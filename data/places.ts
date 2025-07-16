@@ -10,6 +10,7 @@ export const placesData: Place[] = [
     description_short:
       "Cocina mexicana de autor en un ambiente elegante y sofisticado. Ideal para ocasiones muy especiales.",
     playlists: ["Dateo", "Godínez", "Barbón"],
+    source: "local",
   },
   {
     id: 2,
@@ -19,6 +20,7 @@ export const placesData: Place[] = [
     city: "CDMX",
     description_short: "Tienda de ropa vintage y de segunda mano con una barbería clásica en el interior.",
     playlists: ["Barbón", "Tranqui"],
+    source: "local",
   },
   {
     id: 3,
@@ -28,6 +30,7 @@ export const placesData: Place[] = [
     city: "CDMX",
     description_short: "Café histórico con más de 100 años sirviendo antojitos mexicanos y café tradicional.",
     playlists: ["Dominguero", "Chambeador", "Tranqui"],
+    source: "local",
   },
   {
     id: 4,
@@ -37,6 +40,7 @@ export const placesData: Place[] = [
     city: "CDMX",
     description_short: "Bar de coctelería de autor reconocido mundialmente por sus mezclas innovadoras.",
     playlists: ["Bellakeo", "Dateo", "Traka"],
+    source: "local",
   },
   {
     id: 5,
@@ -47,6 +51,7 @@ export const placesData: Place[] = [
     description_short:
       "Galería de arte contemporáneo que representa a algunos de los artistas más importantes de México.",
     playlists: ["Godínez", "Barbón", "Tranqui"],
+    source: "local",
   },
   {
     id: 6,
@@ -56,6 +61,7 @@ export const placesData: Place[] = [
     city: "CDMX",
     description_short: "Librería independiente y café con una cuidada selección de libros y ambiente acogedor.",
     playlists: ["Tranqui", "Chambeador", "Dominguero"],
+    source: "local",
   },
   {
     id: 7,
@@ -66,6 +72,7 @@ export const placesData: Place[] = [
     description_short:
       "Salón de belleza con estilo vintage y servicio de primera, perfecto para un cambio de look radical.",
     playlists: ["Tóxico", "Bellakeo", "Traka"],
+    source: "local",
   },
   {
     id: 8,
@@ -75,6 +82,7 @@ export const placesData: Place[] = [
     city: "CDMX",
     description_short: "Antro icónico para bellakeo y perreo con música reggaetón y ambiente nocturno intenso.",
     playlists: ["Bellakeo", "Traka", "Tóxico"],
+    source: "local",
   },
   {
     id: 9,
@@ -84,6 +92,7 @@ export const placesData: Place[] = [
     city: "CDMX",
     description_short: "Café especializado perfecto para trabajar con wifi rápido y ambiente productivo.",
     playlists: ["Chambeador", "Tranqui", "Godínez"],
+    source: "local",
   },
   {
     id: 10,
@@ -93,6 +102,7 @@ export const placesData: Place[] = [
     city: "CDMX",
     description_short: "Restaurante de mariscos famoso por sus desayunos curativos y ambiente relajado.",
     playlists: ["Crudo", "Dominguero", "Barbón"],
+    source: "local",
   },
   {
     id: 11,
@@ -102,6 +112,7 @@ export const placesData: Place[] = [
     city: "Monterrey",
     description_short: "Bar sofisticado en Monterrey con coctelería premium y ambiente elegante.",
     playlists: ["Barbón", "Dateo", "Godínez"],
+    source: "local",
   },
   {
     id: 12,
@@ -111,6 +122,7 @@ export const placesData: Place[] = [
     city: "Guadalajara",
     description_short: "Restaurante de mariscos perfecto para el bellakeo tapatío con ambiente sensual.",
     playlists: ["Bellakeo", "Dateo", "Dominguero"],
+    source: "local",
   },
   {
     id: 13,
@@ -121,6 +133,7 @@ export const placesData: Place[] = [
     description_short:
       "Un clásico de la ciudad para mariscos frescos y paella. Ambiente familiar y perfecto para comidas de negocios.",
     playlists: ["Godínez", "Dominguero", "Barbón"],
+    source: "local",
   },
   {
     id: 14,
@@ -131,6 +144,7 @@ export const placesData: Place[] = [
     description_short:
       "Especialistas en carnes y cortes finos con un toque norestense. Ideal para una cena importante o una celebración.",
     playlists: ["Dateo", "Godínez", "Barbón"],
+    source: "local",
   },
   {
     id: 15,
@@ -141,6 +155,7 @@ export const placesData: Place[] = [
     description_short:
       "Cocina internacional y mexicana en una antigua casona con patios acogedores. Un lugar elegante para una cita o comida tranquila.",
     playlists: ["Dateo", "Tranqui", "Godínez"],
+    source: "local",
   },
   {
     id: 16,
@@ -151,6 +166,7 @@ export const placesData: Place[] = [
     description_short:
       "Un restaurante versátil con un menú amplio que va desde desayunos hasta cenas. Popular entre familias y para reuniones casuales.",
     playlists: ["Dominguero", "Godínez", "Chambeador"],
+    source: "local",
   },
   {
     id: 17,
@@ -160,6 +176,7 @@ export const placesData: Place[] = [
     city: "Ciudad Victoria",
     description_short: "Tradición en mariscos con un ambiente relajado y familiar. Famoso por sus cocteles y caldos.",
     playlists: ["Dominguero", "Crudo", "Tranqui"],
+    source: "local",
   },
   {
     id: 18,
@@ -170,6 +187,7 @@ export const placesData: Place[] = [
     description_short:
       "Cocina italiana y pizzas a la leña en un ambiente rústico y acogedor. Perfecto para ir en pareja o con amigos.",
     playlists: ["Dateo", "Tranqui", "Dominguero"],
+    source: "local",
   },
   {
     id: 19,
@@ -180,6 +198,7 @@ export const placesData: Place[] = [
     description_short:
       "Mariscos al estilo sinaloense. Ambiente siempre animado, ideal para empezar el fin de semana o curar la resaca.",
     playlists: ["Crudo", "Traka", "Tóxico"],
+    source: "local",
   },
   {
     id: 20,
@@ -190,6 +209,7 @@ export const placesData: Place[] = [
     description_short:
       "Parrilladas y comida tradicional en un espacio amplio. Ideal para grupos grandes y comidas de fin de semana.",
     playlists: ["Dominguero", "Barbón"],
+    source: "local",
   },
   {
     id: 21,
@@ -200,6 +220,7 @@ export const placesData: Place[] = [
     description_short:
       "Sushi y comida japonesa con un toque moderno. Lugar popular entre los jóvenes para cenar antes de la fiesta.",
     playlists: ["Dateo", "Tranqui"],
+    source: "local",
   },
   {
     id: 22,
@@ -210,6 +231,7 @@ export const placesData: Place[] = [
     description_short:
       "Cortes argentinos y empanadas en un ambiente sencillo y directo. Para los verdaderos amantes de la carne.",
     playlists: ["Barbón", "Godínez"],
+    source: "local",
   },
   {
     id: 23,
@@ -220,6 +242,7 @@ export const placesData: Place[] = [
     description_short:
       "El lugar por excelencia para comer fajitas de arrachera y tacos. Casual, rápido y siempre delicioso.",
     playlists: ["Chambeador", "Dominguero", "Crudo"],
+    source: "local",
   },
   {
     id: 24,
@@ -230,6 +253,7 @@ export const placesData: Place[] = [
     description_short:
       "Carne asada y platillos norteños en un ambiente relajado. Excelente para una comida abundante y sin pretensiones.",
     playlists: ["Chambeador", "Dominguero"],
+    source: "local",
   },
   {
     id: 25,
@@ -240,6 +264,7 @@ export const placesData: Place[] = [
     description_short:
       "Famosos pollos asados al carbón. La opción perfecta para una comida familiar de domingo para llevar o comer ahí.",
     playlists: ["Dominguero", "Chambeador"],
+    source: "local",
   },
   {
     id: 26,
@@ -250,6 +275,7 @@ export const placesData: Place[] = [
     description_short:
       "Pizzas artesanales con ingredientes de calidad y combinaciones creativas. Ambiente juvenil y relajado.",
     playlists: ["Tranqui", "Dateo", "Dominguero"],
+    source: "local",
   },
   {
     id: 27,
@@ -260,6 +286,7 @@ export const placesData: Place[] = [
     description_short:
       "Tacos de bistec, tripa y pastor con sazón tradicional. Parada obligatoria para el antojo nocturno.",
     playlists: ["Tóxico", "Crudo", "Chambeador"],
+    source: "local",
   },
   {
     id: 28,
@@ -270,6 +297,7 @@ export const placesData: Place[] = [
     description_short:
       "Un café de especialidad con postres deliciosos como el cheesecake vasco. Ambiente acogedor ideal para una tarde de plática.",
     playlists: ["Tranqui", "Dateo"],
+    source: "local",
   },
   {
     id: 29,
@@ -281,6 +309,7 @@ export const placesData: Place[] = [
     description_short:
       "Café con un toque cultural, ubicado en el corazón del centro. Perfecto para una pausa tranquila después de una exposición.",
     playlists: ["Tranqui", "Godínez", "Dateo"],
+    source: "local",
   },
   {
     id: 30,
@@ -291,6 +320,7 @@ export const placesData: Place[] = [
     description_short:
       "Cafetería temática de anime con bebidas y postres creativos. Un lugar único para fans y curiosos.",
     playlists: ["Tranqui", "Dominguero"],
+    source: "local",
   },
   {
     id: 31,
@@ -300,6 +330,7 @@ export const placesData: Place[] = [
     city: "Ciudad Victoria",
     description_short: "Un espacio relajado para disfrutar de un buen café y juegos de mesa. Ideal para ir con amigos.",
     playlists: ["Tranqui", "Dominguero"],
+    source: "local",
   },
   {
     id: 32,
@@ -310,6 +341,7 @@ export const placesData: Place[] = [
     description_short:
       "Un pequeño café con ambiente íntimo y una buena selección de bebidas calientes y frías. Perfecto para trabajar o leer.",
     playlists: ["Tranqui", "Chambeador", "Godínez"],
+    source: "local",
   },
   {
     id: 33,
@@ -320,6 +352,7 @@ export const placesData: Place[] = [
     description_short:
       "Cafetería con estilo neoyorquino y un menú variado. Buen ambiente para una reunión casual o un desayuno de negocios.",
     playlists: ["Godínez", "Tranqui", "Dateo"],
+    source: "local",
   },
   {
     id: 34,
@@ -330,6 +363,7 @@ export const placesData: Place[] = [
     description_short:
       "Un lugar conocido por su café de calidad y su ambiente amigable. Ideal para empezar el día con energía.",
     playlists: ["Chambeador", "Godínez", "Tranqui"],
+    source: "local",
   },
   {
     id: 35,
@@ -340,6 +374,7 @@ export const placesData: Place[] = [
     description_short:
       "Un espacio moderno y minimalista con café de especialidad. Perfecto para una junta creativa o una tarde de concentración.",
     playlists: ["Tranqui", "Chambeador", "Godínez"],
+    source: "local",
   },
   {
     id: 36,
@@ -349,6 +384,7 @@ export const placesData: Place[] = [
     city: "Ciudad Victoria",
     description_short: "Cafetería con un toque francés en sus postres y panadería. Ambiente romántico y tranquilo.",
     playlists: ["Dateo", "Tranqui"],
+    source: "local",
   },
   {
     id: 37,
@@ -359,6 +395,7 @@ export const placesData: Place[] = [
     description_short:
       "Un café tradicional del centro, sin pretensiones y con buen sabor. Ideal para una charla casual y ver pasar a la gente.",
     playlists: ["Tranqui", "Chambeador"],
+    source: "local",
   },
   {
     id: 38,
@@ -369,6 +406,7 @@ export const placesData: Place[] = [
     description_short:
       "Terraza con buen ambiente, música en vivo y coctelería. El lugar ideal para la precopa o pasar la noche con amigos.",
     playlists: ["Traka", "Dateo", "Tóxico"],
+    source: "local",
   },
   {
     id: 39,
@@ -379,6 +417,7 @@ export const placesData: Place[] = [
     description_short:
       "Bar con temática de aviación, alitas, hamburguesas y cerveza. Perfecto para ver deportes y relajarse después del trabajo.",
     playlists: ["Godínez", "Barbón", "Tranqui"],
+    source: "local",
   },
   {
     id: 40,
@@ -389,6 +428,7 @@ export const placesData: Place[] = [
     description_short:
       "Cantina tradicional con botana y ambiente clásico. Para los que buscan una experiencia auténtica y sin filtros.",
     playlists: ["Tóxico", "Barbón", "Crudo"],
+    source: "local",
   },
   {
     id: 41,
@@ -399,6 +439,7 @@ export const placesData: Place[] = [
     description_short:
       "Un bar con vibra rockera y alternativa. Buena selección de cervezas y música para salir de la rutina.",
     playlists: ["Tóxico", "Barbón"],
+    source: "local",
   },
   {
     id: 42,
@@ -409,6 +450,7 @@ export const placesData: Place[] = [
     description_short:
       "Bar restaurante con música de mariachi y norteño en vivo. Ideal para una noche de fiesta muy mexicana.",
     playlists: ["Traka", "Bellakeo", "Tóxico"],
+    source: "local",
   },
   {
     id: 43,
@@ -419,6 +461,7 @@ export const placesData: Place[] = [
     description_short:
       "Un pequeño bar con buena música y ambiente relajado. Ideal para tomar las primeras cervezas de la noche.",
     playlists: ["Tranqui", "Barbón"],
+    source: "local",
   },
   {
     id: 44,
@@ -429,6 +472,7 @@ export const placesData: Place[] = [
     description_short:
       "Cervecería de barrio con variedad de etiquetas nacionales y botanas. El lugar perfecto para el after-office.",
     playlists: ["Godínez", "Barbón", "Tranqui"],
+    source: "local",
   },
   {
     id: 45,
@@ -439,6 +483,7 @@ export const placesData: Place[] = [
     description_short:
       "Franquicia con una enorme selección de cervezas artesanales e importadas. Para los conocedores y los que quieren probar algo nuevo.",
     playlists: ["Barbón", "Godínez", "Dateo"],
+    source: "local",
   },
   {
     id: 46,
@@ -449,6 +494,7 @@ export const placesData: Place[] = [
     description_short:
       "Antro con música electrónica y reggaetón. El epicentro de la fiesta y el bellaqueo en la ciudad.",
     playlists: ["Bellakeo", "Traka", "Tóxico"],
+    source: "local",
   },
   {
     id: 47,
@@ -458,6 +504,7 @@ export const placesData: Place[] = [
     city: "Ciudad Victoria",
     description_short: "Restaurante-bar familiar de día, con ambiente de cantina por la noche. Versátil y concurrido.",
     playlists: ["Godínez", "Dominguero", "Crudo"],
+    source: "local",
   },
   {
     id: 48,
@@ -467,6 +514,7 @@ export const placesData: Place[] = [
     city: "Ciudad Victoria",
     description_short: "Ropa y accesorios de tendencia para mujer. Una selección cuidada para encontrar piezas únicas.",
     playlists: ["Dateo", "Tranqui"],
+    source: "local",
   },
   {
     id: 49,
@@ -477,6 +525,7 @@ export const placesData: Place[] = [
     description_short:
       "Moda femenina actual y a precios accesibles. Ideal para renovar tu guardarropa con las últimas tendencias.",
     playlists: ["Tranqui"],
+    source: "local",
   },
   {
     id: 50,
@@ -487,6 +536,7 @@ export const placesData: Place[] = [
     description_short:
       "Boutique con vestidos de fiesta y prendas para ocasiones especiales. Perfecta para encontrar el outfit de un evento.",
     playlists: ["Dateo"],
+    source: "local",
   },
   {
     id: 51,
@@ -497,6 +547,7 @@ export const placesData: Place[] = [
     description_short:
       "Una concept store con una mezcla de ropa, accesorios y pequeños regalos. Vibra juvenil y moderna.",
     playlists: ["Tranqui", "Dateo"],
+    source: "local",
   },
   {
     id: 52,
@@ -507,6 +558,7 @@ export const placesData: Place[] = [
     description_short:
       "Una boutique con años de tradición en el centro, ofreciendo moda para la mujer clásica y contemporánea.",
     playlists: ["Tranqui", "Godínez"],
+    source: "local",
   },
   {
     id: 53,
@@ -517,6 +569,7 @@ export const placesData: Place[] = [
     description_short:
       "Salón de alta peluquería y diseño de imagen. Reconocido por sus coloristas y estilistas expertos.",
     playlists: ["Tranqui", "Dateo"],
+    source: "local",
   },
   {
     id: 54,
@@ -527,6 +580,7 @@ export const placesData: Place[] = [
     description_short:
       "Estudio especializado en uñas, extensiones de pestañas y microblading. Un lugar para consentirte y realzar tu belleza.",
     playlists: ["Tranqui"],
+    source: "local",
   },
   {
     id: 55,
@@ -537,6 +591,7 @@ export const placesData: Place[] = [
     description_short:
       "El lugar de referencia para diseños de uñas creativos y manicuras impecables. Siempre están a la vanguardia.",
     playlists: ["Tranqui"],
+    source: "local",
   },
   {
     id: 56,
@@ -547,6 +602,7 @@ export const placesData: Place[] = [
     description_short:
       "Servicios integrales de belleza, desde cortes y tintes hasta masajes relajantes. Un oasis en la ciudad.",
     playlists: ["Tranqui", "Dateo"],
+    source: "local",
   },
   {
     id: 57,
@@ -557,6 +613,7 @@ export const placesData: Place[] = [
     description_short:
       "Especialistas en tratamientos de keratina y cuidado del cabello. Para lucir un pelo liso, sano y espectacular.",
     playlists: ["Tranqui"],
+    source: "local",
   },
   {
     id: 58,
@@ -567,6 +624,7 @@ export const placesData: Place[] = [
     description_short:
       "Un viaje a través de la historia natural de la región, desde dinosaurios hasta ecosistemas actuales. Genial para todas las edades.",
     playlists: ["Dominguero", "Tranqui"],
+    source: "local",
   },
   {
     id: 59,
@@ -577,6 +635,7 @@ export const placesData: Place[] = [
     description_short:
       "Ubicado en un edificio histórico, narra la historia del estado desde la época prehispánica hasta el siglo XX.",
     playlists: ["Dominguero", "Tranqui"],
+    source: "local",
   },
   {
     id: 60,
@@ -587,6 +646,7 @@ export const placesData: Place[] = [
     description_short:
       "El principal recinto para las artes escénicas en la ciudad. Ofrece teatro, danza, conciertos y más.",
     playlists: ["Godínez", "Dateo", "Tranqui"],
+    source: "local",
   },
   {
     id: 61,
@@ -597,6 +657,7 @@ export const placesData: Place[] = [
     description_short:
       "Alberga la colección de artes plásticas más importante del estado, con obras de artistas tamaulipecos y nacionales.",
     playlists: ["Tranqui", "Dateo"],
+    source: "local",
   },
   {
     id: 62,
@@ -607,6 +668,7 @@ export const placesData: Place[] = [
     description_short:
       "Escuela de iniciación artística que también funciona como galería para exposiciones temporales de artistas emergentes.",
     playlists: ["Tranqui", "Chambeador"],
+    source: "local",
   },
   {
     id: 63,
@@ -617,6 +679,7 @@ export const placesData: Place[] = [
     description_short:
       "Sucursal del Fondo de Cultura Económica, con una gran oferta editorial y un ambiente que invita a la lectura. A menudo acompañada por el aroma del café cercano.",
     playlists: ["Tranqui", "Godínez"],
+    source: "local",
   },
   {
     id: 64,
@@ -627,6 +690,7 @@ export const placesData: Place[] = [
     description_short:
       "Librería y papelería con tradición en el centro de la ciudad. Un lugar para encontrar desde novedades hasta material de oficina.",
     playlists: ["Chambeador", "Tranqui"],
+    source: "local",
   },
   {
     id: 65,
@@ -637,6 +701,7 @@ export const placesData: Place[] = [
     description_short:
       "Pequeña librería con una selección de libros religiosos, de autoayuda y literatura general. Un remanso de paz.",
     playlists: ["Tranqui"],
+    source: "local",
   },
   {
     id: 66,
@@ -647,6 +712,7 @@ export const placesData: Place[] = [
     description_short:
       "Librería de viejo con tesoros escondidos y primeras ediciones. El lugar perfecto para coleccionistas y lectores curiosos.",
     playlists: ["Tranqui", "Barbón"],
+    source: "local",
   },
   {
     id: 67,
@@ -657,6 +723,7 @@ export const placesData: Place[] = [
     description_short:
       "Un concepto que une el placer de un buen café con la lectura. Ideal para pasar una tarde tranquila explorando su selección de libros.",
     playlists: ["Tranqui", "Dateo", "Godínez"],
+    source: "local",
   },
   {
     id: 68,
@@ -666,6 +733,7 @@ export const placesData: Place[] = [
     city: "Monterrey",
     description_short: "Alta cocina contemporánea con ingredientes de temporada en un ambiente sofisticado y elegante.",
     playlists: ["Barbón", "Dateo", "Godínez"],
+    source: "local",
   },
   {
     id: 69,
@@ -676,6 +744,7 @@ export const placesData: Place[] = [
     description_short:
       "Experiencia culinaria estrella Michelin que eleva la cocina norestense a la vanguardia mundial. Un viaje sensorial único.",
     playlists: ["Barbón", "Godínez", "Dateo"],
+    source: "local",
   },
   {
     id: 70,
@@ -686,6 +755,7 @@ export const placesData: Place[] = [
     description_short:
       "Institución regia que lleva la comida de cantina a otro nivel. Famosa por sus cortes de carne y ambiente vibrante.",
     playlists: ["Godínez", "Barbón", "Dominguero"],
+    source: "local",
   },
   {
     id: 71,
@@ -696,6 +766,7 @@ export const placesData: Place[] = [
     description_short:
       "Evolución de la carne asada regiomontana en un asadero casual y trendy. Perfecto para vinos naturales y ambiente relajado.",
     playlists: ["Tranqui", "Dominguero", "Barbón"],
+    source: "local",
   },
   {
     id: 72,
@@ -706,6 +777,7 @@ export const placesData: Place[] = [
     description_short:
       "Fusión gastronómica norteña, neoyorquina y angelina. Epicentro social con ambiente moderno, cortes premium y energía vibrante.",
     playlists: ["Barbón", "Traka", "Bellakeo"],
+    source: "local",
   },
   {
     id: 73,
@@ -716,6 +788,7 @@ export const placesData: Place[] = [
     description_short:
       "Viaje a las raíces de la cocina norestense con producto local y técnicas tradicionales. Auténtico y genuino.",
     playlists: ["Barbón", "Dominguero", "Tranqui"],
+    source: "local",
   },
   {
     id: 74,
@@ -726,6 +799,7 @@ export const placesData: Place[] = [
     description_short:
       "Paraíso para amantes del café de especialidad. Enfoque en sustentabilidad, comercio justo y granos de alta calidad.",
     playlists: ["Chambeador", "Tranqui", "Godínez"],
+    source: "local",
   },
   {
     id: 75,
@@ -736,6 +810,7 @@ export const placesData: Place[] = [
     description_short:
       "Café de especialidad elogiado por su transparencia y calidad extrema del grano. Para verdaderos puristas y aficionados.",
     playlists: ["Chambeador", "Barbón", "Tranqui"],
+    source: "local",
   },
   {
     id: 76,
@@ -746,6 +821,7 @@ export const placesData: Place[] = [
     description_short:
       "Joya escondida en Barrio Antiguo con decoración vintage y personalidad única. Perfecto para citas y ambiente bohemio.",
     playlists: ["Dateo", "Tranqui", "Barbón"],
+    source: "local",
   },
   {
     id: 77,
@@ -756,6 +832,7 @@ export const placesData: Place[] = [
     description_short:
       "Bar de referencia con una década de historia. Música exquisita en vinilos, coctelería de autor y ambiente íntimo para conocedores.",
     playlists: ["Barbón", "Tóxico", "Tranqui"],
+    source: "local",
   },
   {
     id: 78,
@@ -766,6 +843,7 @@ export const placesData: Place[] = [
     description_short:
       "Speakeasy secreto con entrada por sótano. Captura la esencia de la prohibición con coctelería de alta gama y ambiente exclusivo.",
     playlists: ["Barbón", "Tóxico", "Bellakeo"],
+    source: "local",
   },
   {
     id: 79,
@@ -776,6 +854,7 @@ export const placesData: Place[] = [
     description_short:
       "Neocantina que reinterpreta la tradición regiomontana con toque moderno. Paraíso para buen ambiente, comida y vida social.",
     playlists: ["Godínez", "Dominguero", "Traka"],
+    source: "local",
   },
   {
     id: 80,
@@ -786,6 +865,7 @@ export const placesData: Place[] = [
     description_short:
       "Concept store dedicada al mejor diseño mexicano. Más de 50 marcas curadas enfocadas en originalidad y sustentabilidad.",
     playlists: ["Barbón", "Tranqui", "Godínez"],
+    source: "local",
   },
   {
     id: 81,
@@ -796,6 +876,7 @@ export const placesData: Place[] = [
     description_short:
       "Museo de Arte Contemporáneo, una de las instituciones culturales más importantes de América Latina. Visita obligada para amantes del arte.",
     playlists: ["Godínez", "Barbón", "Tranqui"],
+    source: "local",
   },
   {
     id: 82,
@@ -806,6 +887,7 @@ export const placesData: Place[] = [
     description_short:
       "Hub social encantador que combina café, libros y ambiente bohemio. Ideal para trabajar, leer o socializar. 100% pet-friendly.",
     playlists: ["Tranqui", "Chambeador", "Dominguero"],
+    source: "local",
   },
   {
     id: 83,
@@ -816,6 +898,7 @@ export const placesData: Place[] = [
     description_short:
       "Más que librería, es centro cultural con libros de segunda mano, cafetería, galería y auditorio. Espacio comunitario accesible.",
     playlists: ["Tranqui", "Chambeador", "Godínez"],
+    source: "local",
   },
   {
     id: 84,
@@ -826,6 +909,7 @@ export const placesData: Place[] = [
     description_short:
       "Una de las 10 librerías más hermosas del mundo según Wired. Arquitectura impresionante y ediciones especializadas en arte y cultura.",
     playlists: ["Barbón", "Tranqui", "Godínez"],
+    source: "local",
   },
   {
     id: 85,
@@ -836,6 +920,7 @@ export const placesData: Place[] = [
     description_short:
       "Estudio especializado en diseño de cejas y microblading. Reconocido por profesionalismo, pigmentos premium y resultados consistentes.",
     playlists: ["Tranqui", "Barbón", "Dateo"],
+    source: "local",
   },
   {
     id: 86,
@@ -846,6 +931,613 @@ export const placesData: Place[] = [
     description_short:
       "Nail Spa moderno con excelentes reseñas. Desde manicuras básicas hasta diseños artísticos y aplicaciones de acrílico.",
     playlists: ["Tranqui", "Bellakeo", "Dateo"],
+    source: "local",
+  },
+  // San Miguel de Allende places start here
+  {
+    id: 87,
+    name: "Atrio Restaurant & Rooftop",
+    category: "Restaurante",
+    address: "Cuna de Allende 3, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Cocina internacional con una de las vistas más espectaculares a la Parroquia. Ambiente sofisticado y perfecto para una ocasión especial.",
+    playlists: ["Dateo", "Godínez", "Barbón"],
+    source: "local",
+  },
+  {
+    id: 88,
+    name: "Bovine Brasserie",
+    category: "Restaurante",
+    address: "Canal 16, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Un concepto de brasserie clásica francesa con un toque moderno. Ideal para amantes de la carne y el buen vino en un ambiente chic.",
+    playlists: ["Dateo", "Barbón", "Godínez"],
+    source: "local",
+  },
+  {
+    id: 89,
+    name: "The Restaurant",
+    category: "Restaurante",
+    address: "Sollano 16, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Ubicado en un hermoso patio colonial, ofrece cocina internacional en un entorno elegante y relajado. Famoso por su brunch de los domingos.",
+    playlists: ["Dateo", "Dominguero", "Tranqui"],
+    source: "local",
+  },
+  {
+    id: 90,
+    name: "Trazo 1810",
+    category: "Restaurante",
+    address: "Hidalgo 8, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Terraza con vistas panorámicas que sirve cocina mexicana contemporánea. Un lugar para ver y ser visto, con un ambiente vibrante.",
+    playlists: ["Dateo", "Traka", "Godínez"],
+    source: "local",
+  },
+  {
+    id: 91,
+    name: "La Parada",
+    category: "Restaurante",
+    address: "Recreo 94, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Sabores peruanos auténticos en un rincón casual y concurrido. Su ceviche es legendario en la ciudad.",
+    playlists: ["Tranqui", "Dateo", "Dominguero"],
+    source: "local",
+  },
+  {
+    id: 92,
+    name: "Luna Rooftop Tapas Bar",
+    category: "Restaurante",
+    address: "Hospicio 35, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Parte del hotel Rosewood, esta terraza es el epítome del lujo. Tapas, cocteles y la mejor vista al atardecer de San Miguel.",
+    playlists: ["Dateo", "Barbón", "Godínez", "Traka"],
+    source: "local",
+  },
+  {
+    id: 93,
+    name: "Áperi Restaurant",
+    category: "Restaurante",
+    address: "Quebrada 101, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Cocina de producto con un menú degustación que cambia constantemente. Una experiencia culinaria íntima y refinada.",
+    playlists: ["Dateo", "Barbón"],
+    source: "local",
+  },
+  {
+    id: 94,
+    name: "Tostévere",
+    category: "Restaurante",
+    address: "Codo 4, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Cocina rústica italiana y del mar en un ambiente relajado y bohemio. Ideal para una cena casual pero deliciosa con amigos.",
+    playlists: ["Tranqui", "Dateo", "Crudo"],
+    source: "local",
+  },
+  {
+    id: 95,
+    name: "Zumo",
+    category: "Restaurante",
+    address: "Orizaba 87-9, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Cocina de autor en una terraza íntima y elegante con vistas espectaculares. Un secreto bien guardado para una cena romántica.",
+    playlists: ["Dateo", "Barbón", "Tranqui"],
+    source: "local",
+  },
+  {
+    id: 96,
+    name: "Antonia Bistro SMA",
+    category: "Restaurante",
+    address: "San Francisco 57, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Cocina internacional en una terraza vibrante con vistas al corazón de la ciudad. Excelente para empezar la noche.",
+    playlists: ["Traka", "Dateo", "Godínez"],
+    source: "local",
+  },
+  {
+    id: 97,
+    name: "Fatima 7 Rooftop",
+    category: "Restaurante",
+    address: "Hidalgo 8, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Sabores de Líbano, Marruecos y Turquía en una de las terrazas más bonitas de la ciudad. Ambiente exótico y perfecto para compartir platillos.",
+    playlists: ["Dateo", "Tranqui", "Barbón"],
+    source: "local",
+  },
+  {
+    id: 98,
+    name: "Marsala, Cocina con Acentos",
+    category: "Restaurante",
+    address: "Hernández Macías 48, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Cocina de autor en un patio interior acogedor y romántico. Un lugar para una conversación larga y una cena memorable.",
+    playlists: ["Dateo", "Tranqui"],
+    source: "local",
+  },
+  {
+    id: 99,
+    name: "La Única San Miguel",
+    category: "Restaurante",
+    address: "Diez de Sollano y Dávalos 14, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Cocina regional mexicana con un toque norteño en una terraza espectacular. Siempre concurrido y con un ambiente de fiesta.",
+    playlists: ["Traka", "Godínez", "Tóxico"],
+    source: "local",
+  },
+  {
+    id: 100,
+    name: "El Pescau",
+    category: "Restaurante",
+    address: "Jesús 21, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Los mejores mariscos estilo Sinaloa. Ambiente súper relajado, ideal para curar la cruda o para unos tragos por la tarde.",
+    playlists: ["Crudo", "Tranqui", "Dominguero"],
+    source: "local",
+  },
+  {
+    id: 101,
+    name: "Hecho en México",
+    category: "Restaurante",
+    address: "Ancha de San Antonio 8, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Un clásico de San Miguel con comida mexicana e internacional. Confiable, acogedor y perfecto para una comida familiar o con amigos.",
+    playlists: ["Dominguero", "Tranqui", "Godínez"],
+    source: "local",
+  },
+  {
+    id: 102,
+    name: "Lavanda Café",
+    category: "Café",
+    address: "Hernández Macías 87, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Famoso por su café con esencia de lavanda y sus desayunos. Siempre hay fila, pero la espera vale la pena por su encanto y sabor.",
+    playlists: ["Tranqui", "Dateo", "Dominguero"],
+    source: "local",
+  },
+  {
+    id: 103,
+    name: "Cumpanio",
+    category: "Café",
+    address: "Correo 29, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Panadería y restaurante de inspiración europea. Ideal para un desayuno completo, un café con pan dulce recién hecho o un brunch.",
+    playlists: ["Dominguero", "Godínez", "Tranqui"],
+    source: "local",
+  },
+  {
+    id: 104,
+    name: "Ki'bok Coffee SMA",
+    category: "Café",
+    address: "Diez de Sollano y Dávalos 21, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Café de especialidad traído desde Tulum con una vibra relajada y bohemia. Tienen una terraza agradable para trabajar o platicar.",
+    playlists: ["Chambeador", "Tranqui", "Dateo"],
+    source: "local",
+  },
+  {
+    id: 105,
+    name: "Geek & Coffee",
+    category: "Café",
+    address: "Calz. de la Aurora Local 3, La Aurora, 37710 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Ubicado en la Fábrica La Aurora, es el lugar perfecto para un descanso después de ver arte. Café de especialidad y un ambiente creativo.",
+    playlists: ["Chambeador", "Tranqui", "Dominguero"],
+    source: "local",
+  },
+  {
+    id: 106,
+    name: "Café Oso Azul",
+    category: "Café",
+    address: "Zacateros 17, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Un pequeño y acogedor café que sirve desayunos caseros y buen café. Ideal para empezar el día de forma tranquila.",
+    playlists: ["Tranqui", "Dominguero", "Crudo"],
+    source: "local",
+  },
+  {
+    id: 107,
+    name: "Panio",
+    category: "Café",
+    address: "Relox 14, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Panadería artesanal con múltiples sucursales. Un lugar para un café rápido y llevarte el mejor pan de la ciudad.",
+    playlists: ["Tranqui", "Chambeador", "Dominguero"],
+    source: "local",
+  },
+  {
+    id: 108,
+    name: "El Rincón de Don Tomás",
+    category: "Café",
+    address: "Correo 3, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Un café sin pretensiones justo al lado de la plaza principal. Perfecto para observar a la gente pasar con un café de olla.",
+    playlists: ["Dominguero", "Tranqui"],
+    source: "local",
+  },
+  {
+    id: 109,
+    name: "Zenteno Café",
+    category: "Café",
+    address: "Hernández Macias 136, Zona Centro, 37700 San Miguel de Allende,  Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Café de especialidad de Veracruz en un local pequeño y con mucho conocimiento. Para los verdaderos amantes del café.",
+    playlists: ["Chambeador", "Tranqui"],
+    source: "local",
+  },
+  {
+    id: 110,
+    name: "Inside Café",
+    category: "Café",
+    address: "Insurgentes 66, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Un lugar escondido con un patio interior encantador. Sirven desayunos de inspiración australiana y excelente café.",
+    playlists: ["Tranqui", "Dateo", "Dominguero"],
+    source: "local",
+  },
+  {
+    id: 111,
+    name: "Animas Quince",
+    category: "Café",
+    address: "Animas 15, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Un rooftop-café con una vibra joven y relajada. Ideal para un desayuno tardío o un café por la tarde con vistas.",
+    playlists: ["Dateo", "Tranqui", "Dominguero"],
+    source: "local",
+  },
+  {
+    id: 112,
+    name: "Quince Rooftop",
+    category: "Bar y Cantina",
+    address: "Cuna de Allende 15, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "El lugar para ver y ser visto. Coctelería de autor, música de DJ y una vista frontal impresionante a la Parroquia. La fiesta empieza aquí.",
+    playlists: ["Traka", "Bellakeo", "Tóxico", "Dateo"],
+    source: "local",
+  },
+  {
+    id: 113,
+    name: "Bekeb",
+    category: "Bar y Cantina",
+    address: "Mesones 14, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Coctelería artesanal enfocada en destilados mexicanos. Una terraza íntima y sofisticada con un conocimiento profundo de mixología.",
+    playlists: ["Dateo", "Barbón", "Tranqui"],
+    source: "local",
+  },
+  {
+    id: 114,
+    name: "The Blue Bar",
+    category: "Bar y Cantina",
+    address: "Zacateros 23, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Un bar pequeño y sin pretensiones con una atmósfera amigable. Famoso por sus martinis y su ambiente de bar de barrio.",
+    playlists: ["Tranqui", "Crudo"],
+    source: "local",
+  },
+  {
+    id: 115,
+    name: "La Cucaracha",
+    category: "Bar y Cantina",
+    address: "Zacateros 22, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Una de las cantinas más antiguas y legendarias de la ciudad. Ambiente oscuro, tradicional y lleno de historias. Pide un 'cucaracho'.",
+    playlists: ["Tóxico", "Crudo", "Barbón"],
+    source: "local",
+  },
+  {
+    id: 116,
+    name: "Hank's New Orleans Oyster Bar",
+    category: "Bar y Cantina",
+    address: "Diez de Sollano 3, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Ambiente de Nueva Orleans en pleno centro. Música en vivo, happy hour y un ambiente siempre animado y ruidoso.",
+    playlists: ["Traka", "Crudo", "Dominguero"],
+    source: "local",
+  },
+  {
+    id: 117,
+    name: "El Manantial",
+    category: "Bar y Cantina",
+    address: "Barranca 78, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Cantina histórica y bohemia, famosa por sus mojitos y sus platillos para botanear. Un clásico para locales y conocedores.",
+    playlists: ["Tranqui", "Barbón", "Crudo"],
+    source: "local",
+  },
+  {
+    id: 118,
+    name: "Tunki Rooftop by Handshake",
+    category: "Bar y Cantina",
+    address: "Hidalgo 2, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Coctelería de clase mundial con la firma de Handshake Speakeasy. Terraza exclusiva con un concepto y ejecución impecables.",
+    playlists: ["Barbón", "Dateo", "Godínez"],
+    source: "local",
+  },
+  {
+    id: 119,
+    name: "San Mezcal",
+    category: "Bar y Cantina",
+    address: "Recreo 88, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Pequeño bar dedicado al mezcal. Ofrecen una gran variedad de etiquetas y un ambiente íntimo para degustar y aprender.",
+    playlists: ["Tranqui", "Barbón", "Dateo"],
+    source: "local",
+  },
+  {
+    id: 120,
+    name: "La Negrita Cantina",
+    category: "Bar y Cantina",
+    address: "Mesones 71, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Cantina moderna con música en vivo y ambiente de fiesta. Ideal para ir en grupo y empezar la noche con unos tragos.",
+    playlists: ["Traka", "Bellakeo", "Tóxico"],
+    source: "local",
+  },
+  {
+    id: 121,
+    name: "El Gato Negro",
+    category: "Bar y Cantina",
+    address: "Mesones 12, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Un bar de toda la vida, popular entre la comunidad de expatriados. Ambiente relajado, buenos precios y cero pretensiones.",
+    playlists: ["Crudo", "Tranqui", "Barbón"],
+    source: "local",
+  },
+  {
+    id: 122,
+    name: "Dôce 18 Concept House",
+    category: "Boutique",
+    address: "Relox 18, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Una mansión colonial convertida en un espacio de lujo que reúne moda, diseño, gastronomía y arte. La meca del coolhunting en la ciudad.",
+    playlists: ["Godínez", "Barbón", "Dateo"],
+    source: "local",
+  },
+  {
+    id: 123,
+    name: "Mixta",
+    category: "Boutique",
+    address: "Pila Seca 3, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Una curaduría de tesoros de todo el mundo. Ropa, joyería, decoración y objetos únicos con una estética bohemia y global.",
+    playlists: ["Tranqui", "Barbón"],
+    source: "local",
+  },
+  {
+    id: 124,
+    name: "Recreo San Miguel",
+    category: "Boutique",
+    address: "Recreo 26, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Diseño de moda que fusiona el clásico sarape mexicano con siluetas modernas y lujosas. Elegancia y tradición en cada pieza.",
+    playlists: ["Godínez", "Barbón"],
+    source: "local",
+  },
+  {
+    id: 125,
+    name: "Hoja Santa Boutique",
+    category: "Boutique",
+    address: "Ancha de San Antonio 30, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Boutique enfocada en diseñadores mexicanos y latinoamericanos. Ropa, accesorios y textiles con una identidad contemporánea.",
+    playlists: ["Tranqui", "Dateo"],
+    source: "local",
+  },
+  {
+    id: 126,
+    name: "Sollano 16",
+    category: "Boutique",
+    address: "Sollano 16, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Una tienda de decoración y estilo de vida con un gusto impecable. Muebles, arte y objetos que definen la estética de San Miguel.",
+    playlists: ["Barbón", "Godínez"],
+    source: "local",
+  },
+  {
+    id: 127,
+    name: "Glow & Go!",
+    category: "Salón de Belleza",
+    address: "Salida Real a Querétaro 189, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Especialistas en faciales y tratamientos para la piel. Un lugar para consentirte y salir con un brillo espectacular antes de un evento.",
+    playlists: ["Dateo", "Traka"],
+    source: "local",
+  },
+  {
+    id: 128,
+    name: "Merak Hair Studio",
+    category: "Salón de Belleza",
+    address: "Correo 27, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Salón de belleza moderno y céntrico, popular para cortes, color y peinados. Ambiente profesional y con buena energía.",
+    playlists: ["Godínez", "Dateo"],
+    source: "local",
+  },
+  {
+    id: 129,
+    name: "Bamboo Glam Beauty Studio",
+    category: "Salón de Belleza",
+    address: "Calzada de la Estación 120, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Expertos en maquillaje y peinado para bodas y eventos especiales. Te dejan lista para cualquier ocasión importante.",
+    playlists: ["Dateo", "Traka"],
+    source: "local",
+  },
+  {
+    id: 130,
+    name: "Harmony Hair & Nail Bar",
+    category: "Salón de Belleza",
+    address: "Salida a Celaya 59, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Un espacio dedicado a la belleza de manos y pies. Ideal para un manicure relajante mientras te pones al día con tus amigas.",
+    playlists: ["Tranqui", "Dominguero"],
+    source: "local",
+  },
+  {
+    id: 131,
+    name: "Andiara Beauty Studio",
+    category: "Salón de Belleza",
+    address: "Jesús 27, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Un estudio de belleza enfocado en cejas y pestañas. El lugar perfecto para un diseño de cejas o aplicación de extensiones de pestañas.",
+    playlists: ["Godínez", "Dateo"],
+    source: "local",
+  },
+  {
+    id: 132,
+    name: "Fábrica La Aurora",
+    category: "Espacio Cultural",
+    address: "Calz. de la Aurora S/N, La Aurora, 37710 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Antigua fábrica textil convertida en un vibrante centro de arte y diseño. Pasea por sus galerías, estudios de artistas y tiendas de antigüedades.",
+    playlists: ["Dominguero", "Tranqui", "Barbón"],
+    source: "local",
+  },
+  {
+    id: 133,
+    name: "Centro Cultural Ignacio Ramírez 'El Nigromante'",
+    category: "Espacio Cultural",
+    address: "Hernández Macías 75, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Parte del INBAL, este antiguo convento ofrece exposiciones, talleres y un mural inconcluso de Siqueiros. Un oasis de cultura.",
+    playlists: ["Tranqui", "Dominguero", "Chambeador"],
+    source: "local",
+  },
+  {
+    id: 134,
+    name: "Museo La Esquina del Juguete Popular Mexicano",
+    category: "Espacio Cultural",
+    address: "Núñez 40, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Una increíble colección de juguetes artesanales de todo México. Un viaje nostálgico y colorido a la infancia y la creatividad del país.",
+    playlists: ["Dominguero", "Tranqui"],
+    source: "local",
+  },
+  {
+    id: 135,
+    name: "Instituto Allende",
+    category: "Espacio Cultural",
+    address: "Ancha de San Antonio 22, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Histórica escuela de artes visuales que ha sido fundamental en la escena cultural de la ciudad. Tiene una galería y un ambiente bohemio.",
+    playlists: ["Chambeador", "Tranqui", "Barbón"],
+    source: "local",
+  },
+  {
+    id: 136,
+    name: "El Charco del Ingenio",
+    category: "Espacio Cultural",
+    address: "Paloma S/N, Las Colonias, 37720 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Jardín botánico y reserva natural dedicada a la flora regional. Un espacio para caminar, meditar y conectarse con la naturaleza del semidesierto.",
+    playlists: ["Dominguero", "Tranqui", "Crudo"],
+    source: "local",
+  },
+  {
+    id: 137,
+    name: "Biblioteca Pública de San Miguel de Allende",
+    category: "Librería con Encanto",
+    address: "Insurgentes 25, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Más que una librería, es el corazón de la comunidad. Tiene una gran selección de libros en inglés y español, un café y un patio encantador.",
+    playlists: ["Tranqui", "Chambeador", "Dominguero"],
+    source: "local",
+  },
+  {
+    id: 138,
+    name: "Vórtice Libros y Cafetería",
+    category: "Librería con Encanto",
+    address: "Pila Seca 19, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Pequeña librería independiente con una cuidada selección de títulos en español. Un lugar para descubrir nuevas lecturas y tomar un buen café.",
+    playlists: ["Tranqui", "Chambeador"],
+    source: "local",
+  },
+  {
+    id: 139,
+    name: "Libros El Tecolote",
+    category: "Librería con Encanto",
+    address: "Jesús 11, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Especializada en libros sobre México: historia, arte, fotografía y literatura. Un paraíso para quien quiera profundizar en la cultura del país.",
+    playlists: ["Barbón", "Tranqui", "Chambeador"],
+    source: "local",
+  },
+  {
+    id: 140,
+    name: "La Musa Hosca",
+    category: "Librería con Encanto",
+    address: "Aldama 9, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Una librería de viejo con hallazgos y tesoros literarios. Perderse en sus estantes es una aventura en sí misma.",
+    playlists: ["Tranqui", "Barbón"],
+    source: "local",
+  },
+  {
+    id: 141,
+    name: "Librería Tesoros",
+    category: "Librería con Encanto",
+    address: "Correo 15, Zona Centro, 37700 San Miguel de Allende, Gto.",
+    city: "San Miguel de Allende",
+    description_short:
+      "Una pequeña y encantadora tienda en el corazón de la ciudad. Ofrece una buena selección de bestsellers, guías de viaje y postales.",
+    playlists: ["Dominguero", "Tranqui"],
+    source: "local",
   },
 ]
 

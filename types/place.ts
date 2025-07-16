@@ -10,7 +10,7 @@ export type Place = {
     | "Salón de Belleza"
     | "Librería con Encanto"
   address: string
-  city: "CDMX" | "Monterrey" | "Guadalajara"
+  city: "CDMX" | "Monterrey" | "Guadalajara" | "Ciudad Victoria" | "San Miguel de Allende"
   description_short: string
   playlists: string[]
   source: "local" | "web"
