@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { callPerplexityAPI, MODELS, getApiStatus } from "@/lib/api-config"
 import type { Place } from "@/types/place"
 
 interface PerplexityResponse {
@@ -7,20 +8,30 @@ interface PerplexityResponse {
       content: string
     }
   }>
+  model?: string
 }
 
 export async function POST(request: NextRequest) {
   try {
     const { vibe, city } = await request.json()
 
+    console.log("Perplexity search request:", { vibe, city })
+
     if (!vibe || !city) {
+      return NextResponse.json([])
+    }
+
+    // Verificar configuración de Perplexity
+    const apiStatus = getApiStatus()
+    if (!apiStatus.perplexity.configured) {
+      console.warn("PERPLEXITY_API_KEY not configured, returning empty results")
       return NextResponse.json([])
     }
 
     // Mapear vibes a descripciones más naturales para la búsqueda
     const vibeDescriptions: Record<string, string> = {
-      Traca: "fiesta, diversión, ambiente de celebración, vida nocturna, música en vivo",
-      Bellaqueo: "ambiente seductor, sensual, para ligar, romántico pero intenso, cocktails",
+      Traka: "fiesta, diversión, ambiente de celebración, vida nocturna, música en vivo",
+      Bellakeo: "ambiente seductor, sensual, para ligar, romántico pero intenso, cocktails",
       Tranqui: "relajado, tranquilo, sin presión, chill, ambiente zen, terraza",
       Godínez: "profesional, formal, para después del trabajo, ejecutivo, wifi",
       Dominguero: "familiar, casual, para fines de semana, ambiente hogareño, brunch",
@@ -35,17 +46,17 @@ export async function POST(request: NextRequest) {
 
     // Crear prompt optimizado para Perplexity
     const searchPrompt = `Encuentra los mejores lugares en ${city}, México que tengan un ambiente de ${vibeDescription}. 
-    
+
 Busca específicamente restaurantes, cafés, bares, boutiques, espacios culturales o librerías que coincidan con este vibe y que estén actualmente operando en 2024.
-    
+
 Para cada lugar, proporciona:
 - Nombre exacto del lugar
 - Categoría (Restaurante, Café, Bar y Cantina, Boutique, Espacio Cultural, Salón de Belleza, o Librería con Encanto)
 - Dirección completa con colonia
 - Descripción breve del ambiente y por qué encaja con el vibe (máximo 100 caracteres)
-    
+
 Enfócate en lugares reales, populares y bien valorados. Responde SOLO con un JSON válido con máximo 3 lugares.
-    
+
 Formato requerido:
 [
   {
@@ -56,26 +67,16 @@ Formato requerido:
   }
 ]`
 
-    // Verificar que tenemos la API key
-    if (!process.env.PERPLEXITY_API_KEY) {
-      console.warn("PERPLEXITY_API_KEY not found, returning fallback results")
-      return NextResponse.json(getFallbackResults(city, vibe))
-    }
+    console.log("Sending to Perplexity:", { prompt: searchPrompt.substring(0, 100) + "..." })
 
-    // Llamada a la API de Perplexity con timeout
+    // Llamada a Perplexity con timeout
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 15000) // 15 second timeout
 
     try {
-      const perplexityResponse = await fetch("https://api.perplexity.ai/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.PERPLEXITY_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "llama-3.1-sonar-small-128k-online",
-          messages: [
+      const data: PerplexityResponse = await Promise.race([
+        callPerplexityAPI(
+          [
             {
               role: "system",
               content:
@@ -86,28 +87,19 @@ Formato requerido:
               content: searchPrompt,
             },
           ],
-          max_tokens: 1000,
-          temperature: 0.2,
-          top_p: 0.9,
-          search_domain_filter: ["mexico"],
-          return_images: false,
-          return_related_questions: false,
-          search_recency_filter: "month",
-        }),
-        signal: controller.signal,
-      })
+          MODELS.PERPLEXITY.PRIMARY,
+        ),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 15000)),
+      ])
 
       clearTimeout(timeoutId)
 
-      if (!perplexityResponse.ok) {
-        throw new Error(`Perplexity API error: ${perplexityResponse.status}`)
-      }
-
-      const data: PerplexityResponse = await perplexityResponse.json()
       const content = data.choices[0]?.message?.content
+      console.log("Perplexity raw response:", content?.substring(0, 200) + "...")
 
       if (!content) {
-        return NextResponse.json(getFallbackResults(city, vibe))
+        console.warn("No content from Perplexity")
+        return NextResponse.json([])
       }
 
       // Extraer JSON del contenido de la respuesta
@@ -117,18 +109,20 @@ Formato requerido:
         const jsonMatch = content.match(/\[\s*{[\s\S]*}\s*\]/)
         if (jsonMatch) {
           placesData = JSON.parse(jsonMatch[0])
+          console.log("Parsed Perplexity data:", placesData.length, "places")
         } else {
           // Intentar parsear toda la respuesta como JSON
           placesData = JSON.parse(content)
         }
       } catch (parseError) {
-        console.warn("Error parsing Perplexity response:", parseError)
-        return NextResponse.json(getFallbackResults(city, vibe))
+        console.error("Error parsing Perplexity response:", parseError)
+        console.log("Raw content:", content)
+        return NextResponse.json([])
       }
 
       // Transformar a nuestro formato y agregar metadatos
       const formattedPlaces: Place[] = placesData.slice(0, 3).map((place, index) => ({
-        id: 2000 + index, // IDs únicos para resultados web
+        id: 3000 + index, // IDs únicos para resultados de Perplexity
         name: place.name || `Lugar encontrado en ${city}`,
         category: mapCategory(place.category) || "Restaurante",
         address: place.address || `${city}, México`,
@@ -139,6 +133,7 @@ Formato requerido:
         source: "web" as const,
       }))
 
+      console.log("Returning formatted places:", formattedPlaces.length)
       return NextResponse.json(formattedPlaces)
     } catch (fetchError) {
       clearTimeout(timeoutId)
@@ -147,10 +142,8 @@ Formato requerido:
   } catch (error) {
     console.error("Error in Perplexity search:", error)
 
-    // Fallback con resultados genéricos
-    return NextResponse.json(
-      getFallbackResults((await request.json()).city || "CDMX", (await request.json()).vibe || "Tranqui"),
-    )
+    // Retornar array vacío en lugar de error para no romper la experiencia
+    return NextResponse.json([])
   }
 }
 
@@ -179,20 +172,4 @@ function mapCategory(category: string): Place["category"] {
   }
 
   return "Restaurante" // Default
-}
-
-// Función para generar resultados de fallback
-function getFallbackResults(city: string, vibe: string): Place[] {
-  return [
-    {
-      id: 2000,
-      name: `Lugar ${vibe} recomendado`,
-      category: "Restaurante",
-      address: `${city}, México`,
-      city: city as "CDMX" | "Monterrey" | "Guadalajara",
-      description_short: `Lugar encontrado en búsquedas web para ${vibe.toLowerCase()}.`,
-      playlists: [vibe] as any,
-      source: "web" as const,
-    },
-  ]
 }
