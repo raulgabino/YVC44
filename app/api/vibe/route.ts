@@ -2,42 +2,50 @@ import { type NextRequest, NextResponse } from "next/server"
 import { openai, MODELS, MODEL_CONFIGS } from "@/lib/config"
 
 function buildMainPrompt(query: string): string {
-  return `Eres un experto en lenguaje coloquial mexicano. Analiza esta búsqueda: "${query}"
+  return `Eres un experto en geografía mexicana y lenguaje coloquial. Analiza esta búsqueda: "${query}"
 
-EXTRAE EXACTAMENTE:
-1. VIBE: Una de estas 10 opciones EXACTAS
-2. CIUDAD: CDMX, Monterrey, Guadalajara, Ciudad Victoria, o San Miguel de Allende
+EXTRAE DOS DATOS EXACTOS:
+1. **VIBE**: Una opción de la lista de VIBES DISPONIBLES
+2. **CIUDAD**: El nombre completo y correcto de la ciudad mexicana mencionada
 
-VIBES DISPONIBLES (elige UNA):
-- Traka: "fiesta", "reventón", "parrandear", "traka", "party"
-- Bellakeo: "bellakear", "bellaquear", "ligar", "seducir", "perrear", "sensual"
-- Tranqui: "tranqui", "chill", "relajado", "zen", "calma"
-- Godínez: "godín", "trabajo", "oficina", "profesional", "ejecutivo"
-- Dominguero: "domingo", "familia", "casual", "dominguero", "familiar"
-- Chambeador: "chambear", "estudiar", "trabajar", "productivo", "wifi"
-- Tóxico: "tóxico", "dramático", "intenso", "emocional", "catártico"
-- Dateo: "cita", "romántico", "dateo", "íntimo", "pareja"
-- Crudo: "crudo", "resaca", "hangover", "desayuno", "recovery"
-- Barbón: "barbón", "fresa", "elegante", "sofisticado", "exclusivo", "clase alta"
+VIBES DISPONIBLES (elige SOLO UNA):
+- Traka: fiesta, reventón, antro
+- Bellakeo: ligar, perrear, sensual  
+- Tranqui: relajado, chill, calmo
+- Godínez: trabajo, oficina, profesional
+- Dominguero: familia, casual, paseo
+- Chambeador: trabajar, estudiar, wifi
+- Tóxico: intenso, dramático, catarsis
+- Dateo: cita, romántico, pareja
+- Crudo: resaca, hangover, curar
+- Barbón: fresa, elegante, sofisticado
 
-EJEMPLOS ESPECÍFICOS:
-"algo para bellakear en gdl" → {"vibe": "Bellakeo", "city": "Guadalajara"}
-"un lugar tranqui en la Roma" → {"vibe": "Tranqui", "city": "CDMX"}
-"donde desayunar crudo en Polanco" → {"vibe": "Crudo", "city": "CDMX"}
-"un bar barbón en Monterrey" → {"vibe": "Barbón", "city": "Monterrey"}
-"café para chambear en la Condesa" → {"vibe": "Chambeador", "city": "CDMX"}
-"lugar dominguero en Santa Fe" → {"vibe": "Dominguero", "city": "CDMX"}
+DETECCIÓN DE CIUDADES - EJEMPLOS CRÍTICOS:
+"ciudad juarez" → "Ciudad Juárez"
+"nuevo laredo" → "Nuevo Laredo"
+"tijuana" → "Tijuana"
+"león" → "León"
+"puebla" → "Puebla"
+"mérida" → "Mérida"
+"cancún" → "Cancún"
+"gdl" o "guadalajara" → "Guadalajara"
+"monterrey" o "mty" → "Monterrey"
+"cdmx" o "df" o "la roma" o "polanco" o "condesa" → "CDMX"
+"ciudad victoria" o "victoria" → "Ciudad Victoria"
+"san miguel" o "san miguel de allende" → "San Miguel de Allende"
 
-CIUDADES:
-- gdl/guadalajara/zapopan → Guadalajara
-- mty/monterrey/san pedro → Monterrey
-- cdmx/df/polanco/roma/condesa/santa fe → CDMX
-- ciudad victoria/victoria → Ciudad Victoria
-- san miguel/san miguel de allende → San Miguel de Allende
-- Sin ciudad específica → CDMX
+REGLA CRÍTICA: Si NO se menciona ciudad específica, SOLO entonces usa "CDMX" por defecto.
 
-RESPONDE SOLO JSON:
-{"vibe": "nombre_exacto", "city": "ciudad_exacta"}`
+EJEMPLOS DE DETECCIÓN:
+"un lugar tranqui en ciudad juarez" → {"vibe": "Tranqui", "city": "Ciudad Juárez"}
+"algo para bellakear en tijuana" → {"vibe": "Bellakeo", "city": "Tijuana"}  
+"café para chambear en león" → {"vibe": "Chambeador", "city": "León"}
+"bar barbón en mérida" → {"vibe": "Barbón", "city": "Mérida"}
+"lugar dominguero en ciudad victoria" → {"vibe": "Dominguero", "city": "Ciudad Victoria"}
+"restaurante para dateo en san miguel" → {"vibe": "Dateo", "city": "San Miguel de Allende"}
+
+RESPONDE SOLO CON JSON:
+{"vibe": "nombre_exacto", "city": "nombre_ciudad_completo"}`
 }
 
 export async function POST(request: NextRequest) {
@@ -62,7 +70,7 @@ export async function POST(request: NextRequest) {
 
     const mainPrompt = buildMainPrompt(query.trim())
 
-    // Try primary model first
+    // Try primary model first (o3-mini)
     try {
       console.log("🤖 Calling OpenAI with primary model...")
       const controller = new AbortController()
@@ -75,7 +83,8 @@ export async function POST(request: NextRequest) {
             messages: [
               {
                 role: "system",
-                content: "Responde SOLO con JSON válido. No agregues explicaciones.",
+                content:
+                  "Eres un experto en análisis de lenguaje coloquial mexicano. Responde únicamente con JSON válido, sin texto adicional.",
               },
               {
                 role: "user",
@@ -112,9 +121,8 @@ export async function POST(request: NextRequest) {
             "Crudo",
             "Barbón",
           ]
-          const validCities = ["CDMX", "Monterrey", "Guadalajara", "Ciudad Victoria", "San Miguel de Allende"]
 
-          if (parsed.vibe && parsed.city && validVibes.includes(parsed.vibe) && validCities.includes(parsed.city)) {
+          if (parsed.vibe && parsed.city && validVibes.includes(parsed.vibe)) {
             console.log("✅ Valid detection:", parsed)
             return NextResponse.json({
               ...parsed,
@@ -130,7 +138,7 @@ export async function POST(request: NextRequest) {
       console.error("❌ Primary model failed:", openaiError)
     }
 
-    // Try fallback model
+    // Try fallback model (gpt-4o-mini)
     try {
       console.log("🔄 Trying fallback model...")
       const controller = new AbortController()
@@ -143,7 +151,8 @@ export async function POST(request: NextRequest) {
             messages: [
               {
                 role: "system",
-                content: "Analiza el contexto y da la mejor interpretación posible. Responde con JSON válido.",
+                content:
+                  "Eres un experto en análisis de lenguaje coloquial mexicano. Responde únicamente con JSON válido, sin texto adicional.",
               },
               {
                 role: "user",
@@ -200,23 +209,29 @@ export async function POST(request: NextRequest) {
 function analyzeQueryManually(query: string): { vibe: string; city: string } {
   const lowerQuery = query.toLowerCase()
 
-  // Enhanced city detection
-  let city = "CDMX"
-  if (lowerQuery.includes("gdl") || lowerQuery.includes("guadalajara") || lowerQuery.includes("zapopan")) {
-    city = "Guadalajara"
-  } else if (lowerQuery.includes("mty") || lowerQuery.includes("monterrey") || lowerQuery.includes("san pedro")) {
-    city = "Monterrey"
-  } else if (lowerQuery.includes("ciudad victoria") || lowerQuery.includes("victoria")) {
-    city = "Ciudad Victoria"
-  } else if (lowerQuery.includes("san miguel") || lowerQuery.includes("allende")) {
-    city = "San Miguel de Allende"
-  } else if (
-    lowerQuery.includes("polanco") ||
-    lowerQuery.includes("roma") ||
-    lowerQuery.includes("condesa") ||
-    lowerQuery.includes("santa fe")
-  ) {
-    city = "CDMX"
+  // Enhanced city detection with more Mexican cities
+  let city = "CDMX" // Default fallback
+
+  const cityMappings = [
+    { patterns: ["ciudad juarez", "juarez"], city: "Ciudad Juárez" },
+    { patterns: ["nuevo laredo", "laredo"], city: "Nuevo Laredo" },
+    { patterns: ["tijuana", "tj"], city: "Tijuana" },
+    { patterns: ["león", "leon"], city: "León" },
+    { patterns: ["puebla"], city: "Puebla" },
+    { patterns: ["mérida", "merida"], city: "Mérida" },
+    { patterns: ["cancún", "cancun"], city: "Cancún" },
+    { patterns: ["gdl", "guadalajara", "zapopan"], city: "Guadalajara" },
+    { patterns: ["mty", "monterrey", "san pedro"], city: "Monterrey" },
+    { patterns: ["ciudad victoria", "victoria"], city: "Ciudad Victoria" },
+    { patterns: ["san miguel", "san miguel de allende", "allende"], city: "San Miguel de Allende" },
+    { patterns: ["polanco", "roma", "condesa", "santa fe", "cdmx", "df"], city: "CDMX" },
+  ]
+
+  for (const { patterns, city: mappedCity } of cityMappings) {
+    if (patterns.some((pattern) => lowerQuery.includes(pattern))) {
+      city = mappedCity
+      break
+    }
   }
 
   // Enhanced vibe detection with priority order
