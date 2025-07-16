@@ -1,5 +1,26 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { openai, MODELS, MODEL_CONFIGS, getApiStatus } from "@/lib/config"
+import OpenAI from "openai"
+
+// Configuración inline para evitar problemas de imports
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null
+
+const MODELS = {
+  PRIMARY: "o3-mini",
+  FALLBACK: "gpt-4o-mini",
+} as const
+
+const MODEL_CONFIGS = {
+  "o3-mini": {
+    temperature: 0.1,
+    max_tokens: 150,
+    top_p: 0.9,
+  },
+  "gpt-4o-mini": {
+    temperature: 0.2,
+    max_tokens: 100,
+    top_p: 0.95,
+  },
+} as const
 
 function buildMainPrompt(query: string): string {
   return `Eres un experto en lenguaje coloquial mexicano. Analiza esta búsqueda: "${query}"
@@ -46,26 +67,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Query is required and must be a non-empty string" }, { status: 400 })
     }
 
-    const apiStatus = getApiStatus()
-    console.log("API Status:", apiStatus)
-    console.log("Analyzing query:", query)
+    console.log("🔍 Analyzing query:", query)
 
     if (!openai) {
-      return NextResponse.json({ error: "OpenAI not configured" }, { status: 500 })
+      console.warn("⚠️ OpenAI not configured, using manual analysis")
+      const manualResult = analyzeQueryManually(query.trim())
+      return NextResponse.json({
+        ...manualResult,
+        model_used: "manual",
+        confidence: "low",
+      })
     }
 
     const mainPrompt = buildMainPrompt(query.trim())
-    const primaryConfig = MODEL_CONFIGS[MODELS.OPENAI.PRIMARY]
 
-    // Análisis principal con o3-mini usando config centralizado + timeout
+    // Análisis principal con o3-mini + timeout
     try {
+      console.log("🤖 Calling OpenAI o3-mini...")
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
 
       const completion = await Promise.race([
         openai.chat.completions.create(
           {
-            model: MODELS.OPENAI.PRIMARY,
+            model: MODELS.PRIMARY,
             messages: [
               {
                 role: "system",
@@ -76,17 +101,17 @@ export async function POST(request: NextRequest) {
                 content: mainPrompt,
               },
             ],
-            ...primaryConfig,
+            ...MODEL_CONFIGS[MODELS.PRIMARY],
           },
           { signal: controller.signal },
         ),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000)),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000)),
       ])
 
       clearTimeout(timeoutId)
 
       const response = completion.choices[0].message.content?.trim()
-      console.log("OpenAI response:", response)
+      console.log("📥 OpenAI response:", response)
 
       if (response) {
         try {
@@ -109,31 +134,31 @@ export async function POST(request: NextRequest) {
           const validCities = ["CDMX", "Monterrey", "Guadalajara"]
 
           if (parsed.vibe && parsed.city && validVibes.includes(parsed.vibe) && validCities.includes(parsed.city)) {
-            console.log("Detected:", parsed)
+            console.log("✅ Valid detection:", parsed)
             return NextResponse.json({
               ...parsed,
-              model_used: MODELS.OPENAI.PRIMARY,
+              model_used: MODELS.PRIMARY,
               confidence: "high",
             })
           }
         } catch (parseError) {
-          console.error("JSON parsing failed:", parseError)
+          console.error("❌ JSON parsing failed:", parseError)
         }
       }
     } catch (openaiError) {
-      console.error("OpenAI request failed:", openaiError)
+      console.error("❌ OpenAI request failed:", openaiError)
     }
 
     // Fallback con gpt-4o-mini + timeout
     try {
-      const fallbackConfig = MODEL_CONFIGS[MODELS.OPENAI.FALLBACK]
+      console.log("🔄 Trying gpt-4o-mini fallback...")
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 8000) // 8 second timeout
 
       const fallbackCompletion = await Promise.race([
         openai.chat.completions.create(
           {
-            model: MODELS.OPENAI.FALLBACK,
+            model: MODELS.FALLBACK,
             messages: [
               {
                 role: "system",
@@ -144,11 +169,11 @@ export async function POST(request: NextRequest) {
                 content: mainPrompt,
               },
             ],
-            ...fallbackConfig,
+            ...MODEL_CONFIGS[MODELS.FALLBACK],
           },
           { signal: controller.signal },
         ),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000)),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000)),
       ])
 
       clearTimeout(timeoutId)
@@ -164,21 +189,21 @@ export async function POST(request: NextRequest) {
           if (parsed.vibe && parsed.city) {
             return NextResponse.json({
               ...parsed,
-              model_used: MODELS.OPENAI.FALLBACK,
+              model_used: MODELS.FALLBACK,
               confidence: "medium",
             })
           }
         } catch (parseError) {
-          console.warn("Fallback JSON parsing failed:", parseError)
+          console.warn("⚠️ Fallback JSON parsing failed:", parseError)
         }
       }
     } catch (fallbackError) {
-      console.error("Fallback request failed:", fallbackError)
+      console.error("❌ Fallback request failed:", fallbackError)
     }
 
     // Último fallback: análisis manual
+    console.log("🔧 Using manual analysis")
     const manualResult = analyzeQueryManually(query.trim())
-    console.log("Manual analysis result:", manualResult)
 
     return NextResponse.json({
       ...manualResult,
@@ -186,7 +211,7 @@ export async function POST(request: NextRequest) {
       confidence: "low",
     })
   } catch (error) {
-    console.error("Error in vibe detection:", error)
+    console.error("💥 Error in vibe detection:", error)
     return NextResponse.json({ error: "Error processing vibe detection" }, { status: 500 })
   }
 }
@@ -215,7 +240,7 @@ function analyzeQueryManually(query: string): { vibe: string; city: string } {
     { vibe: "Chambeador", keywords: ["chambear", "trabajar", "estudiar", "wifi", "productiv"] },
     { vibe: "Crudo", keywords: ["crudo", "resaca", "desayun", "hangover", "recovery"] },
     { vibe: "Traka", keywords: ["traka", "fiesta", "reventón", "parrandear", "party"] },
-    { vibe: "Dateo", keywords: ["romántico", "cita", "dateo", "íntimo", "pareja"] }, // Fixed typo
+    { vibe: "Dateo", keywords: ["romántico", "cita", "dateo", "íntimo", "pareja"] },
     { vibe: "Godínez", keywords: ["godín", "trabajo", "oficina", "ejecutivo", "profesional"] },
     { vibe: "Dominguero", keywords: ["dominguero", "familia", "domingo", "casual", "familiar"] },
     { vibe: "Tóxico", keywords: ["tóxico", "dramátic", "intenso", "emocional", "catártico"] },
