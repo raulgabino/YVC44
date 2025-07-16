@@ -1,54 +1,41 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { openai, MODELS, MODEL_CONFIGS } from "@/lib/api-config"
-
-function getCurrentHour(): number {
-  return new Date().getHours()
-}
+import { openai, MODELS, MODEL_CONFIGS, getApiStatus } from "@/lib/config"
 
 function buildMainPrompt(query: string): string {
-  return `Eres un experto en lenguaje coloquial mexicano especializado en interpretar "vibes" para lugares.
+  return `Eres un experto en lenguaje coloquial mexicano. Analiza esta búsqueda: "${query}"
 
-CONTEXTO: YCV Playlists es como "Spotify para lugares" - los usuarios buscan sitios según su estado de ánimo.
+EXTRAE EXACTAMENTE:
+1. VIBE: Una de estas 10 opciones EXACTAS
+2. CIUDAD: CDMX, Monterrey, o Guadalajara
 
-TAREA: Analiza: "${query}" y extrae:
-1. VIBE (obligatorio): Una de estas 10 opciones exactas
-2. CIUDAD (obligatorio): CDMX, Monterrey, o Guadalajara
+VIBES DISPONIBLES (elige UNA):
+- Traka: "fiesta", "reventón", "parrandear", "traka", "party"
+- Bellakeo: "bellakear", "bellaquear", "ligar", "seducir", "perrear", "sensual"
+- Tranqui: "tranqui", "chill", "relajado", "zen", "calma"
+- Godínez: "godín", "trabajo", "oficina", "profesional", "ejecutivo"
+- Dominguero: "domingo", "familia", "casual", "dominguero", "familiar"
+- Chambeador: "chambear", "estudiar", "trabajar", "productivo", "wifi"
+- Tóxico: "tóxico", "dramático", "intenso", "emocional", "catártico"
+- Dateo: "cita", "romántico", "dateo", "íntimo", "pareja"
+- Crudo: "crudo", "resaca", "hangover", "desayuno", "recovery"
+- Barbón: "barbón", "fresa", "elegante", "sofisticado", "exclusivo", "clase alta"
 
-VIBES DISPONIBLES:
-- Traka: Fiesta intensa, reventón, parrandear, ambiente de club, "irse de traka"
-- Bellakeo: Seducir, ligar, ambiente sensual/sexual, "perrear", "bellakear"
-- Tranqui: Relajado, chill, sin prisa, "echarse la hueva", ambiente zen
-- Godínez: Profesional, ejecutivo, formal, "godín lifestyle", después del trabajo
-- Dominguero: Familiar, casual, fin de semana, "dominguear", ambiente hogareño
-- Chambeador: Productivo, trabajar, estudiar, "echarle ganas", wifi y silencio
-- Tóxico: Intenso, dramático, procesar emociones, "toxiquear", catártico
-- Dateo: Romántico, cita, conquistar, "salir con alguien", íntimo
-- Crudo: Resaca, recovery, comfort food, "estar crudo", desayunos curativos
-- Barbón: Sofisticado, elegante, clase alta, "fresa", exclusivo
+EJEMPLOS ESPECÍFICOS:
+"algo para bellakear en gdl" → {"vibe": "Bellakeo", "city": "Guadalajara"}
+"un lugar tranqui en la Roma" → {"vibe": "Tranqui", "city": "CDMX"}
+"donde desayunar crudo en Polanco" → {"vibe": "Crudo", "city": "CDMX"}
+"un bar barbón en Monterrey" → {"vibe": "Barbón", "city": "Monterrey"}
+"café para chambear en la Condesa" → {"vibe": "Chambeador", "city": "CDMX"}
+"lugar dominguero en Santa Fe" → {"vibe": "Dominguero", "city": "CDMX"}
 
-CIUDADES (mapeo automático):
-- gdl/guadalajara/tapatío/jalisco → Guadalajara
-- cdmx/df/chilango/ciudad de méxico/mexico city → CDMX
-- mty/monterrey/regio/nuevo león → Monterrey
-- Sin mención específica → CDMX (default)
+CIUDADES:
+- gdl/guadalajara/zapopan → Guadalajara
+- mty/monterrey/san pedro → Monterrey
+- cdmx/df/polanco/roma/condesa/santa fe → CDMX
+- Sin ciudad específica → CDMX
 
-RESPONDE SOLO CON JSON VÁLIDO (sin explicaciones):
+RESPONDE SOLO JSON:
 {"vibe": "nombre_exacto", "city": "ciudad_exacta"}`
-}
-
-function buildFallbackPrompt(query: string, currentHour: number): string {
-  return `ANÁLISIS FALLBACK para: "${query}"
-
-La búsqueda no pudo categorizarse automáticamente. Usa contexto inteligente:
-
-CONTEXTO TEMPORAL (hora actual: ${currentHour}):
-- 0-6: Traka (madrugada de fiesta)
-- 7-11: Chambeador (mañana productiva)
-- 12-17: Tranqui (tarde relajada)
-- 18-23: Bellakeo/Dateo (noche social)
-
-Responde con el JSON más probable:
-{"vibe": "mejor_opción", "city": "ciudad_probable"}`
 }
 
 export async function POST(request: NextRequest) {
@@ -59,47 +46,47 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Query is required and must be a non-empty string" }, { status: 400 })
     }
 
-    // Verificar que OpenAI esté configurado
+    const apiStatus = getApiStatus()
+    console.log("API Status:", apiStatus)
+    console.log("Analyzing query:", query)
+
     if (!openai) {
-      console.error("OPENAI_API_KEY not configured")
-      const manualAnalysis = analyzeQueryManually(query.trim())
-      return NextResponse.json({
-        ...manualAnalysis,
-        model_used: "manual",
-        confidence: "low",
-        error: "OpenAI not configured",
-      })
+      return NextResponse.json({ error: "OpenAI not configured" }, { status: 500 })
     }
 
     const mainPrompt = buildMainPrompt(query.trim())
+    const primaryConfig = MODEL_CONFIGS[MODELS.OPENAI.PRIMARY]
 
-    // Análisis principal con o3-mini (con timeout)
+    // Análisis principal con o3-mini usando config centralizado + timeout
     try {
-      const primaryConfig = MODEL_CONFIGS[MODELS.OPENAI.PRIMARY]
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
 
       const completion = await Promise.race([
-        openai.chat.completions.create({
-          model: MODELS.OPENAI.PRIMARY,
-          messages: [
-            {
-              role: "system",
-              content: "Eres un experto en cultura mexicana y análisis de texto. Responde SIEMPRE con JSON válido.",
-            },
-            {
-              role: "user",
-              content: mainPrompt,
-            },
-          ],
-          ...primaryConfig,
-        }),
+        openai.chat.completions.create(
+          {
+            model: MODELS.OPENAI.PRIMARY,
+            messages: [
+              {
+                role: "system",
+                content: "Responde SOLO con JSON válido. No agregues explicaciones.",
+              },
+              {
+                role: "user",
+                content: mainPrompt,
+              },
+            ],
+            ...primaryConfig,
+          },
+          { signal: controller.signal },
+        ),
         new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000)),
       ])
 
       clearTimeout(timeoutId)
 
       const response = completion.choices[0].message.content?.trim()
+      console.log("OpenAI response:", response)
 
       if (response) {
         try {
@@ -107,60 +94,60 @@ export async function POST(request: NextRequest) {
           const jsonStr = jsonMatch ? jsonMatch[0] : response
           const parsed = JSON.parse(jsonStr)
 
-          if (parsed.vibe && parsed.city) {
-            const validVibes = [
-              "Traka",
-              "Bellakeo",
-              "Tranqui",
-              "Godínez",
-              "Dominguero",
-              "Chambeador",
-              "Tóxico",
-              "Dateo",
-              "Crudo",
-              "Barbón",
-            ]
-            const validCities = ["CDMX", "Monterrey", "Guadalajara"]
+          const validVibes = [
+            "Traka",
+            "Bellakeo",
+            "Tranqui",
+            "Godínez",
+            "Dominguero",
+            "Chambeador",
+            "Tóxico",
+            "Dateo",
+            "Crudo",
+            "Barbón",
+          ]
+          const validCities = ["CDMX", "Monterrey", "Guadalajara"]
 
-            if (validVibes.includes(parsed.vibe) && validCities.includes(parsed.city)) {
-              return NextResponse.json({
-                ...parsed,
-                model_used: MODELS.OPENAI.PRIMARY,
-                confidence: "high",
-              })
-            }
+          if (parsed.vibe && parsed.city && validVibes.includes(parsed.vibe) && validCities.includes(parsed.city)) {
+            console.log("Detected:", parsed)
+            return NextResponse.json({
+              ...parsed,
+              model_used: MODELS.OPENAI.PRIMARY,
+              confidence: "high",
+            })
           }
         } catch (parseError) {
-          console.warn(`${MODELS.OPENAI.PRIMARY} JSON parsing failed, trying fallback:`, parseError)
+          console.error("JSON parsing failed:", parseError)
         }
       }
     } catch (openaiError) {
-      console.warn(`${MODELS.OPENAI.PRIMARY} request failed, trying ${MODELS.OPENAI.FALLBACK} fallback:`, openaiError)
+      console.error("OpenAI request failed:", openaiError)
     }
 
-    // Fallback con gpt-4o-mini (con timeout)
+    // Fallback con gpt-4o-mini + timeout
     try {
-      const currentHour = getCurrentHour()
-      const fallbackPrompt = buildFallbackPrompt(query.trim(), currentHour)
       const fallbackConfig = MODEL_CONFIGS[MODELS.OPENAI.FALLBACK]
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 8000) // 8 second timeout
 
       const fallbackCompletion = await Promise.race([
-        openai.chat.completions.create({
-          model: MODELS.OPENAI.FALLBACK,
-          messages: [
-            {
-              role: "system",
-              content: "Analiza el contexto y da la mejor interpretación posible. Responde con JSON válido.",
-            },
-            {
-              role: "user",
-              content: fallbackPrompt,
-            },
-          ],
-          ...fallbackConfig,
-        }),
+        openai.chat.completions.create(
+          {
+            model: MODELS.OPENAI.FALLBACK,
+            messages: [
+              {
+                role: "system",
+                content: "Analiza el contexto y da la mejor interpretación posible. Responde con JSON válido.",
+              },
+              {
+                role: "user",
+                content: mainPrompt,
+              },
+            ],
+            ...fallbackConfig,
+          },
+          { signal: controller.signal },
+        ),
         new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000)),
       ])
 
@@ -182,17 +169,19 @@ export async function POST(request: NextRequest) {
             })
           }
         } catch (parseError) {
-          console.warn(`${MODELS.OPENAI.FALLBACK} JSON parsing failed:`, parseError)
+          console.warn("Fallback JSON parsing failed:", parseError)
         }
       }
     } catch (fallbackError) {
-      console.error(`${MODELS.OPENAI.FALLBACK} fallback failed:`, fallbackError)
+      console.error("Fallback request failed:", fallbackError)
     }
 
     // Último fallback: análisis manual
-    const manualAnalysis = analyzeQueryManually(query.trim())
+    const manualResult = analyzeQueryManually(query.trim())
+    console.log("Manual analysis result:", manualResult)
+
     return NextResponse.json({
-      ...manualAnalysis,
+      ...manualResult,
       model_used: "manual",
       confidence: "low",
     })
@@ -206,37 +195,34 @@ function analyzeQueryManually(query: string): { vibe: string; city: string } {
   const lowerQuery = query.toLowerCase()
 
   let city = "CDMX"
-  if (
-    lowerQuery.includes("gdl") ||
-    lowerQuery.includes("guadalajara") ||
-    lowerQuery.includes("tapatío") ||
-    lowerQuery.includes("zapopan")
-  ) {
+  if (lowerQuery.includes("gdl") || lowerQuery.includes("guadalajara") || lowerQuery.includes("zapopan")) {
     city = "Guadalajara"
-  } else if (
-    lowerQuery.includes("mty") ||
-    lowerQuery.includes("monterrey") ||
-    lowerQuery.includes("regio") ||
-    lowerQuery.includes("san pedro")
-  ) {
+  } else if (lowerQuery.includes("mty") || lowerQuery.includes("monterrey") || lowerQuery.includes("san pedro")) {
     city = "Monterrey"
+  } else if (
+    lowerQuery.includes("polanco") ||
+    lowerQuery.includes("roma") ||
+    lowerQuery.includes("condesa") ||
+    lowerQuery.includes("santa fe")
+  ) {
+    city = "CDMX"
   }
 
-  // Enhanced keyword detection
-  const vibeKeywords = {
-    Bellakeo: ["bellak", "ligar", "seducir", "perrear", "sensual", "sexual"],
-    Traka: ["traka", "fiesta", "reventón", "parrandear", "club", "antro"],
-    Tranqui: ["tranqui", "chill", "relajad", "zen", "calm", "peace"],
-    Godínez: ["godín", "trabajo", "oficina", "ejecutivo", "profesional", "formal"],
-    Crudo: ["crudo", "resaca", "desayun", "recovery", "hangover"],
-    Dateo: ["romántico", "cita", "dateo", "conquistar", "íntimo", "pareja"],
-    Barbón: ["fresa", "elegante", "sofisticad", "clase", "exclusivo", "premium"],
-    Chambeador: ["estudiar", "trabajar", "productiv", "wifi", "laptop", "concentrar"],
-    Dominguero: ["familia", "domingo", "casual", "hogareño", "brunch", "familiar"],
-    Tóxico: ["tóxico", "dramátic", "intenso", "emocional", "catártico", "procesar"],
-  }
+  // Enhanced vibe detection with priority order
+  const vibePatterns = [
+    { vibe: "Bellakeo", keywords: ["bellak", "bellaque", "ligar", "seducir", "perrear"] },
+    { vibe: "Barbón", keywords: ["barbón", "fresa", "elegante", "sofisticad", "exclusivo", "clase alta"] },
+    { vibe: "Chambeador", keywords: ["chambear", "trabajar", "estudiar", "wifi", "productiv"] },
+    { vibe: "Crudo", keywords: ["crudo", "resaca", "desayun", "hangover", "recovery"] },
+    { vibe: "Traka", keywords: ["traka", "fiesta", "reventón", "parrandear", "party"] },
+    { vibe: "Dateo", keywords: ["romántico", "cita", "dateo", "íntimo", "pareja"] }, // Fixed typo
+    { vibe: "Godínez", keywords: ["godín", "trabajo", "oficina", "ejecutivo", "profesional"] },
+    { vibe: "Dominguero", keywords: ["dominguero", "familia", "domingo", "casual", "familiar"] },
+    { vibe: "Tóxico", keywords: ["tóxico", "dramátic", "intenso", "emocional", "catártico"] },
+    { vibe: "Tranqui", keywords: ["tranqui", "chill", "relajad", "zen", "calma"] },
+  ]
 
-  for (const [vibe, keywords] of Object.entries(vibeKeywords)) {
+  for (const { vibe, keywords } of vibePatterns) {
     if (keywords.some((keyword) => lowerQuery.includes(keyword))) {
       return { vibe, city }
     }
