@@ -658,6 +658,195 @@ export const placesData: Place[] = [
       "Un concepto que une el placer de un buen café con la lectura. Ideal para pasar una tarde tranquila explorando su selección de libros.",
     playlists: ["Tranqui", "Dateo", "Godínez"],
   },
+  {
+    id: 68,
+    name: "Pangea",
+    category: "Restaurante",
+    address: "Av. del Roble 660, Valle del Campestre, San Pedro Garza García, N.L.",
+    city: "Monterrey",
+    description_short: "Alta cocina contemporánea con ingredientes de temporada en un ambiente sofisticado y elegante.",
+    playlists: ["Barbón", "Dateo", "Godínez"],
+  },
+  {
+    id: 69,
+    name: "Koli Cocina de Origen",
+    category: "Restaurante",
+    address: "Río Amazonas 225, Del Valle, San Pedro Garza García, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Experiencia culinaria estrella Michelin que eleva la cocina norestense a la vanguardia mundial. Un viaje sensorial único.",
+    playlists: ["Barbón", "Godínez", "Dateo"],
+  },
+  {
+    id: 70,
+    name: "La Nacional",
+    category: "Restaurante",
+    address: "Av. San Jerónimo 1106, Miravalle, Monterrey, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Institución regia que lleva la comida de cantina a otro nivel. Famosa por sus cortes de carne y ambiente vibrante.",
+    playlists: ["Godínez", "Barbón", "Dominguero"],
+  },
+  {
+    id: 71,
+    name: "Cara de Vaca",
+    category: "Restaurante",
+    address: "R. de la Plata 448, Del Valle, San Pedro Garza García, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Evolución de la carne asada regiomontana en un asadero casual y trendy. Perfecto para vinos naturales y ambiente relajado.",
+    playlists: ["Tranqui", "Dominguero", "Barbón"],
+  },
+  {
+    id: 72,
+    name: "Colmillo",
+    category: "Restaurante",
+    address: "Av. del Roble 660, Valle del Campestre, San Pedro Garza García, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Fusión gastronómica norteña, neoyorquina y angelina. Epicentro social con ambiente moderno, cortes premium y energía vibrante.",
+    playlists: ["Barbón", "Traka", "Bellakeo"],
+  },
+  {
+    id: 73,
+    name: "El Jonuco",
+    category: "Restaurante",
+    address: "Mariano Abasolo 102-A, Centro, Apodaca, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Viaje a las raíces de la cocina norestense con producto local y técnicas tradicionales. Auténtico y genuino.",
+    playlists: ["Barbón", "Dominguero", "Tranqui"],
+  },
+  {
+    id: 74,
+    name: "Kali Coffee Roasters",
+    category: "Café",
+    address: "Av. Manuel Gómez Morin 900, San Pedro Garza García, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Paraíso para amantes del café de especialidad. Enfoque en sustentabilidad, comercio justo y granos de alta calidad.",
+    playlists: ["Chambeador", "Tranqui", "Godínez"],
+  },
+  {
+    id: 75,
+    name: "Café Limón",
+    category: "Café",
+    address: "Río Hudson 385-L4, Del Valle, San Pedro Garza García, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Café de especialidad elogiado por su transparencia y calidad extrema del grano. Para verdaderos puristas y aficionados.",
+    playlists: ["Chambeador", "Barbón", "Tranqui"],
+  },
+  {
+    id: 76,
+    name: "Roland Coffee Bar",
+    category: "Café",
+    address: "Jerónimo Treviño 1027, Centro, Monterrey, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Joya escondida en Barrio Antiguo con decoración vintage y personalidad única. Perfecto para citas y ambiente bohemio.",
+    playlists: ["Dateo", "Tranqui", "Barbón"],
+  },
+  {
+    id: 77,
+    name: "Maverick",
+    category: "Bar y Cantina",
+    address: "Rio Mississippi 103D, Del Valle, San Pedro Garza García, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Bar de referencia con una década de historia. Música exquisita en vinilos, coctelería de autor y ambiente íntimo para conocedores.",
+    playlists: ["Barbón", "Tóxico", "Tranqui"],
+  },
+  {
+    id: 78,
+    name: "Bar Coleman",
+    category: "Bar y Cantina",
+    address: "Plaza Paseo La Rioja (Sótano), Av. la Rioja, Las Diligencias, Monterrey, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Speakeasy secreto con entrada por sótano. Captura la esencia de la prohibición con coctelería de alta gama y ambiente exclusivo.",
+    playlists: ["Barbón", "Tóxico", "Bellakeo"],
+  },
+  {
+    id: 79,
+    name: "La Divina",
+    category: "Bar y Cantina",
+    address: "Diego de Montemayor 507 sur, Centro, Monterrey, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Neocantina que reinterpreta la tradición regiomontana con toque moderno. Paraíso para buen ambiente, comida y vida social.",
+    playlists: ["Godínez", "Dominguero", "Traka"],
+  },
+  {
+    id: 80,
+    name: "Casa Cler",
+    category: "Boutique",
+    address: "Terranova 260-A, Vista Hermosa, Monterrey, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Concept store dedicada al mejor diseño mexicano. Más de 50 marcas curadas enfocadas en originalidad y sustentabilidad.",
+    playlists: ["Barbón", "Tranqui", "Godínez"],
+  },
+  {
+    id: 81,
+    name: "MARCO",
+    category: "Espacio Cultural",
+    address: "Juan Zuazua s/n, Centro, Monterrey, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Museo de Arte Contemporáneo, una de las instituciones culturales más importantes de América Latina. Visita obligada para amantes del arte.",
+    playlists: ["Godínez", "Barbón", "Tranqui"],
+  },
+  {
+    id: 82,
+    name: "Galindo's Café y Libros",
+    category: "Librería con Encanto",
+    address: "José María Morelos 965, Barrio Antiguo, Centro, Monterrey, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Hub social encantador que combina café, libros y ambiente bohemio. Ideal para trabajar, leer o socializar. 100% pet-friendly.",
+    playlists: ["Tranqui", "Chambeador", "Dominguero"],
+  },
+  {
+    id: 83,
+    name: "Punto y Coma",
+    category: "Librería con Encanto",
+    address: "Av. Eugenio Garza Sada 275, Caracol, Monterrey, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Más que librería, es centro cultural con libros de segunda mano, cafetería, galería y auditorio. Espacio comunitario accesible.",
+    playlists: ["Tranqui", "Chambeador", "Godínez"],
+  },
+  {
+    id: 84,
+    name: "Librería CONARTE",
+    category: "Librería con Encanto",
+    address: "José Mariano Abasolo 1024, Centro, Monterrey, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Una de las 10 librerías más hermosas del mundo según Wired. Arquitectura impresionante y ediciones especializadas en arte y cultura.",
+    playlists: ["Barbón", "Tranqui", "Godínez"],
+  },
+  {
+    id: 85,
+    name: "BROWS Studio by Monica Perez",
+    category: "Salón de Belleza",
+    address: "Plaza Via Puerta de Hierro, Av. Paseo de los Leones, Monterrey, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Estudio especializado en diseño de cejas y microblading. Reconocido por profesionalismo, pigmentos premium y resultados consistentes.",
+    playlists: ["Tranqui", "Barbón", "Dateo"],
+  },
+  {
+    id: 86,
+    name: "ESMALATO / Nail Spa",
+    category: "Salón de Belleza",
+    address: "Paseo de los Leones 117, Plaza 117 - Local 4, Monterrey, N.L.",
+    city: "Monterrey",
+    description_short:
+      "Nail Spa moderno con excelentes reseñas. Desde manicuras básicas hasta diseños artísticos y aplicaciones de acrílico.",
+    playlists: ["Tranqui", "Bellakeo", "Dateo"],
+  },
 ]
 
 export default placesData
