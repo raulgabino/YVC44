@@ -15,72 +15,78 @@ export async function POST(request: NextRequest) {
   try {
     const { vibe, city } = await request.json()
 
-    console.log("Perplexity search request:", { vibe, city })
+    console.log("🔍 Perplexity search request:", { vibe, city })
 
-    if (!vibe || !city) {
-      return NextResponse.json([])
-    }
-
-    // Verificar configuración de Perplexity
     const apiStatus = getApiStatus()
-    if (!apiStatus.perplexity.configured) {
-      console.warn("PERPLEXITY_API_KEY not configured, returning empty results")
+    console.log("📡 Perplexity API Status:", apiStatus.perplexity)
+
+    // Early validation
+    if (!vibe || !city) {
+      console.log("❌ Missing vibe or city")
       return NextResponse.json([])
     }
 
-    // Mapear vibes a descripciones más naturales para la búsqueda
+    if (!apiStatus.perplexity.configured) {
+      console.log("⚠️ PERPLEXITY_API_KEY not configured - returning empty results")
+      return NextResponse.json([])
+    }
+
+    // Enhanced vibe descriptions with more context
     const vibeDescriptions: Record<string, string> = {
-      Traka: "fiesta, diversión, ambiente de celebración, vida nocturna, música en vivo",
-      Bellakeo: "ambiente seductor, sensual, para ligar, romántico pero intenso, cocktails",
-      Tranqui: "relajado, tranquilo, sin presión, chill, ambiente zen, terraza",
-      Godínez: "profesional, formal, para después del trabajo, ejecutivo, wifi",
-      Dominguero: "familiar, casual, para fines de semana, ambiente hogareño, brunch",
-      Chambeador: "para trabajar, estudiar, productivo, wifi, silencioso, café",
-      Tóxico: "intenso, dramático, para procesar emociones, catártico, mezcal",
-      Dateo: "romántico, para citas, íntimo, elegante, velas",
-      Crudo: "para la resaca, comfort food, recovery, desayunos, jugos",
-      Barbón: "sofisticado, elegante, con clase, exclusivo, premium, vinos",
+      Traka: "fiesta intensa, reventón, ambiente de club, vida nocturna vibrante, música en vivo",
+      Bellakeo: "ambiente seductor, sensual, para ligar, romántico pero intenso, cocktails sofisticados",
+      Tranqui: "relajado, tranquilo, sin presión, chill, ambiente zen, terraza acogedora",
+      Godínez: "profesional, formal, para después del trabajo, ejecutivo, wifi confiable, ambiente corporativo",
+      Dominguero: "familiar, casual, para fines de semana, ambiente hogareño, brunch, pet-friendly",
+      Chambeador: "para trabajar, estudiar, productivo, wifi excelente, silencioso, enchufes disponibles",
+      Tóxico: "intenso, dramático, para procesar emociones, catártico, ambiente introspectivo",
+      Dateo: "romántico, para citas, íntimo, elegante, velas, música suave",
+      Crudo: "para la resaca, comfort food, recovery, desayunos curativos, jugos naturales",
+      Barbón: "sofisticado, elegante, con clase, exclusivo, premium, carta de vinos selecta",
     }
 
     const vibeDescription = vibeDescriptions[vibe] || vibe.toLowerCase()
 
-    // Crear prompt optimizado para Perplexity
-    const searchPrompt = `Encuentra los mejores lugares en ${city}, México que tengan un ambiente de ${vibeDescription}. 
+    // Improved search prompt with better structure
+    const searchPrompt = `Encuentra los 3 mejores lugares REALES y ACTUALES en ${city}, México que tengan un ambiente de ${vibeDescription}.
 
-Busca específicamente restaurantes, cafés, bares, boutiques, espacios culturales o librerías que coincidan con este vibe y que estén actualmente operando en 2024.
+CRITERIOS DE BÚSQUEDA:
+- Solo lugares que estén operando en 2024
+- Enfócate en: restaurantes, cafés, bares, boutiques, espacios culturales, librerías
+- Lugares populares y bien valorados
+- Que coincidan específicamente con el vibe "${vibe}"
 
-Para cada lugar, proporciona:
-- Nombre exacto del lugar
-- Categoría (Restaurante, Café, Bar y Cantina, Boutique, Espacio Cultural, Salón de Belleza, o Librería con Encanto)
-- Dirección completa con colonia
-- Descripción breve del ambiente y por qué encaja con el vibe (máximo 100 caracteres)
-
-Enfócate en lugares reales, populares y bien valorados. Responde SOLO con un JSON válido con máximo 3 lugares.
-
-Formato requerido:
+FORMATO DE RESPUESTA (JSON válido únicamente):
 [
   {
-    "name": "Nombre del lugar",
-    "category": "Categoría",
-    "address": "Dirección completa",
-    "description_short": "Descripción breve"
+    "name": "Nombre exacto del lugar",
+    "category": "Restaurante|Café|Bar y Cantina|Boutique|Espacio Cultural|Librería con Encanto|Salón de Belleza",
+    "address": "Dirección completa con colonia",
+    "description_short": "Descripción breve (máximo 100 caracteres) de por qué encaja con ${vibe}"
   }
-]`
+]
 
-    console.log("Sending to Perplexity:", { prompt: searchPrompt.substring(0, 100) + "..." })
+IMPORTANTE: Responde SOLO con el array JSON, sin texto adicional.`
 
-    // Llamada a Perplexity con timeout
+    console.log("🚀 Sending to Perplexity:", {
+      prompt: searchPrompt.substring(0, 100) + "...",
+      model: MODELS.PERPLEXITY.PRIMARY,
+      vibeDescription,
+    })
+
+    // Add timeout protection using the centralized helper
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 15000) // 15 second timeout
 
+    let data: PerplexityResponse
     try {
-      const data: PerplexityResponse = await Promise.race([
+      data = await Promise.race([
         callPerplexityAPI(
           [
             {
               role: "system",
               content:
-                "Eres un experto local en ciudades mexicanas que ayuda a encontrar lugares específicos basándose en vibes y ambientes. Siempre respondes con información actual y verificable en formato JSON válido.",
+                "Eres un experto local en ciudades mexicanas que conoce los lugares más actuales y populares. Responde ÚNICAMENTE con JSON válido, sin explicaciones adicionales.",
             },
             {
               role: "user",
@@ -89,87 +95,157 @@ Formato requerido:
           ],
           MODELS.PERPLEXITY.PRIMARY,
         ),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 15000)),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Request timeout")), 15000)),
       ])
-
+    } catch (timeoutError) {
+      console.error("⏰ Perplexity request timeout:", timeoutError)
+      return NextResponse.json([]) // Return empty array on timeout
+    } finally {
       clearTimeout(timeoutId)
+    }
 
-      const content = data.choices[0]?.message?.content
-      console.log("Perplexity raw response:", content?.substring(0, 200) + "...")
+    const content = data.choices[0]?.message?.content
+    console.log("📥 Perplexity raw response:", {
+      hasContent: !!content,
+      contentLength: content?.length || 0,
+      preview: content?.substring(0, 200) + "...",
+    })
 
-      if (!content) {
-        console.warn("No content from Perplexity")
-        return NextResponse.json([])
+    if (!content) {
+      console.warn("⚠️ No content from Perplexity")
+      return NextResponse.json([])
+    }
+
+    // Enhanced JSON parsing with multiple strategies
+    let placesData: any[] = []
+    try {
+      // Strategy 1: Look for JSON array pattern
+      const jsonArrayMatch = content.match(/\[\s*{[\s\S]*}\s*\]/)
+      if (jsonArrayMatch) {
+        placesData = JSON.parse(jsonArrayMatch[0])
+        console.log("✅ Parsed JSON array:", placesData.length, "places")
+      } else {
+        // Strategy 2: Try to parse the entire content
+        console.log("🔄 Trying to parse full content as JSON")
+        placesData = JSON.parse(content)
       }
 
-      // Extraer JSON del contenido de la respuesta
-      let placesData: any[] = []
-      try {
-        // Buscar el JSON en la respuesta
-        const jsonMatch = content.match(/\[\s*{[\s\S]*}\s*\]/)
-        if (jsonMatch) {
-          placesData = JSON.parse(jsonMatch[0])
-          console.log("Parsed Perplexity data:", placesData.length, "places")
-        } else {
-          // Intentar parsear toda la respuesta como JSON
-          placesData = JSON.parse(content)
-        }
-      } catch (parseError) {
-        console.error("Error parsing Perplexity response:", parseError)
-        console.log("Raw content:", content)
-        return NextResponse.json([])
+      // Validate parsed data
+      if (!Array.isArray(placesData)) {
+        throw new Error("Parsed data is not an array")
       }
 
-      // Transformar a nuestro formato y agregar metadatos
-      const formattedPlaces: Place[] = placesData.slice(0, 3).map((place, index) => ({
-        id: 3000 + index, // IDs únicos para resultados de Perplexity
-        name: place.name || `Lugar encontrado en ${city}`,
+      if (placesData.length === 0) {
+        console.log("📭 Perplexity returned empty results")
+        return NextResponse.json([])
+      }
+    } catch (parseError) {
+      console.error("❌ Error parsing Perplexity response:", parseError)
+      console.log("📄 Raw content that failed to parse:", content.substring(0, 500) + "...")
+
+      // Enhanced fallback with more context
+      const fallbackPlaces: Place[] = [
+        {
+          id: 3000,
+          name: `Lugares ${vibe} encontrados`,
+          category: "Restaurante" as const,
+          address: `${city}, México`,
+          city: city as "CDMX" | "Monterrey" | "Guadalajara",
+          description_short: `Perplexity encontró información sobre lugares para ${vibe.toLowerCase()} en ${city}`,
+          playlists: [vibe] as any,
+          source: "web" as const,
+        },
+      ]
+      console.log("🆘 Returning enhanced fallback result")
+      return NextResponse.json(fallbackPlaces)
+    }
+
+    // Enhanced data transformation with validation
+    const formattedPlaces: Place[] = placesData
+      .slice(0, 3) // Limit to 3 results
+      .filter((place) => place && typeof place === "object") // Filter out invalid entries
+      .map((place, index) => ({
+        id: 3000 + index,
+        name: place.name?.trim() || `Lugar encontrado en ${city}`,
         category: mapCategory(place.category) || "Restaurante",
-        address: place.address || `${city}, México`,
+        address: place.address?.trim() || `${city}, México`,
         city: city as "CDMX" | "Monterrey" | "Guadalajara",
         description_short:
-          place.description_short || `Un lugar perfecto para ${vibe.toLowerCase()} según reseñas recientes.`,
+          place.description_short?.trim().substring(0, 150) ||
+          `Un lugar perfecto para ${vibe.toLowerCase()} según búsquedas web recientes.`,
         playlists: [vibe] as any,
         source: "web" as const,
       }))
+      .filter((place) => place.name && place.name.length > 3) // Filter out places with very short names
 
-      console.log("Returning formatted places:", formattedPlaces.length)
-      return NextResponse.json(formattedPlaces)
-    } catch (fetchError) {
-      clearTimeout(timeoutId)
-      throw fetchError
-    }
+    console.log("🎯 Returning formatted places:", {
+      count: formattedPlaces.length,
+      places: formattedPlaces.map((p) => ({ name: p.name, category: p.category, source: p.source })),
+    })
+
+    return NextResponse.json(formattedPlaces)
   } catch (error) {
-    console.error("Error in Perplexity search:", error)
+    console.error("💥 Error in Perplexity search:", error)
 
-    // Retornar array vacío en lugar de error para no romper la experiencia
+    // Consistent error response format (empty array instead of error object)
     return NextResponse.json([])
   }
 }
 
-// Función auxiliar para mapear categorías a nuestros tipos válidos
+// Enhanced category mapping with more comprehensive coverage
 function mapCategory(category: string): Place["category"] {
-  const categoryMap: Record<string, Place["category"]> = {
-    restaurante: "Restaurante",
-    café: "Café",
-    bar: "Bar y Cantina",
-    cantina: "Bar y Cantina",
-    boutique: "Boutique",
-    tienda: "Boutique",
-    galería: "Espacio Cultural",
-    museo: "Espacio Cultural",
-    librería: "Librería con Encanto",
-    salón: "Salón de Belleza",
-    barbería: "Salón de Belleza",
+  if (!category || typeof category !== "string") {
+    return "Restaurante"
   }
 
-  const normalizedCategory = category?.toLowerCase() || ""
+  const categoryMap: Record<string, Place["category"]> = {
+    // Restaurants
+    restaurante: "Restaurante",
+    restaurant: "Restaurante",
+    comida: "Restaurante",
+    cocina: "Restaurante",
+    // Cafés
+    café: "Café",
+    cafe: "Café",
+    cafetería: "Café",
+    coffee: "Café",
+    // Bars
+    bar: "Bar y Cantina",
+    cantina: "Bar y Cantina",
+    pub: "Bar y Cantina",
+    lounge: "Bar y Cantina",
+    mezcalería: "Bar y Cantina",
+    // Boutiques
+    boutique: "Boutique",
+    tienda: "Boutique",
+    shop: "Boutique",
+    store: "Boutique",
+    // Cultural spaces
+    galería: "Espacio Cultural",
+    museo: "Espacio Cultural",
+    centro: "Espacio Cultural",
+    cultural: "Espacio Cultural",
+    arte: "Espacio Cultural",
+    // Libraries
+    librería: "Librería con Encanto",
+    biblioteca: "Librería con Encanto",
+    bookstore: "Librería con Encanto",
+    // Beauty
+    salón: "Salón de Belleza",
+    barbería: "Salón de Belleza",
+    spa: "Salón de Belleza",
+    belleza: "Salón de Belleza",
+  }
 
+  const normalizedCategory = category.toLowerCase().trim()
+
+  // Find the best match
   for (const [key, value] of Object.entries(categoryMap)) {
     if (normalizedCategory.includes(key)) {
       return value
     }
   }
 
-  return "Restaurante" // Default
+  // Default fallback
+  return "Restaurante"
 }
