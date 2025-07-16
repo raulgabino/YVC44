@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { openai, MODELS, MODEL_CONFIGS } from "@/lib/openai"
+import { openai, MODELS, MODEL_CONFIGS } from "@/lib/api-config"
 
 function getCurrentHour(): number {
   return new Date().getHours()
@@ -32,21 +32,6 @@ CIUDADES (mapeo automático):
 - mty/monterrey/regio/nuevo león → Monterrey
 - Sin mención específica → CDMX (default)
 
-EJEMPLOS DE MAPEO:
-"algo para bellakear en gdl" → {"vibe": "Bellakeo", "city": "Guadalajara"}
-"un lugar tranqui en polanco" → {"vibe": "Tranqui", "city": "CDMX"}
-"donde desayunar crudo en mty" → {"vibe": "Crudo", "city": "Monterrey"}
-"bar fresa en santa fe" → {"vibe": "Barbón", "city": "CDMX"}
-"fiesta en zapopan" → {"vibe": "Traka", "city": "Guadalajara"}
-"restaurante godínez en san pedro" → {"vibe": "Godínez", "city": "Monterrey"}
-
-REGLAS ESPECIALES:
-- "romántico pero intenso" → Priorizar Dateo
-- "relajado pero elegante" → Priorizar Barbón
-- "fiesta pero no tan loca" → Tranqui (no Traka)
-- "centro" sin contexto → CDMX
-- Duda entre vibes → Elegir más específico: Bellakeo > Dateo > Tranqui
-
 RESPONDE SOLO CON JSON VÁLIDO (sin explicaciones):
 {"vibe": "nombre_exacto", "city": "ciudad_exacta"}`
 }
@@ -62,19 +47,6 @@ CONTEXTO TEMPORAL (hora actual: ${currentHour}):
 - 12-17: Tranqui (tarde relajada)
 - 18-23: Bellakeo/Dateo (noche social)
 
-PALABRAS CLAVE:
-- comida/desayuno/brunch → Crudo o Dominguero
-- trabajo/oficina/laptop → Godínez o Chambeador
-- amor/ex/corazón → Dateo o Tóxico
-- dinero/caro/exclusivo → Barbón
-- fiesta/alcohol/música → Traka
-
-DEFAULT INTELIGENTE:
-- Menciona comida/bebida → Dominguero + CDMX
-- Menciona trabajo/estudio → Chambeador + CDMX
-- Menciona salir/diversión → Tranqui + CDMX
-- Sin contexto claro → Tranqui + CDMX
-
 Responde con el JSON más probable:
 {"vibe": "mejor_opción", "city": "ciudad_probable"}`
 }
@@ -88,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar que OpenAI esté configurado
-    if (!process.env.OPENAI_API_KEY) {
+    if (!openai) {
       console.error("OPENAI_API_KEY not configured")
       const manualAnalysis = analyzeQueryManually(query.trim())
       return NextResponse.json({
@@ -101,23 +73,31 @@ export async function POST(request: NextRequest) {
 
     const mainPrompt = buildMainPrompt(query.trim())
 
-    // Análisis principal con o3-mini
+    // Análisis principal con o3-mini (con timeout)
     try {
-      const primaryConfig = MODEL_CONFIGS[MODELS.PRIMARY]
-      const completion = await openai.chat.completions.create({
-        model: MODELS.PRIMARY,
-        messages: [
-          {
-            role: "system",
-            content: "Eres un experto en cultura mexicana y análisis de texto. Responde SIEMPRE con JSON válido.",
-          },
-          {
-            role: "user",
-            content: mainPrompt,
-          },
-        ],
-        ...primaryConfig,
-      })
+      const primaryConfig = MODEL_CONFIGS[MODELS.OPENAI.PRIMARY]
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+
+      const completion = await Promise.race([
+        openai.chat.completions.create({
+          model: MODELS.OPENAI.PRIMARY,
+          messages: [
+            {
+              role: "system",
+              content: "Eres un experto en cultura mexicana y análisis de texto. Responde SIEMPRE con JSON válido.",
+            },
+            {
+              role: "user",
+              content: mainPrompt,
+            },
+          ],
+          ...primaryConfig,
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000)),
+      ])
+
+      clearTimeout(timeoutId)
 
       const response = completion.choices[0].message.content?.trim()
 
@@ -145,39 +125,46 @@ export async function POST(request: NextRequest) {
             if (validVibes.includes(parsed.vibe) && validCities.includes(parsed.city)) {
               return NextResponse.json({
                 ...parsed,
-                model_used: MODELS.PRIMARY,
+                model_used: MODELS.OPENAI.PRIMARY,
                 confidence: "high",
               })
             }
           }
         } catch (parseError) {
-          console.warn(`${MODELS.PRIMARY} JSON parsing failed, trying fallback:`, parseError)
+          console.warn(`${MODELS.OPENAI.PRIMARY} JSON parsing failed, trying fallback:`, parseError)
         }
       }
     } catch (openaiError) {
-      console.warn(`${MODELS.PRIMARY} request failed, trying ${MODELS.FALLBACK} fallback:`, openaiError)
+      console.warn(`${MODELS.OPENAI.PRIMARY} request failed, trying ${MODELS.OPENAI.FALLBACK} fallback:`, openaiError)
     }
 
-    // Fallback con gpt-4o-mini
+    // Fallback con gpt-4o-mini (con timeout)
     try {
       const currentHour = getCurrentHour()
       const fallbackPrompt = buildFallbackPrompt(query.trim(), currentHour)
-      const fallbackConfig = MODEL_CONFIGS[MODELS.FALLBACK]
+      const fallbackConfig = MODEL_CONFIGS[MODELS.OPENAI.FALLBACK]
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 8000) // 8 second timeout
 
-      const fallbackCompletion = await openai.chat.completions.create({
-        model: MODELS.FALLBACK,
-        messages: [
-          {
-            role: "system",
-            content: "Analiza el contexto y da la mejor interpretación posible. Responde con JSON válido.",
-          },
-          {
-            role: "user",
-            content: fallbackPrompt,
-          },
-        ],
-        ...fallbackConfig,
-      })
+      const fallbackCompletion = await Promise.race([
+        openai.chat.completions.create({
+          model: MODELS.OPENAI.FALLBACK,
+          messages: [
+            {
+              role: "system",
+              content: "Analiza el contexto y da la mejor interpretación posible. Responde con JSON válido.",
+            },
+            {
+              role: "user",
+              content: fallbackPrompt,
+            },
+          ],
+          ...fallbackConfig,
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 8000)),
+      ])
+
+      clearTimeout(timeoutId)
 
       const fallbackResponse = fallbackCompletion.choices[0].message.content?.trim()
 
@@ -190,16 +177,16 @@ export async function POST(request: NextRequest) {
           if (parsed.vibe && parsed.city) {
             return NextResponse.json({
               ...parsed,
-              model_used: MODELS.FALLBACK,
+              model_used: MODELS.OPENAI.FALLBACK,
               confidence: "medium",
             })
           }
         } catch (parseError) {
-          console.warn(`${MODELS.FALLBACK} JSON parsing failed:`, parseError)
+          console.warn(`${MODELS.OPENAI.FALLBACK} JSON parsing failed:`, parseError)
         }
       }
     } catch (fallbackError) {
-      console.error(`${MODELS.FALLBACK} fallback failed:`, fallbackError)
+      console.error(`${MODELS.OPENAI.FALLBACK} fallback failed:`, fallbackError)
     }
 
     // Último fallback: análisis manual
