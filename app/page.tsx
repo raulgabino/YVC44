@@ -48,34 +48,59 @@ export default function HomePage() {
       setDetectedVibe(vibeData)
       console.log("✅ Vibe detected:", vibeData)
 
-      // 2. Web Search First (Perplexity)
-      console.log("🌐 Step 2: Trying web search first...")
-      let webPlaces: Place[] = []
+      // 2. Try multiple search sources in order: Perplexity -> GPT -> Local
+      let searchResults: Place[] = []
+      let searchSource = ""
 
-      try {
-        const searchResponse = await fetch("/api/search", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ vibe: vibeData.vibe, city: vibeData.city }),
-        })
+      // Try Perplexity first (if configured)
+      if (process.env.PERPLEXITY_API_KEY) {
+        console.log("🌐 Step 2a: Trying Perplexity web search...")
+        try {
+          const perplexityResponse = await fetch("/api/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ vibe: vibeData.vibe, city: vibeData.city }),
+          })
 
-        if (searchResponse.ok) {
-          webPlaces = await searchResponse.json()
-          console.log(`🌐 Web search returned ${webPlaces.length} places`)
-        } else {
-          console.warn("⚠️ Web search API returned error status")
+          if (perplexityResponse.ok) {
+            const perplexityPlaces = await perplexityResponse.json()
+            if (perplexityPlaces.length > 0) {
+              searchResults = perplexityPlaces
+              searchSource = "Perplexity Web Search"
+              console.log(`🌐 Perplexity returned ${perplexityPlaces.length} places`)
+            }
+          }
+        } catch (perplexityError) {
+          console.warn("⚠️ Perplexity search failed:", perplexityError)
         }
-      } catch (webError) {
-        console.warn("⚠️ Web search failed:", webError)
       }
 
-      // 3. If web search has results, use them. Otherwise, fallback to local data
-      if (webPlaces.length > 0) {
-        console.log("✅ Using web search results")
-        setPlaces(webPlaces)
-      } else {
-        console.log("🔄 Web search returned no results. Using local data fallback...")
+      // Try GPT search if Perplexity didn't work
+      if (searchResults.length === 0) {
+        console.log("🤖 Step 2b: Trying GPT search...")
+        try {
+          const gptResponse = await fetch("/api/search-gpt", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ vibe: vibeData.vibe, city: vibeData.city }),
+          })
 
+          if (gptResponse.ok) {
+            const gptPlaces = await gptResponse.json()
+            if (gptPlaces.length > 0) {
+              searchResults = gptPlaces
+              searchSource = "GPT Recommendations"
+              console.log(`🤖 GPT returned ${gptPlaces.length} places`)
+            }
+          }
+        } catch (gptError) {
+          console.warn("⚠️ GPT search failed:", gptError)
+        }
+      }
+
+      // Fallback to local data if both web searches failed
+      if (searchResults.length === 0) {
+        console.log("🎯 Step 2c: Using local data fallback...")
         try {
           const localResponse = await fetch("/api/places", {
             method: "POST",
@@ -85,28 +110,28 @@ export default function HomePage() {
 
           if (localResponse.ok) {
             const localPlaces = await localResponse.json()
-            console.log(`🎯 Local search returned ${localPlaces.length} places`)
-
             if (localPlaces.length > 0) {
-              setPlaces(localPlaces)
-            } else {
-              setError(`No encontramos lugares para "${vibeData.vibe}" en ${vibeData.city}. Intenta con otra búsqueda.`)
+              searchResults = localPlaces
+              searchSource = "Curated Local Data"
+              console.log(`🎯 Local search returned ${localPlaces.length} places`)
             }
-          } else {
-            console.error("❌ Local search API failed")
-            setError(`No encontramos lugares para "${vibeData.vibe}" en ${vibeData.city}. Intenta con otra búsqueda.`)
           }
         } catch (localError) {
           console.error("❌ Local search error:", localError)
-          setError(`No encontramos lugares para "${vibeData.vibe}" en ${vibeData.city}. Intenta con otra búsqueda.`)
         }
       }
 
+      // Set results or error
+      if (searchResults.length > 0) {
+        setPlaces(searchResults)
+        console.log(`✅ Using ${searchSource}`)
+      } else {
+        setError(`No encontramos lugares para "${vibeData.vibe}" en ${vibeData.city}. Intenta con otra búsqueda.`)
+      }
+
       // Add to recent searches if we have results
-      if (webPlaces.length > 0 || places.length > 0) {
-        if (typeof window !== "undefined" && (window as any).addRecentSearch) {
-          ;(window as any).addRecentSearch(query)
-        }
+      if (searchResults.length > 0 && typeof window !== "undefined" && (window as any).addRecentSearch) {
+        ;(window as any).addRecentSearch(query)
       }
     } catch (error) {
       console.error("💥 Error in search process:", error)
@@ -122,8 +147,31 @@ export default function HomePage() {
     }
   }
 
-  const localPlaces = places.filter((p) => p.source === "local")
-  const webPlaces = places.filter((p) => p.source === "web")
+  const getSourceIcon = (source: Place["source"]) => {
+    switch (source) {
+      case "web":
+        return "🌐"
+      case "gpt":
+        return "🤖"
+      case "local":
+        return "🎯"
+      default:
+        return "📍"
+    }
+  }
+
+  const getSourceLabel = (source: Place["source"]) => {
+    switch (source) {
+      case "web":
+        return "Búsqueda Web"
+      case "gpt":
+        return "GPT Recommendations"
+      case "local":
+        return "Datos Curados"
+      default:
+        return "Desconocido"
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -170,7 +218,7 @@ export default function HomePage() {
                 </span>
                 {places.length > 0 && (
                   <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
-                    {places[0].source === "web" ? "🌐 Búsqueda Web" : "🎯 Datos Locales"}
+                    {getSourceIcon(places[0].source)} {getSourceLabel(places[0].source)}
                   </span>
                 )}
               </div>

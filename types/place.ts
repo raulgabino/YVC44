@@ -25,5 +25,5 @@ export type Place = {
     | "Nuevo Laredo"
   description_short: string
   playlists: string[]
-  source: "local" | "web"
+  source: "local" | "web" | "gpt"
 }
