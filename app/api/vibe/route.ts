@@ -1,33 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
-import OpenAI from "openai"
-
-// Configuración inline para evitar problemas de imports
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null
-
-const MODELS = {
-  PRIMARY: "o3-mini",
-  FALLBACK: "gpt-4o-mini",
-} as const
-
-const MODEL_CONFIGS = {
-  "o3-mini": {
-    temperature: 0.1,
-    max_tokens: 150,
-    top_p: 0.9,
-  },
-  "gpt-4o-mini": {
-    temperature: 0.2,
-    max_tokens: 100,
-    top_p: 0.95,
-  },
-} as const
+import { openai, MODELS, MODEL_CONFIGS } from "@/lib/config"
 
 function buildMainPrompt(query: string): string {
   return `Eres un experto en lenguaje coloquial mexicano. Analiza esta búsqueda: "${query}"
 
 EXTRAE EXACTAMENTE:
 1. VIBE: Una de estas 10 opciones EXACTAS
-2. CIUDAD: CDMX, Monterrey, o Guadalajara
+2. CIUDAD: CDMX, Monterrey, Guadalajara, Ciudad Victoria, o San Miguel de Allende
 
 VIBES DISPONIBLES (elige UNA):
 - Traka: "fiesta", "reventón", "parrandear", "traka", "party"
@@ -53,6 +32,8 @@ CIUDADES:
 - gdl/guadalajara/zapopan → Guadalajara
 - mty/monterrey/san pedro → Monterrey
 - cdmx/df/polanco/roma/condesa/santa fe → CDMX
+- ciudad victoria/victoria → Ciudad Victoria
+- san miguel/san miguel de allende → San Miguel de Allende
 - Sin ciudad específica → CDMX
 
 RESPONDE SOLO JSON:
@@ -81,16 +62,16 @@ export async function POST(request: NextRequest) {
 
     const mainPrompt = buildMainPrompt(query.trim())
 
-    // Análisis principal con o3-mini + timeout
+    // Try primary model first
     try {
-      console.log("🤖 Calling OpenAI o3-mini...")
+      console.log("🤖 Calling OpenAI with primary model...")
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000)
 
       const completion = await Promise.race([
         openai.chat.completions.create(
           {
-            model: MODELS.PRIMARY,
+            model: MODELS.OPENAI.PRIMARY,
             messages: [
               {
                 role: "system",
@@ -101,7 +82,7 @@ export async function POST(request: NextRequest) {
                 content: mainPrompt,
               },
             ],
-            ...MODEL_CONFIGS[MODELS.PRIMARY],
+            ...MODEL_CONFIGS[MODELS.OPENAI.PRIMARY],
           },
           { signal: controller.signal },
         ),
@@ -131,13 +112,13 @@ export async function POST(request: NextRequest) {
             "Crudo",
             "Barbón",
           ]
-          const validCities = ["CDMX", "Monterrey", "Guadalajara"]
+          const validCities = ["CDMX", "Monterrey", "Guadalajara", "Ciudad Victoria", "San Miguel de Allende"]
 
           if (parsed.vibe && parsed.city && validVibes.includes(parsed.vibe) && validCities.includes(parsed.city)) {
             console.log("✅ Valid detection:", parsed)
             return NextResponse.json({
               ...parsed,
-              model_used: MODELS.PRIMARY,
+              model_used: MODELS.OPENAI.PRIMARY,
               confidence: "high",
             })
           }
@@ -146,19 +127,19 @@ export async function POST(request: NextRequest) {
         }
       }
     } catch (openaiError) {
-      console.error("❌ OpenAI request failed:", openaiError)
+      console.error("❌ Primary model failed:", openaiError)
     }
 
-    // Fallback con gpt-4o-mini + timeout
+    // Try fallback model
     try {
-      console.log("🔄 Trying gpt-4o-mini fallback...")
+      console.log("🔄 Trying fallback model...")
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 8000) // 8 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 8000)
 
       const fallbackCompletion = await Promise.race([
         openai.chat.completions.create(
           {
-            model: MODELS.FALLBACK,
+            model: MODELS.OPENAI.FALLBACK,
             messages: [
               {
                 role: "system",
@@ -169,7 +150,7 @@ export async function POST(request: NextRequest) {
                 content: mainPrompt,
               },
             ],
-            ...MODEL_CONFIGS[MODELS.FALLBACK],
+            ...MODEL_CONFIGS[MODELS.OPENAI.FALLBACK],
           },
           { signal: controller.signal },
         ),
@@ -189,7 +170,7 @@ export async function POST(request: NextRequest) {
           if (parsed.vibe && parsed.city) {
             return NextResponse.json({
               ...parsed,
-              model_used: MODELS.FALLBACK,
+              model_used: MODELS.OPENAI.FALLBACK,
               confidence: "medium",
             })
           }
@@ -198,10 +179,10 @@ export async function POST(request: NextRequest) {
         }
       }
     } catch (fallbackError) {
-      console.error("❌ Fallback request failed:", fallbackError)
+      console.error("❌ Fallback model failed:", fallbackError)
     }
 
-    // Último fallback: análisis manual
+    // Final fallback: manual analysis
     console.log("🔧 Using manual analysis")
     const manualResult = analyzeQueryManually(query.trim())
 
@@ -219,11 +200,16 @@ export async function POST(request: NextRequest) {
 function analyzeQueryManually(query: string): { vibe: string; city: string } {
   const lowerQuery = query.toLowerCase()
 
+  // Enhanced city detection
   let city = "CDMX"
   if (lowerQuery.includes("gdl") || lowerQuery.includes("guadalajara") || lowerQuery.includes("zapopan")) {
     city = "Guadalajara"
   } else if (lowerQuery.includes("mty") || lowerQuery.includes("monterrey") || lowerQuery.includes("san pedro")) {
     city = "Monterrey"
+  } else if (lowerQuery.includes("ciudad victoria") || lowerQuery.includes("victoria")) {
+    city = "Ciudad Victoria"
+  } else if (lowerQuery.includes("san miguel") || lowerQuery.includes("allende")) {
+    city = "San Miguel de Allende"
   } else if (
     lowerQuery.includes("polanco") ||
     lowerQuery.includes("roma") ||

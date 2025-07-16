@@ -44,25 +44,27 @@ export async function POST(request: NextRequest) {
 
     const vibeDescription = vibeDescriptions[vibe] || vibe.toLowerCase()
 
-    const searchPrompt = `Encuentra los 3 mejores lugares REALES y ACTUALES en ${city}, México que tengan un ambiente de ${vibeDescription}.
+    const searchPrompt = `Busca hasta 3 lugares REALES y OPERATIVOS en ${city}, México que encajen perfectamente con el ambiente: "${vibeDescription}".
 
-CRITERIOS:
-- Solo lugares que estén operando en 2024
-- Enfócate en: restaurantes, cafés, bares, boutiques, espacios culturales, librerías
-- Lugares populares y bien valorados
-- Que coincidan específicamente con el vibe "${vibe}"
+CRITERIOS ESTRICTOS:
+- Los lugares deben existir y estar operando actualmente.
+- Categorías preferidas: restaurantes, cafés, bares, boutiques, espacios culturales, librerías.
+- Deben ser populares o tener buenas reseñas. La relevancia para el vibe "${vibe}" es lo más importante.
 
-FORMATO (JSON válido únicamente):
+FORMATO DE RESPUESTA:
+- Responde ÚNICAMENTE con un array JSON.
+- Si no encuentras ningún lugar que cumpla los criterios, responde con un array JSON vacío: []
+- No inventes lugares. Es mejor no devolver nada que un resultado incorrecto.
+
+EJEMPLO DE ESTRUCTURA JSON:
 [
   {
-    "name": "Nombre exacto del lugar",
+    "name": "Nombre Exacto del Lugar",
     "category": "Restaurante|Café|Bar y Cantina|Boutique|Espacio Cultural|Librería con Encanto|Salón de Belleza",
-    "address": "Dirección completa con colonia",
-    "description_short": "Descripción breve (máximo 100 caracteres) de por qué encaja con ${vibe}"
+    "address": "Dirección completa y verificable",
+    "description_short": "Descripción breve (máx 120 caracteres) explicando por qué se ajusta al vibe."
   }
-]
-
-IMPORTANTE: Responde SOLO con el array JSON, sin texto adicional.`
+]`
 
     console.log("🚀 Sending to Perplexity...")
 
@@ -85,7 +87,7 @@ IMPORTANTE: Responde SOLO con el array JSON, sin texto adicional.`
               {
                 role: "system",
                 content:
-                  "Eres un experto local en ciudades mexicanas que conoce los lugares más actuales. Responde ÚNICAMENTE con JSON válido, sin explicaciones adicionales.",
+                  "Eres un experto local en ciudades mexicanas que conoce los lugares más actuales y verificados. Responde ÚNICAMENTE con JSON válido. Si no encuentras lugares que cumplan los criterios, devuelve un array vacío [].",
               },
               {
                 role: "user",

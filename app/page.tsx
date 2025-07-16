@@ -29,9 +29,11 @@ export default function HomePage() {
     setSearchQuery(query)
     setError(null)
     setDetectedVibe(null)
+    setPlaces([]) // Clear previous results
 
     try {
-      // Llamar al endpoint de vibe para detectar vibe y ciudad
+      // 1. Get vibe and city detection
+      console.log("🔍 Step 1: Detecting vibe and city...")
       const vibeResponse = await fetch("/api/vibe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -44,55 +46,71 @@ export default function HomePage() {
 
       const vibeData: VibeResponse = await vibeResponse.json()
       setDetectedVibe(vibeData)
+      console.log("✅ Vibe detected:", vibeData)
 
-      // Realizar búsquedas en paralelo con timeout
-      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 15000))
-
-      const [localResponse, searchResponse] = await Promise.allSettled([
-        Promise.race([
-          fetch("/api/places", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ vibe: vibeData.vibe, city: vibeData.city }),
-          }),
-          timeoutPromise,
-        ]),
-        Promise.race([
-          fetch("/api/search", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ vibe: vibeData.vibe, city: vibeData.city }),
-          }),
-          timeoutPromise,
-        ]),
-      ])
-
-      let localPlaces: Place[] = []
+      // 2. Web Search First (Perplexity)
+      console.log("🌐 Step 2: Trying web search first...")
       let webPlaces: Place[] = []
 
-      // Procesar resultados locales
-      if (localResponse.status === "fulfilled" && localResponse.value.ok) {
-        localPlaces = await localResponse.value.json()
+      try {
+        const searchResponse = await fetch("/api/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ vibe: vibeData.vibe, city: vibeData.city }),
+        })
+
+        if (searchResponse.ok) {
+          webPlaces = await searchResponse.json()
+          console.log(`🌐 Web search returned ${webPlaces.length} places`)
+        } else {
+          console.warn("⚠️ Web search API returned error status")
+        }
+      } catch (webError) {
+        console.warn("⚠️ Web search failed:", webError)
       }
 
-      // Procesar resultados web
-      if (searchResponse.status === "fulfilled" && searchResponse.value.ok) {
-        webPlaces = await searchResponse.value.json()
-      } else if (searchResponse.status === "rejected") {
-        console.warn("Web search failed:", searchResponse.reason)
+      // 3. If web search has results, use them. Otherwise, fallback to local data
+      if (webPlaces.length > 0) {
+        console.log("✅ Using web search results")
+        setPlaces(webPlaces)
+      } else {
+        console.log("🔄 Web search returned no results. Using local data fallback...")
+
+        try {
+          const localResponse = await fetch("/api/places", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ vibe: vibeData.vibe, city: vibeData.city }),
+          })
+
+          if (localResponse.ok) {
+            const localPlaces = await localResponse.json()
+            console.log(`🎯 Local search returned ${localPlaces.length} places`)
+
+            if (localPlaces.length > 0) {
+              setPlaces(localPlaces)
+            } else {
+              setError(`No encontramos lugares para "${vibeData.vibe}" en ${vibeData.city}. Intenta con otra búsqueda.`)
+            }
+          } else {
+            console.error("❌ Local search API failed")
+            setError(`No encontramos lugares para "${vibeData.vibe}" en ${vibeData.city}. Intenta con otra búsqueda.`)
+          }
+        } catch (localError) {
+          console.error("❌ Local search error:", localError)
+          setError(`No encontramos lugares para "${vibeData.vibe}" en ${vibeData.city}. Intenta con otra búsqueda.`)
+        }
       }
 
-      // Combinar resultados (locales primero)
-      const combinedResults = [...localPlaces, ...webPlaces]
-
-      if (combinedResults.length === 0) {
-        setError(`No encontramos lugares para "${vibeData.vibe}" en ${vibeData.city}. Intenta con otra búsqueda.`)
+      // Add to recent searches if we have results
+      if (webPlaces.length > 0 || places.length > 0) {
+        if (typeof window !== "undefined" && (window as any).addRecentSearch) {
+          ;(window as any).addRecentSearch(query)
+        }
       }
-
-      setPlaces(combinedResults)
     } catch (error) {
-      console.error("Error searching:", error)
-      setError("Hubo un error en la búsqueda. Por favor intenta de nuevo.")
+      console.error("💥 Error in search process:", error)
+      setError("Hubo un error al realizar la búsqueda. Por favor intenta de nuevo.")
     } finally {
       setLoading(false)
     }
@@ -146,44 +164,23 @@ export default function HomePage() {
           <div className="mb-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold">Resultados para: "{searchQuery}"</h2>
-              <span className="text-muted-foreground">
-                {places.length} lugar{places.length !== 1 ? "es" : ""} encontrado{places.length !== 1 ? "s" : ""}
-              </span>
+              <div className="flex items-center gap-4">
+                <span className="text-muted-foreground">
+                  {places.length} lugar{places.length !== 1 ? "es" : ""} encontrado{places.length !== 1 ? "s" : ""}
+                </span>
+                {places.length > 0 && (
+                  <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
+                    {places[0].source === "web" ? "🌐 Búsqueda Web" : "🎯 Datos Locales"}
+                  </span>
+                )}
+              </div>
             </div>
 
-            {/* Mostrar resultados locales primero */}
-            {localPlaces.length > 0 && (
-              <div className="mb-8">
-                <h3 className="text-lg font-medium mb-4 text-primary flex items-center gap-2">
-                  🎯 Recomendaciones Curadas
-                  <span className="text-sm bg-primary/20 text-primary px-2 py-1 rounded-full">
-                    {localPlaces.length}
-                  </span>
-                </h3>
-                <div className="grid gap-4">
-                  {localPlaces.map((place) => (
-                    <PlaceCard key={place.id} place={place} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Mostrar resultados web después */}
-            {webPlaces.length > 0 && (
-              <div>
-                <h3 className="text-lg font-medium mb-4 text-secondary-foreground flex items-center gap-2">
-                  🌐 Encontrado en la Web
-                  <span className="text-sm bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
-                    {webPlaces.length}
-                  </span>
-                </h3>
-                <div className="grid gap-4">
-                  {webPlaces.map((place) => (
-                    <PlaceCard key={place.id} place={place} />
-                  ))}
-                </div>
-              </div>
-            )}
+            <div className="grid gap-4">
+              {places.map((place) => (
+                <PlaceCard key={place.id} place={place} />
+              ))}
+            </div>
           </div>
         )}
 
