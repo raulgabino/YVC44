@@ -51,20 +51,31 @@ CRITERIOS ESTRICTOS:
 - Categorías preferidas: restaurantes, cafés, bares, boutiques, espacios culturales, librerías.
 - Deben ser populares o tener buenas reseñas. La relevancia para el vibe "${vibe}" es lo más importante.
 
-FORMATO DE RESPUESTA:
-- Responde ÚNICAMENTE con un array JSON.
-- Si no encuentras ningún lugar que cumpla los criterios, responde con un array JSON vacío: []
-- No inventes lugares. Es mejor no devolver nada que un resultado incorrecto.
-
-EJEMPLO DE ESTRUCTURA JSON:
+FORMATO DE RESPUESTA - JSON únicamente:
 [
   {
     "name": "Nombre Exacto del Lugar",
     "category": "Restaurante|Café|Bar y Cantina|Boutique|Espacio Cultural|Librería con Encanto|Salón de Belleza",
-    "address": "Dirección completa y verificable",
-    "description_short": "Descripción breve (máx 120 caracteres) explicando por qué se ajusta al vibe."
+    "address": "Dirección completa y verificable en ${city}",
+    "description_short": "Descripción breve (máx 120 caracteres) explicando por qué se ajusta al vibe.",
+    "phone": "+52 xxx xxx xxxx (SOLO si estás seguro del número, omite si no)",
+    "hours": {
+      "monday": "HH:MM-HH:MM o Cerrado",
+      "tuesday": "HH:MM-HH:MM o Cerrado",
+      "wednesday": "HH:MM-HH:MM o Cerrado", 
+      "thursday": "HH:MM-HH:MM o Cerrado",
+      "friday": "HH:MM-HH:MM o Cerrado",
+      "saturday": "HH:MM-HH:MM o Cerrado",
+      "sunday": "HH:MM-HH:MM o Cerrado"
+    }
   }
-]`
+]
+
+IMPORTANTE: 
+- Solo incluye "phone" si estás 100% seguro del número
+- Solo incluye "hours" si conoces los horarios reales
+- Omite campos inciertos - es mejor no tener info que info incorrecta
+`
 
     console.log("🚀 Sending to Perplexity...")
 
@@ -153,7 +164,7 @@ EJEMPLO DE ESTRUCTURA JSON:
       return NextResponse.json([])
     }
 
-    const formattedPlaces: Place[] = placesData
+    const formattedPlaces = placesData
       .slice(0, 3)
       .filter((place) => place && typeof place === "object")
       .map((place, index) => ({
@@ -161,7 +172,9 @@ EJEMPLO DE ESTRUCTURA JSON:
         name: place.name?.trim() || `Lugar encontrado en ${city}`,
         category: mapCategory(place.category) || "Restaurante",
         address: place.address?.trim() || `${city}, México`,
-        city: city as "CDMX" | "Monterrey" | "Guadalajara",
+        city: city,
+        phone: place.phone || undefined,
+        hours: place.hours || undefined,
         description_short:
           place.description_short?.trim().substring(0, 150) ||
           `Un lugar perfecto para ${vibe.toLowerCase()} según búsquedas web recientes.`,

@@ -1,6 +1,6 @@
 "use client"
 
-import { MapPin, Tag, ExternalLink, Share2, Heart } from "lucide-react"
+import { MapPin, Tag, ExternalLink, Share2, Heart, Phone, Clock, ChevronDown, ChevronUp } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -14,6 +14,7 @@ interface PlaceCardProps {
 export function PlaceCard({ place }: PlaceCardProps) {
   const [isFavorite, setIsFavorite] = useState(false)
   const [shareSuccess, setShareSuccess] = useState(false)
+  const [showAllHours, setShowAllHours] = useState(false)
 
   // Check if place is favorited on mount
   useEffect(() => {
@@ -80,6 +81,30 @@ export function PlaceCard({ place }: PlaceCardProps) {
     return emojiMap[vibe] || "📍"
   }
 
+  const getCurrentDay = () => {
+    const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+    return days[new Date().getDay()]
+  }
+
+  const formatDayName = (day: string) => {
+    const dayNames: Record<string, string> = {
+      monday: "Lunes",
+      tuesday: "Martes",
+      wednesday: "Miércoles",
+      thursday: "Jueves",
+      friday: "Viernes",
+      saturday: "Sábado",
+      sunday: "Domingo",
+    }
+    return dayNames[day] || day
+  }
+
+  const getHourStatus = (hour: string) => {
+    if (!hour || hour === "No disponible") return { text: "No disponible", className: "text-muted-foreground" }
+    if (hour.toLowerCase() === "cerrado") return { text: "Cerrado", className: "text-red-600" }
+    return { text: hour, className: "text-foreground" }
+  }
+
   return (
     <Card className="hover:bg-accent/50 transition-all duration-200 hover:shadow-md group">
       <CardContent className="p-6">
@@ -105,6 +130,56 @@ export function PlaceCard({ place }: PlaceCardProps) {
             </div>
 
             <p className="text-foreground mb-4 leading-relaxed">{place.description_short}</p>
+
+            {/* Información de contacto y horarios */}
+            <div className="space-y-3 mb-4">
+              {/* Teléfono */}
+              <div className="flex items-center gap-2 text-sm">
+                <Phone className="h-4 w-4 text-muted-foreground" />
+                {place.phone ? (
+                  <a href={`tel:${place.phone}`} className="text-primary hover:underline">
+                    {place.phone}
+                  </a>
+                ) : (
+                  <span className="text-muted-foreground">No disponible</span>
+                )}
+              </div>
+
+              {/* Horarios */}
+              {place.hours && (
+                <div className="space-y-2">
+                  {/* Horario de hoy */}
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium">Hoy:</span>
+                    <span className={getHourStatus(place.hours[getCurrentDay() as keyof typeof place.hours]).className}>
+                      {getHourStatus(place.hours[getCurrentDay() as keyof typeof place.hours]).text}
+                    </span>
+                  </div>
+
+                  {/* Botón ver todos los horarios */}
+                  <button
+                    onClick={() => setShowAllHours(!showAllHours)}
+                    className="flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    Ver todos los horarios
+                    {showAllHours ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  </button>
+
+                  {/* Horarios expandidos */}
+                  {showAllHours && (
+                    <div className="grid grid-cols-1 gap-1 p-3 bg-accent/20 rounded-lg text-xs">
+                      {Object.entries(place.hours).map(([day, hour]) => (
+                        <div key={day} className="flex justify-between items-center">
+                          <span className="font-medium">{formatDayName(day)}:</span>
+                          <span className={getHourStatus(hour).className}>{getHourStatus(hour).text}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {place.playlists && place.playlists.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4">

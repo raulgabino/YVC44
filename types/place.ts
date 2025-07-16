@@ -1,3 +1,13 @@
+export interface PlaceHours {
+  monday: string
+  tuesday: string
+  wednesday: string
+  thursday: string
+  friday: string
+  saturday: string
+  sunday: string
+}
+
 export type Place = {
   id: number
   name: string
@@ -10,19 +20,9 @@ export type Place = {
     | "Salón de Belleza"
     | "Librería con Encanto"
   address: string
-  city:
-    | "CDMX"
-    | "Monterrey"
-    | "Guadalajara"
-    | "Ciudad Victoria"
-    | "San Miguel de Allende"
-    | "Ciudad Juárez"
-    | "Tijuana"
-    | "León"
-    | "Puebla"
-    | "Mérida"
-    | "Cancún"
-    | "Nuevo Laredo"
+  city: string
+  phone?: string
+  hours?: PlaceHours
   description_short: string
   playlists: string[]
   source: "local" | "web" | "gpt"
