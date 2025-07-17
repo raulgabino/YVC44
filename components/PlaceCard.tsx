@@ -1,6 +1,6 @@
 "use client"
 
-import { MapPin, Tag, ExternalLink, Share2, Heart, Phone, Clock, ChevronDown, ChevronUp } from "lucide-react"
+import { ExternalLink, Share2, Heart } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -67,8 +67,8 @@ export function PlaceCard({ place }: PlaceCardProps) {
 
   const getVibeEmoji = (vibe: string) => {
     const emojiMap: Record<string, string> = {
-      Traca: "🎉",
-      Bellaqueo: "😏",
+      Traka: "🎉",
+      Bellakeo: "😏",
       Tranqui: "😌",
       Godínez: "💼",
       Dominguero: "👨‍👩‍👧‍👦",
@@ -77,6 +77,7 @@ export function PlaceCard({ place }: PlaceCardProps) {
       Dateo: "💕",
       Crudo: "🤒",
       Barbón: "🎩",
+      Instagrameable: "📸",
     }
     return emojiMap[vibe] || "📍"
   }
@@ -106,117 +107,92 @@ export function PlaceCard({ place }: PlaceCardProps) {
   }
 
   return (
-    <Card className="hover:bg-accent/50 transition-all duration-200 hover:shadow-md group">
-      <CardContent className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-xl font-semibold group-hover:text-primary transition-colors">{place.name}</h3>
+    <Card className="bg-[#181818] border-[#282828] hover:bg-[#282828] transition-all duration-300 group cursor-pointer">
+      <CardContent className="p-0">
+        <div className="flex items-center gap-4 p-4">
+          {/* Imagen/Icono del lugar - lado izquierdo */}
+          <div className="w-16 h-16 bg-gradient-to-br from-[#FF6B35] to-[#F7931E] rounded-lg flex items-center justify-center flex-shrink-0">
+            <span className="text-2xl">{getVibeEmoji(place.playlists[0] || "Tranqui")}</span>
+          </div>
+
+          {/* Contenido principal - centro */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-white font-semibold truncate group-hover:text-[#FF6B35] transition-colors">
+                {place.name}
+              </h3>
               {place.source && (
-                <Badge variant={place.source === "local" ? "default" : "secondary"}>
-                  {place.source === "local" ? "🎯 Curada" : "🌐 Web"}
+                <Badge
+                  variant={place.source === "local" ? "default" : "secondary"}
+                  className={`text-xs ${
+                    place.source === "local"
+                      ? "bg-[#FF6B35] text-white hover:bg-[#FF6B35]"
+                      : "bg-[#282828] text-[#B3B3B3] hover:bg-[#282828]"
+                  }`}
+                >
+                  {place.source === "local" ? "🎯" : "🌐"}
                 </Badge>
               )}
             </div>
-
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Tag className="h-4 w-4" />
-              <span className="text-sm">{place.category}</span>
+            <div className="flex items-center gap-2 text-[#B3B3B3] text-sm mb-1">
+              <span>{place.category}</span>
+              <span>•</span>
+              <span className="truncate">{place.city}</span>
             </div>
-
-            <div className="flex items-center gap-2 text-muted-foreground mb-3">
-              <MapPin className="h-4 w-4" />
-              <span className="text-sm">{place.address}</span>
-            </div>
-
-            <p className="text-foreground mb-4 leading-relaxed">{place.description_short}</p>
-
-            {/* Información de contacto y horarios */}
-            <div className="space-y-3 mb-4">
-              {/* Teléfono */}
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                {place.phone ? (
-                  <a href={`tel:${place.phone}`} className="text-primary hover:underline">
-                    {place.phone}
-                  </a>
-                ) : (
-                  <span className="text-muted-foreground">No disponible</span>
+            <p className="text-[#B3B3B3] text-sm truncate">{place.description_short}</p>
+            {/* Vibes tags */}
+            {place.playlists && place.playlists.length > 0 && (
+              <div className="flex gap-1 mt-2">
+                {place.playlists.slice(0, 2).map((playlist) => (
+                  <span
+                    key={playlist}
+                    className="inline-flex items-center gap-1 bg-[#282828] text-[#B3B3B3] px-2 py-1 rounded-full text-xs"
+                  >
+                    {getVibeEmoji(playlist)} {playlist}
+                  </span>
+                ))}
+                {place.playlists.length > 2 && (
+                  <span className="text-[#B3B3B3] text-xs self-center">+{place.playlists.length - 2}</span>
                 )}
               </div>
-
-              {/* Horarios */}
-              {place.hours && (
-                <div className="space-y-2">
-                  {/* Horario de hoy */}
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium">Hoy:</span>
-                    <span className={getHourStatus(place.hours[getCurrentDay() as keyof typeof place.hours]).className}>
-                      {getHourStatus(place.hours[getCurrentDay() as keyof typeof place.hours]).text}
-                    </span>
-                  </div>
-
-                  {/* Botón ver todos los horarios */}
-                  <button
-                    onClick={() => setShowAllHours(!showAllHours)}
-                    className="flex items-center gap-1 text-xs text-primary hover:underline"
-                  >
-                    Ver todos los horarios
-                    {showAllHours ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                  </button>
-
-                  {/* Horarios expandidos */}
-                  {showAllHours && (
-                    <div className="grid grid-cols-1 gap-1 p-3 bg-accent/20 rounded-lg text-xs">
-                      {Object.entries(place.hours).map(([day, hour]) => (
-                        <div key={day} className="flex justify-between items-center">
-                          <span className="font-medium">{formatDayName(day)}:</span>
-                          <span className={getHourStatus(hour).className}>{getHourStatus(hour).text}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {place.playlists && place.playlists.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {place.playlists.map((playlist) => (
-                  <Badge key={playlist} variant="outline" className="text-xs">
-                    {getVibeEmoji(playlist)} {playlist}
-                  </Badge>
-                ))}
-              </div>
             )}
+          </div>
 
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                onClick={handleDirections}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 bg-transparent"
-              >
-                <ExternalLink className="h-4 w-4" />
-                Cómo llegar
-              </Button>
-
-              <Button onClick={handleShare} variant="ghost" size="sm" className="flex items-center gap-2">
-                <Share2 className="h-4 w-4" />
-                {shareSuccess ? "¡Copiado!" : "Compartir"}
-              </Button>
-
-              <Button
-                onClick={toggleFavorite}
-                variant="ghost"
-                size="sm"
-                className={`flex items-center gap-2 ${isFavorite ? "text-red-500 hover:text-red-600" : ""}`}
-              >
-                <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
-                {isFavorite ? "Guardado" : "Guardar"}
-              </Button>
-            </div>
+          {/* Acciones - lado derecho */}
+          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              onClick={toggleFavorite}
+              variant="ghost"
+              size="sm"
+              className={`h-8 w-8 p-0 rounded-full hover:bg-[#333] ${isFavorite ? "text-[#FF6B35]" : "text-[#B3B3B3]"}`}
+            >
+              <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
+            </Button>
+            <Button
+              onClick={handleDirections}
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 rounded-full hover:bg-[#333] text-[#B3B3B3] hover:text-white"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+            <Button
+              onClick={handleShare}
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 rounded-full hover:bg-[#333] text-[#B3B3B3] hover:text-white"
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+            {/* Play Button - Característico de Spotify */}
+            <Button
+              onClick={handleDirections}
+              className="h-10 w-10 p-0 rounded-full bg-[#FF6B35] hover:bg-[#e55a2b] text-white hover:scale-105 transition-all"
+            >
+              <svg className="h-5 w-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </Button>
           </div>
         </div>
       </CardContent>

@@ -8,6 +8,7 @@ import { ErrorMessage } from "@/components/ErrorMessage"
 import { FavoritesModal } from "@/components/FavoritesModal"
 import { VibeDetector } from "@/components/VibeDetector"
 import { VibeStats } from "@/components/VibeStats"
+import { NowPlayingBar } from "@/components/NowPlayingBar"
 import type { Place } from "@/types/place"
 
 interface VibeResponse {
@@ -174,19 +175,59 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <div></div> {/* Spacer */}
-            <h1 className="text-4xl md:text-6xl font-bold text-primary">YCV Playlists</h1>
-            <FavoritesModal />
-          </div>
-          <p className="text-xl text-muted-foreground mb-8">El Spotify de lugares. Encuentra tu vibe perfecto.</p>
+    <div className="min-h-screen bg-[#121212] text-white flex">
+      {/* Sidebar Navigation - 240px fijo */}
+      <aside className="w-60 bg-black p-6 flex flex-col">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-white mb-2">YCV Playlists</h1>
+          <p className="text-[#B3B3B3] text-sm">El Spotify de lugares</p>
+        </div>
 
+        {/* Navigation Menu */}
+        <nav className="space-y-4 mb-8">
+          <div className="flex items-center gap-3 text-[#B3B3B3] hover:text-white cursor-pointer">
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+            </svg>
+            <span>Inicio</span>
+          </div>
+          <div className="flex items-center gap-3 text-white">
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+            </svg>
+            <span>Buscar</span>
+          </div>
+        </nav>
+
+        {/* Tu Biblioteca */}
+        <div className="mb-6">
+          <h3 className="text-[#B3B3B3] text-sm font-medium mb-3">Tu Biblioteca</h3>
+          <div className="space-y-2">
+            <div className="text-[#B3B3B3] hover:text-white cursor-pointer text-sm">Lugares guardados</div>
+            <div className="text-[#B3B3B3] hover:text-white cursor-pointer text-sm">Búsquedas recientes</div>
+          </div>
+        </div>
+
+        {/* Vibes Recientes */}
+        {detectedVibe && (
+          <div>
+            <h3 className="text-[#B3B3B3] text-sm font-medium mb-3">Vibe Activo</h3>
+            <div className="bg-[#282828] rounded-lg p-3">
+              <div className="text-white text-sm font-medium">{detectedVibe.vibe}</div>
+              <div className="text-[#B3B3B3] text-xs">{detectedVibe.city}</div>
+            </div>
+          </div>
+        )}
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 bg-gradient-to-b from-[#1f1f1f] to-[#121212] p-6 pb-24">
+        {/* Search Section - mantén SearchBar exactamente igual */}
+        <div className="mb-8">
           <SearchBar onSearch={handleSearch} disabled={loading} />
         </div>
 
+        {/* Vibe Detector - mantén exactamente igual */}
         <VibeDetector
           query={searchQuery}
           vibe={detectedVibe?.vibe}
@@ -195,6 +236,7 @@ export default function HomePage() {
           confidence={detectedVibe?.confidence}
         />
 
+        {/* Loading, Error y VibeStats - mantén exactamente igual */}
         {!loading && !searchQuery && (
           <VibeStats
             currentVibe={detectedVibe?.vibe}
@@ -208,20 +250,14 @@ export default function HomePage() {
 
         {error && <ErrorMessage message={error} onRetry={handleRetry} />}
 
+        {/* Results Section - mantén la lógica, solo ajusta el styling */}
         {searchQuery && !loading && !error && places.length > 0 && (
           <div className="mb-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold">Resultados para: "{searchQuery}"</h2>
-              <div className="flex items-center gap-4">
-                <span className="text-muted-foreground">
-                  {places.length} lugar{places.length !== 1 ? "es" : ""} encontrado{places.length !== 1 ? "s" : ""}
-                </span>
-                {places.length > 0 && (
-                  <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">
-                    {getSourceIcon(places[0].source)} {getSourceLabel(places[0].source)}
-                  </span>
-                )}
-              </div>
+              <h2 className="text-2xl font-bold text-white">Resultados para: "{searchQuery}"</h2>
+              <span className="text-[#B3B3B3]">
+                {places.length} lugar{places.length !== 1 ? "es" : ""} encontrado{places.length !== 1 ? "s" : ""}
+              </span>
             </div>
 
             <div className="grid gap-4">
@@ -232,13 +268,34 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* No results message - mantén igual pero ajusta colores */}
         {searchQuery && !loading && !error && places.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg mb-4">No encontramos lugares que coincidan con tu búsqueda.</p>
-            <p className="text-sm text-muted-foreground">Intenta con otro vibe o ciudad.</p>
+            <p className="text-[#B3B3B3] text-lg mb-4">No encontramos lugares que coincidan con tu búsqueda.</p>
+            <p className="text-sm text-[#B3B3B3]">Intenta con otro vibe o ciudad.</p>
           </div>
         )}
-      </div>
+      </main>
+
+      {/* Right Panel */}
+      <aside className="w-80 bg-[#121212] p-6 border-l border-[#282828]">
+        <FavoritesModal />
+        {detectedVibe && (
+          <div className="mt-6">
+            <h3 className="text-white font-medium mb-4">Vibe Actual</h3>
+            <div className="bg-[#181818] rounded-lg p-4">
+              <div className="text-[#FF6B35] font-bold text-lg">{detectedVibe.vibe}</div>
+              <div className="text-[#B3B3B3] text-sm">📍 {detectedVibe.city}</div>
+              {detectedVibe.confidence && (
+                <div className="text-[#B3B3B3] text-xs mt-2">Confianza: {detectedVibe.confidence}</div>
+              )}
+            </div>
+          </div>
+        )}
+      </aside>
+
+      {/* Now Playing Bar */}
+      <NowPlayingBar vibe={detectedVibe?.vibe} city={detectedVibe?.city} placesCount={places.length} />
     </div>
   )
 }

@@ -65,10 +65,10 @@ export function SearchBar({ onSearch, disabled, placeholder = "Busca un lugar o 
   ]
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
+    <div className="max-w-4xl mx-auto">
+      <form onSubmit={handleSubmit} className="flex gap-4 mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#B3B3B3] h-5 w-5" />
           <Input
             ref={inputRef}
             type="text"
@@ -77,7 +77,7 @@ export function SearchBar({ onSearch, disabled, placeholder = "Busca un lugar o 
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setShowRecent(true)}
             onBlur={() => setTimeout(() => setShowRecent(false), 200)}
-            className="pl-10 pr-10 h-12 text-lg"
+            className="pl-12 pr-12 h-14 text-lg bg-[#242424] border-[#3E3E3E] text-white placeholder-[#B3B3B3] focus:bg-[#2A2A2A] focus:border-[#FF6B35] rounded-full"
             disabled={disabled}
           />
           {query && (
@@ -86,7 +86,7 @@ export function SearchBar({ onSearch, disabled, placeholder = "Busca un lugar o 
               variant="ghost"
               size="sm"
               onClick={clearQuery}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 text-[#B3B3B3] hover:text-white rounded-full"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -94,13 +94,18 @@ export function SearchBar({ onSearch, disabled, placeholder = "Busca un lugar o 
 
           {/* Recent searches dropdown */}
           {showRecent && recentSearches.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-md shadow-lg z-10">
-              <div className="flex items-center justify-between p-3 border-b">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-[#282828] border border-[#3E3E3E] rounded-lg shadow-xl z-10">
+              <div className="flex items-center justify-between p-4 border-b border-[#3E3E3E]">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Búsquedas recientes</span>
+                  <Clock className="h-4 w-4 text-[#B3B3B3]" />
+                  <span className="text-sm font-medium text-white">Búsquedas recientes</span>
                 </div>
-                <Button variant="ghost" size="sm" onClick={clearRecentSearches} className="text-xs h-6">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearRecentSearches}
+                  className="text-xs h-6 text-[#B3B3B3] hover:text-white"
+                >
                   Limpiar
                 </Button>
               </div>
@@ -109,7 +114,7 @@ export function SearchBar({ onSearch, disabled, placeholder = "Busca un lugar o 
                   <button
                     key={index}
                     onClick={() => performSearch(search)}
-                    className="w-full text-left px-3 py-2 hover:bg-accent text-sm transition-colors"
+                    className="w-full text-left px-4 py-3 hover:bg-[#3E3E3E] text-sm text-[#B3B3B3] hover:text-white transition-colors"
                   >
                     {search}
                   </button>
@@ -118,22 +123,26 @@ export function SearchBar({ onSearch, disabled, placeholder = "Busca un lugar o 
             </div>
           )}
         </div>
-        <Button type="submit" disabled={disabled || !query.trim()} className="h-12 px-8">
+        <Button
+          type="submit"
+          disabled={disabled || !query.trim()}
+          className="h-14 px-8 bg-[#FF6B35] hover:bg-[#e55a2b] text-white font-medium rounded-full disabled:bg-[#3E3E3E] disabled:text-[#727272]"
+        >
           Buscar
         </Button>
       </form>
 
-      {/* Suggestions */}
+      {/* Suggestions mejoradas - estilo pills */}
       <div className="flex flex-wrap gap-2 justify-center">
-        <span className="text-sm text-muted-foreground mr-2 self-center">Prueba:</span>
+        <span className="text-sm text-[#B3B3B3] mr-2 self-center">Prueba:</span>
         {suggestions.map((suggestion) => (
           <Button
             key={suggestion}
-            variant="secondary"
+            variant="outline"
             size="sm"
             onClick={() => performSearch(suggestion)}
             disabled={disabled}
-            className="text-xs hover:bg-primary hover:text-primary-foreground transition-colors"
+            className="text-xs bg-transparent border-[#3E3E3E] text-[#B3B3B3] hover:bg-[#FF6B35] hover:text-white hover:border-[#FF6B35] transition-all rounded-full"
           >
             {suggestion}
           </Button>
