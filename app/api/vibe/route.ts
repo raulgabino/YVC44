@@ -120,6 +120,7 @@ export async function POST(request: NextRequest) {
             "Dateo",
             "Crudo",
             "Barbón",
+            "Instagrameable",
           ]
 
           if (parsed.vibe && parsed.city && validVibes.includes(parsed.vibe)) {

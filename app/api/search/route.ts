@@ -22,25 +22,90 @@ export async function POST(request: NextRequest) {
 
     console.log("🇲🇽 City analysis:", { city, isMexicanCity })
 
-    const vibeDescriptions: Record<string, string> = {
-      Traka: "fiesta intensa, reventón, antros, vida nocturna vibrante, música en vivo",
-      Bellakeo: "ambiente seductor, sensual, para ligar, romántico pero intenso, cocktails sofisticados",
-      Tranqui: "relajado, tranquilo, sin presión, chill, ambiente zen, terrazas acogedoras",
-      Godínez: "profesional, formal, para después del trabajo, ejecutivo, wifi confiable",
-      Dominguero: "familiar, casual, para fines de semana, ambiente hogareño, brunch, pet-friendly",
-      Chambeador: "para trabajar, estudiar, productivo, wifi excelente, silencioso, enchufes",
-      Tóxico: "intenso, dramático, para procesar emociones, catártico, ambiente introspectivo",
-      Dateo: "romántico, para citas, íntimo, elegante, velas, música suave",
-      Crudo: "para la resaca, comfort food, recovery, desayunos curativos, jugos naturales",
-      Barbón: "sofisticado, elegante, con clase, exclusivo, premium, carta de vinos selecta",
+    // Sistema de perfiles de vibe con contexto específico
+    const vibeProfiles: Record<
+      string,
+      {
+        description: string
+        context: string
+        avoid: string
+        examples: string
+      }
+    > = {
+      Traka: {
+        description: "fiesta, diversión, vida nocturna, música en vivo, antros",
+        context: "lugares para reventón, ambiente de club, música alta",
+        avoid: "lugares familiares, formales, tranquilos",
+        examples: "antros, bares con música, terrazas de fiesta",
+      },
+      Bellakeo: {
+        description: "ambiente seductor, sensual, para ligar, cocktails sofisticados",
+        context: "lugares íntimos pero con ambiente sensual, no familiar",
+        avoid: "lugares familiares, casuales, muy formales",
+        examples: "bares de cocktails, terrazas con ambiente, lounges",
+      },
+      Tranqui: {
+        description: "relajado, sin presión, chill, ambiente zen, terrazas",
+        context: "lugares para descansar, conversar tranquilo, sin prisa",
+        avoid: "lugares muy formales, de fiesta, ruidosos",
+        examples: "cafés con terraza, parques, lugares chill",
+      },
+      Godínez: {
+        description: "profesional, formal, ejecutivo, wifi, cerca de oficinas",
+        context: "lugares para reuniones de trabajo, después de oficina",
+        avoid: "lugares muy casuales, de fiesta, familiares",
+        examples: "restaurantes ejecutivos, cafés con wifi, lugares formales",
+      },
+      Dominguero: {
+        description: "familiar, casual, para fines de semana, brunch, niños",
+        context: "lugares para familias, ambiente hogareño, relajado",
+        avoid: "lugares de fiesta, muy formales, nocturnos",
+        examples: "restaurantes familiares, parques, lugares de brunch",
+      },
+      Chambeador: {
+        description: "para trabajar, estudiar, wifi confiable, silencioso",
+        context: "lugares productivos, con mesas amplias, enchufes",
+        avoid: "lugares ruidosos, de fiesta, sin wifi",
+        examples: "cafés para laptop, bibliotecas, coworking",
+      },
+      Tóxico: {
+        description: "intenso, dramático, para procesar emociones, mezcal",
+        context: "lugares para desahogarse, ambiente introspectivo",
+        avoid: "lugares muy alegres, familiares, formales",
+        examples: "bares oscuros, cantinas, lugares con mezcal",
+      },
+      Dateo: {
+        description: "romántico, para citas, íntimo, elegante, velas",
+        context: "lugares para parejas, ambiente romántico pero no familiar",
+        avoid: "lugares muy casuales, ruidosos, familiares",
+        examples: "restaurantes románticos, cafés íntimos, terrazas con vista",
+      },
+      Crudo: {
+        description: "lugares CASUALES para resaca, fondas populares, tacos, caldos",
+        context: "lugares SIN PRETENSIONES, baratos, tradicionales, comfort food",
+        avoid: "lugares trendy, caros, instagrameables, upscale como Rosetta",
+        examples: "taquerías de barrio, fondas familiares, jugos Betty, comedores populares",
+      },
+      Barbón: {
+        description: "sofisticado, elegante, exclusivo, premium, vinos",
+        context: "lugares caros, con clase, para impresionar",
+        avoid: "lugares casuales, baratos, populares",
+        examples: "restaurantes premium, wine bars, lugares exclusivos",
+      },
+      Instagrameable: {
+        description: "trendy, fotogénico, viral, aesthetic, para fotos",
+        context: "lugares modernos, con diseño llamativo, populares en redes",
+        avoid: "lugares muy tradicionales, sin diseño especial",
+        examples: "cafés aesthetic, restaurantes con diseño, lugares trendy",
+      },
     }
 
-    const vibeDescription = vibeDescriptions[vibe] || vibe.toLowerCase()
+    const vibeProfile = vibeProfiles[vibe]
 
     // Prompt adaptado según si es México o internacional
     const searchPrompt = isMexicanCity
-      ? buildMexicanCityPrompt(city, vibe, vibeDescription)
-      : buildInternationalCityPrompt(city, vibe, vibeDescription)
+      ? buildMexicanCityPrompt(city, vibe, vibeProfile)
+      : buildInternationalCityPrompt(city, vibe, vibeProfile.description)
 
     console.log("🚀 Sending to GPT with adapted prompt...")
 
@@ -191,37 +256,29 @@ async function checkIfMexicanCity(city: string): Promise<boolean> {
   return mexicanCities.some((mexicanCity) => cityLower.includes(mexicanCity) || mexicanCity.includes(cityLower))
 }
 
-function buildMexicanCityPrompt(city: string, vibe: string, vibeDescription: string): string {
-  return `Busca 3 lugares REALES y específicos en ${city}, México que encajen perfectamente con "${vibeDescription}".
+function buildMexicanCityPrompt(city: string, vibe: string, vibeProfile: any): string {
+  return `Eres un experto local en ${city}, México. Busca lugares que REALMENTE encajen con este vibe específico:
 
-CRITERIOS MEXICANOS:
-- Solo lugares que REALMENTE existen en ${city}, México
-- Que entiendan la vibe "${vibe}" en el contexto cultural mexicano
-- Preferir lugares populares entre locales, no solo turísticos
-- Categorías: restaurantes, cafés, bares, cantinas, boutiques, espacios culturales
+VIBE: ${vibe}
+CONTEXTO: ${vibeProfile.context}
+DESCRIPCIÓN: ${vibeProfile.description}
+EVITAR ABSOLUTAMENTE: ${vibeProfile.avoid}
+EJEMPLOS CORRECTOS: ${vibeProfile.examples}
 
-IMPORTANTE: 
-- Si NO conoces lugares específicos en ${city}, responde: []
-- NO inventes nombres o direcciones
-- Es mejor no responder que dar información incorrecta
+INSTRUCCIONES ESPECÍFICAS:
+- Para "Crudo": SOLO lugares casuales, baratos, populares (NO Rosetta, NO lugares trendy)
+- Para "Barbón": SOLO lugares caros, exclusivos, sofisticados
+- Para "Instagrameable": SOLO lugares trendy, modernos, fotogénicos
 
-FORMATO JSON:
+Encuentra máximo 3 lugares REALES en ${city} que estén operando en 2024 y que coincidan EXACTAMENTE con el contexto del vibe.
+
+Formato JSON requerido:
 [
   {
     "name": "Nombre exacto del lugar",
-    "category": "Restaurante|Café|Bar y Cantina|Boutique|Espacio Cultural|Librería con Encanto|Salón de Belleza",
-    "address": "Dirección completa en ${city}, México",
-    "description_short": "Por qué es perfecto para ${vibe} (máx 120 caracteres)",
-    "phone": "+52 xxx xxx xxxx (solo si estás seguro)",
-    "hours": {
-      "monday": "HH:MM-HH:MM o Cerrado",
-      "tuesday": "HH:MM-HH:MM o Cerrado",
-      "wednesday": "HH:MM-HH:MM o Cerrado",
-      "thursday": "HH:MM-HH:MM o Cerrado",
-      "friday": "HH:MM-HH:MM o Cerrado",
-      "saturday": "HH:MM-HH:MM o Cerrado",
-      "sunday": "HH:MM-HH:MM o Cerrado"
-    }
+    "category": "Restaurante|Café|Bar y Cantina|Boutique|Espacio Cultural|Salón de Belleza|Librería con Encanto",
+    "address": "Dirección completa con colonia",
+    "description_short": "Por qué encaja con ${vibe} - máximo 100 caracteres"
   }
 ]`
 }

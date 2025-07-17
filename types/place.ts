@@ -1,13 +1,3 @@
-export interface PlaceHours {
-  monday: string
-  tuesday: string
-  wednesday: string
-  thursday: string
-  friday: string
-  saturday: string
-  sunday: string
-}
-
 export type Place = {
   id: number
   name: string
@@ -20,10 +10,21 @@ export type Place = {
     | "Salón de Belleza"
     | "Librería con Encanto"
   address: string
-  city: string
+  city: string // Cambiar de union type limitado a string libre
   phone?: string
-  hours?: PlaceHours
+  hours?: string // Cambiar de PlaceHours a string opcional
   description_short: string
   playlists: string[]
   source: "local" | "web" | "gpt"
+}
+
+// Mantener PlaceHours para compatibilidad pero hacer opcional su uso
+export interface PlaceHours {
+  monday: string
+  tuesday: string
+  wednesday: string
+  thursday: string
+  friday: string
+  saturday: string
+  sunday: string
 }
