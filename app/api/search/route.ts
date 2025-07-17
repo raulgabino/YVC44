@@ -1,5 +1,5 @@
-// Solución simplificada para app/api/search/route.ts
-// GPT Expandido que entiende cuando debe buscar vs cuando debe fallar
+// Solución mejorada para app/api/search/route.ts
+// Sistema de perfiles de vibe con contexto específico y validaciones estrictas
 import { type NextRequest, NextResponse } from "next/server"
 import type { Place } from "@/types/place"
 
@@ -101,6 +101,9 @@ export async function POST(request: NextRequest) {
     }
 
     const vibeProfile = vibeProfiles[vibe]
+    if (!vibeProfile) {
+      return NextResponse.json(getFallbackResults(city, vibe))
+    }
 
     // Prompt adaptado según si es México o internacional
     const searchPrompt = isMexicanCity
@@ -265,12 +268,36 @@ DESCRIPCIÓN: ${vibeProfile.description}
 EVITAR ABSOLUTAMENTE: ${vibeProfile.avoid}
 EJEMPLOS CORRECTOS: ${vibeProfile.examples}
 
-INSTRUCCIONES ESPECÍFICAS:
-- Para "Crudo": SOLO lugares casuales, baratos, populares (NO Rosetta, NO lugares trendy)
-- Para "Barbón": SOLO lugares caros, exclusivos, sofisticados
-- Para "Instagrameable": SOLO lugares trendy, modernos, fotogénicos
+INSTRUCCIONES ESPECÍFICAS PARA "${vibe}":
+${
+  vibe === "Crudo"
+    ? `
+- PROHIBIDO recomendar: Panadería Rosetta, cafés trendy, lugares caros
+- SOLO lugares casuales: taquerías, fondas, comedores populares
+- Precios accesibles, ambiente sin pretensiones
+- Lugares donde puedas llegar "hecho pedazos" sin problemas
+`
+    : vibe === "Barbón"
+      ? `
+- SOLO lugares caros, exclusivos, sofisticados
+- Ambiente premium, servicio de primera
+- Para impresionar, no para uso cotidiano
+`
+      : vibe === "Instagrameable"
+        ? `
+- SOLO lugares trendy, modernos, fotogénicos
+- Con diseño llamativo, populares en redes sociales
+- Aesthetic importante, viral-worthy
+`
+        : `
+- Enfócate en ${vibeProfile.context}
+- Evita ${vibeProfile.avoid}
+`
+}
 
 Encuentra máximo 3 lugares REALES en ${city} que estén operando en 2024 y que coincidan EXACTAMENTE con el contexto del vibe.
+
+IMPORTANTE: Si es ${vibe}, NO incluyas Panadería Rosetta ni lugares similares.
 
 Formato JSON requerido:
 [
@@ -278,7 +305,7 @@ Formato JSON requerido:
     "name": "Nombre exacto del lugar",
     "category": "Restaurante|Café|Bar y Cantina|Boutique|Espacio Cultural|Salón de Belleza|Librería con Encanto",
     "address": "Dirección completa con colonia",
-    "description_short": "Por qué encaja con ${vibe} - máximo 100 caracteres"
+    "description_short": "Por qué encaja ESPECÍFICAMENTE con ${vibe} - máximo 100 caracteres"
   }
 ]`
 }
@@ -307,6 +334,11 @@ SOLO si conoces lugares específicos, usa este formato JSON:
 ]
 
 Si tienes dudas sobre lugares específicos, responde: []`
+}
+
+function getFallbackResults(city: string, vibe: string): Place[] {
+  // Fallback results cuando no se encuentra el vibe
+  return []
 }
 
 function createDefaultHours() {
