@@ -9,6 +9,8 @@ import { FavoritesModal } from "@/components/FavoritesModal"
 import { VibeDetector } from "@/components/VibeDetector"
 import { VibeStats } from "@/components/VibeStats"
 import { NowPlayingBar } from "@/components/NowPlayingBar"
+import { UserLibrary } from "@/components/UserLibrary"
+import { VibePlaylists } from "@/components/VibePlaylists"
 import type { Place } from "@/types/place"
 
 interface VibeResponse {
@@ -48,6 +50,15 @@ export default function HomePage() {
       const vibeData: VibeResponse = await vibeResponse.json()
       setDetectedVibe(vibeData)
       console.log("✅ Vibe detected:", vibeData)
+
+      // Guardar en historial después de detectar vibe
+      const historyEntry = {
+        query,
+        vibe: vibeData.vibe,
+        city: vibeData.city,
+        timestamp: new Date().toISOString(),
+        resultsCount: 0, // Se actualizará después
+      }
 
       // 2. Try multiple search sources in order: Perplexity -> GPT -> Local
       let searchResults: Place[] = []
@@ -126,6 +137,12 @@ export default function HomePage() {
       if (searchResults.length > 0) {
         setPlaces(searchResults)
         console.log(`✅ Using ${searchSource}`)
+
+        // Actualizar historial con número de resultados
+        historyEntry.resultsCount = searchResults.length
+        const currentHistory = JSON.parse(localStorage.getItem("ycv-search-history") || "[]")
+        const updatedHistory = [historyEntry, ...currentHistory.filter((h: any) => h.query !== query)].slice(0, 20)
+        localStorage.setItem("ycv-search-history", JSON.stringify(updatedHistory))
       } else {
         setError(`No encontramos lugares para "${vibeData.vibe}" en ${vibeData.city}. Intenta con otra búsqueda.`)
       }
@@ -199,18 +216,19 @@ export default function HomePage() {
           </div>
         </nav>
 
-        {/* Tu Biblioteca */}
-        <div className="mb-6">
-          <h3 className="text-[#B3B3B3] text-sm font-medium mb-3">Tu Biblioteca</h3>
-          <div className="space-y-2">
-            <div className="text-[#B3B3B3] hover:text-white cursor-pointer text-sm">Lugares guardados</div>
-            <div className="text-[#B3B3B3] hover:text-white cursor-pointer text-sm">Búsquedas recientes</div>
-          </div>
+        {/* Tu Biblioteca - expandida */}
+        <div className="flex-1 overflow-y-auto">
+          <UserLibrary
+            onSearchSelect={(query) => {
+              setSearchQuery(query)
+              handleSearch(query)
+            }}
+          />
         </div>
 
         {/* Vibes Recientes */}
         {detectedVibe && (
-          <div>
+          <div className="mt-4">
             <h3 className="text-[#B3B3B3] text-sm font-medium mb-3">Vibe Activo</h3>
             <div className="bg-[#282828] rounded-lg p-3">
               <div className="text-white text-sm font-medium">{detectedVibe.vibe}</div>
@@ -222,12 +240,25 @@ export default function HomePage() {
 
       {/* Main Content Area */}
       <main className="flex-1 bg-gradient-to-b from-[#1f1f1f] to-[#121212] p-6 pb-24">
-        {/* Search Section - mantén SearchBar exactamente igual */}
+        {/* Search Section */}
         <div className="mb-8">
           <SearchBar onSearch={handleSearch} disabled={loading} />
         </div>
 
-        {/* Vibe Detector - mantén exactamente igual */}
+        {/* Home Dashboard - cuando no hay búsqueda */}
+        {!searchQuery && !loading && !error && (
+          <div className="space-y-8">
+            <VibePlaylists
+              onVibeSelect={(vibe, city) => {
+                const searchQuery = `lugares ${vibe.toLowerCase()} en ${city}`
+                setSearchQuery(searchQuery)
+                handleSearch(searchQuery)
+              }}
+            />
+          </div>
+        )}
+
+        {/* Vibe Detector */}
         <VibeDetector
           query={searchQuery}
           vibe={detectedVibe?.vibe}
@@ -236,7 +267,7 @@ export default function HomePage() {
           confidence={detectedVibe?.confidence}
         />
 
-        {/* Loading, Error y VibeStats - mantén exactamente igual */}
+        {/* Loading, Error y VibeStats */}
         {!loading && !searchQuery && (
           <VibeStats
             currentVibe={detectedVibe?.vibe}
@@ -250,7 +281,7 @@ export default function HomePage() {
 
         {error && <ErrorMessage message={error} onRetry={handleRetry} />}
 
-        {/* Results Section - mantén la lógica, solo ajusta el styling */}
+        {/* Results Section */}
         {searchQuery && !loading && !error && places.length > 0 && (
           <div className="mb-6">
             <div className="flex items-center justify-between mb-6">
@@ -268,7 +299,7 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* No results message - mantén igual pero ajusta colores */}
+        {/* No results message */}
         {searchQuery && !loading && !error && places.length === 0 && (
           <div className="text-center py-12">
             <p className="text-[#B3B3B3] text-lg mb-4">No encontramos lugares que coincidan con tu búsqueda.</p>
