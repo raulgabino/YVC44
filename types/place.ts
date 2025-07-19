@@ -10,21 +10,25 @@ export type Place = {
     | "Salón de Belleza"
     | "Librería con Encanto"
   address: string
-  city: string // Cambiar de union type limitado a string libre
+  city: string
   phone?: string
-  hours?: string // Cambiar de PlaceHours a string opcional
+  hours?: string
+  lat?: number
+  lng?: number
+  rating?: number // 1 decimal
+  price_range?: "$" | "$$" | "$$$"
   description_short: string
-  playlists: string[]
+  playlists: string[] // 0‑5 vibes
   source: "local" | "web" | "gpt"
+  place_id?: string
 }
 
-// Mantener PlaceHours para compatibilidad pero hacer opcional su uso
-export interface PlaceHours {
-  monday: string
-  tuesday: string
-  wednesday: string
-  thursday: string
-  friday: string
-  saturday: string
-  sunday: string
+export type PlaceHours = {
+  monday?: string
+  tuesday?: string
+  wednesday?: string
+  thursday?: string
+  friday?: string
+  saturday?: string
+  sunday?: string
 }

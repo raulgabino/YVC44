@@ -1,0 +1,36 @@
+[
+  {
+    "id": 1,
+    "name": "Café Nin",
+    "category": "Café",
+    "address": "Av. Álvaro Obregón 64, Roma Nte., 06700 Ciudad de México",
+    "city": "CDMX",
+    "phone": "+52 55 5264 4607",
+    "hours": "L-V 7:00-22:00, S-D 8:00-23:00",
+    "lat": 19.4144,
+    "lng": -99.1661,
+    "rating": 4.4,
+    "price_range": "$$",
+    "description_short": "Café bohemio en Roma Norte con ambiente tranquilo y excelente café de especialidad",
+    "playlists": ["Tranqui", "Intelectual"],
+    "source": "local",
+    "place_id": "cafe_nin_roma"
+  },
+  {
+    "id": 2,
+    "name": "Pujol",
+    "category": "Restaurante",
+    "address": "Tennyson 133, Polanco, 11570 Ciudad de México",
+    "city": "CDMX",
+    "phone": "+52 55 5545 4111",
+    "hours": "L-S 13:30-22:00",
+    "lat": 19.4362,
+    "lng": -99.1887,
+    "rating": 4.6,
+    "price_range": "$$$",
+    "description_short": "Restaurante de alta cocina mexicana con estrella Michelin",
+    "playlists": ["Barbón", "Experimental"],
+    "source": "local",
+    "place_id": "pujol_polanco"
+  }
+]

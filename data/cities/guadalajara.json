@@ -1,0 +1,14 @@
+[
+  {
+    "id": 401,
+    "name": "Café Madoka",
+    "category": "Café",
+    "address": "Chapultepec, Guadalajara, Jalisco",
+    "city": "Guadalajara",
+    "rating": 4.4,
+    "price_range": "$$",
+    "description_short": "Café de especialidad en zona Chapultepec",
+    "playlists": ["Hipster", "Tranqui"],
+    "source": "local"
+  }
+]

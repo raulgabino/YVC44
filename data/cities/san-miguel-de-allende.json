@@ -1,0 +1,14 @@
+[
+  {
+    "id": 301,
+    "name": "Café Rama",
+    "category": "Café",
+    "address": "Centro Histórico, San Miguel de Allende, Guanajuato",
+    "city": "San Miguel de Allende",
+    "rating": 4.5,
+    "price_range": "$$",
+    "description_short": "Café artesanal en el centro histórico colonial",
+    "playlists": ["Artístico", "Tranqui"],
+    "source": "local"
+  }
+]

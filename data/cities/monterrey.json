@@ -1,0 +1,14 @@
+[
+  {
+    "id": 201,
+    "name": "Café Iguana",
+    "category": "Café",
+    "address": "Barrio Antiguo, Monterrey, Nuevo León",
+    "city": "Monterrey",
+    "rating": 4.3,
+    "price_range": "$$",
+    "description_short": "Café bohemio en el histórico Barrio Antiguo",
+    "playlists": ["Bohemio", "Tranqui"],
+    "source": "local"
+  }
+]

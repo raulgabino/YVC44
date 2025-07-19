@@ -1,104 +1,76 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { placesData } from "@/data/places"
-import type { Place } from "@/types/place"
+import { loadCityData, isCitySupported } from "@/data/cityLoader"
 
-interface PlacesRequest {
-  vibe: string
-  city: string
-}
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams
+  const vibe = searchParams.get("vibe")
+  const city = searchParams.get("city")
 
-export async function POST(request: NextRequest) {
-  try {
-    const { vibe, city }: PlacesRequest = await request.json()
-
-    console.log("🎯 Local places search:", { vibe, city })
-
-    if (!vibe || !city) {
-      console.log("❌ Missing vibe or city")
-      return NextResponse.json([])
-    }
-
-    // Filter places by city and vibe
-    const filteredPlaces = (placesData as Place[])
-      .filter((place) => place.city === city)
-      .filter((place) => place.playlists.includes(vibe as any))
-      .map((place) => ({
-        ...place,
-        source: "local" as const,
-      }))
-
-    console.log(`✅ Found ${filteredPlaces.length} local places for ${vibe} in ${city}`)
-
-    // Log analytics for popular combinations
-    if (filteredPlaces.length > 0) {
-      console.log("📊 Popular vibe-city combination:", {
-        vibe,
-        city,
-        count: filteredPlaces.length,
-        places: filteredPlaces.map((p) => p.name),
-      })
-    }
-
-    return NextResponse.json(filteredPlaces)
-  } catch (error) {
-    console.error("💥 Error in local places search:", error)
-    return NextResponse.json([])
-  }
-}
-
-// GET endpoint for analytics and debugging
-export async function GET() {
-  try {
-    const places = placesData as Place[]
-
-    // Generate analytics
-    const analytics = {
-      total_places: places.length,
-      by_city: places.reduce(
-        (acc, place) => {
-          acc[place.city] = (acc[place.city] || 0) + 1
-          return acc
-        },
-        {} as Record<string, number>,
-      ),
-      by_category: places.reduce(
-        (acc, place) => {
-          acc[place.category] = (acc[place.category] || 0) + 1
-          return acc
-        },
-        {} as Record<string, number>,
-      ),
-      by_vibe: places.reduce(
-        (acc, place) => {
-          place.playlists.forEach((vibe) => {
-            acc[vibe] = (acc[vibe] || 0) + 1
-          })
-          return acc
-        },
-        {} as Record<string, number>,
-      ),
-      ciudad_victoria_coverage: {
-        total: places.filter((p) => p.city === "Ciudad Victoria").length,
-        by_category: places
-          .filter((p) => p.city === "Ciudad Victoria")
-          .reduce(
-            (acc, place) => {
-              acc[place.category] = (acc[place.category] || 0) + 1
-              return acc
-            },
-            {} as Record<string, number>,
-          ),
+  if (!city || city === "unknown") {
+    return NextResponse.json(
+      {
+        error: "Ciudad requerida",
+        message: "Por favor especifica una ciudad para buscar lugares",
+        code: "CITY_REQUIRED",
       },
+      { status: 400 },
+    )
+  }
+
+  if (!isCitySupported(city)) {
+    return NextResponse.json(
+      {
+        error: "Ciudad no soportada",
+        message: `Aún no tenemos datos para ${city}. Ciudades disponibles: CDMX, Monterrey, Guadalajara, San Miguel de Allende, Ciudad Victoria`,
+        code: "CITY_NOT_SUPPORTED",
+      },
+      { status: 404 },
+    )
+  }
+
+  try {
+    const cityPlaces = await loadCityData(city)
+
+    if (!cityPlaces || cityPlaces.length === 0) {
+      return NextResponse.json(
+        {
+          error: "Sin datos",
+          message: `No se encontraron lugares para ${city}`,
+          code: "NO_DATA",
+        },
+        { status: 404 },
+      )
+    }
+
+    let filteredPlaces = cityPlaces
+
+    // Filter by vibe if provided
+    if (vibe && vibe !== "undefined") {
+      filteredPlaces = cityPlaces.filter((place) =>
+        place.playlists.some((playlist) => playlist.toLowerCase().includes(vibe.toLowerCase())),
+      )
+
+      // If no exact matches, return all places from the city
+      if (filteredPlaces.length === 0) {
+        filteredPlaces = cityPlaces
+      }
     }
 
     return NextResponse.json({
-      status: "success",
-      message: "YCV Playlists Local Database Analytics",
-      analytics,
-      sample_places: places.slice(0, 5),
+      places: filteredPlaces,
+      total: filteredPlaces.length,
+      city: city,
+      vibe: vibe || "all",
     })
   } catch (error) {
-    console.error("Error generating analytics:", error)
-    return NextResponse.json({ error: "Failed to generate analytics" }, { status: 500 })
+    console.error("Error loading city data:", error)
+    return NextResponse.json(
+      {
+        error: "Error interno",
+        message: "Error al cargar datos de la ciudad",
+        code: "INTERNAL_ERROR",
+      },
+      { status: 500 },
+    )
   }
 }

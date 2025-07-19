@@ -2,15 +2,15 @@
 
 import { useState } from "react"
 import { SearchBar } from "@/components/SearchBar"
-import { PlaceCard } from "@/components/PlaceCard"
 import { LoadingSpinner } from "@/components/LoadingSpinner"
-import { ErrorMessage } from "@/components/ErrorMessage"
 import { FavoritesModal } from "@/components/FavoritesModal"
 import { VibeDetector } from "@/components/VibeDetector"
 import { VibeStats } from "@/components/VibeStats"
 import { NowPlayingBar } from "@/components/NowPlayingBar"
 import { UserLibrary } from "@/components/UserLibrary"
 import { VibePlaylists } from "@/components/VibePlaylists"
+import { Phone, Clock, DollarSign, Star } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 import type { Place } from "@/types/place"
 
 interface VibeResponse {
@@ -26,6 +26,16 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [detectedVibe, setDetectedVibe] = useState<VibeResponse | null>(null)
+
+  const formatPriceRange = (priceRange?: string) => {
+    if (!priceRange) return null
+    return priceRange
+  }
+
+  const formatRating = (rating?: number) => {
+    if (!rating) return null
+    return rating.toFixed(1)
+  }
 
   const handleSearch = async (query: string) => {
     setLoading(true)
@@ -51,6 +61,13 @@ export default function HomePage() {
       setDetectedVibe(vibeData)
       console.log("✅ Vibe detected:", vibeData)
 
+      // Step 2: Check if city was detected
+      if (vibeData.city === "unknown") {
+        setError('Por favor especifica una ciudad en tu búsqueda. Ejemplo: "café tranquilo en Monterrey"')
+        setLoading(false)
+        return
+      }
+
       // Guardar en historial después de detectar vibe
       const historyEntry = {
         query,
@@ -60,13 +77,13 @@ export default function HomePage() {
         resultsCount: 0, // Se actualizará después
       }
 
-      // 2. Try multiple search sources in order: Perplexity -> GPT -> Local
+      // 3. Try multiple search sources in order: Perplexity -> GPT -> Local
       let searchResults: Place[] = []
       let searchSource = ""
 
       // Try Perplexity first (if configured)
       if (process.env.PERPLEXITY_API_KEY) {
-        console.log("🌐 Step 2a: Trying Perplexity web search...")
+        console.log("🌐 Step 3a: Trying Perplexity web search...")
         try {
           const perplexityResponse = await fetch("/api/search", {
             method: "POST",
@@ -89,7 +106,7 @@ export default function HomePage() {
 
       // Try GPT search if Perplexity didn't work
       if (searchResults.length === 0) {
-        console.log("🤖 Step 2b: Trying GPT search...")
+        console.log("🤖 Step 3b: Trying GPT search...")
         try {
           const gptResponse = await fetch("/api/search-gpt", {
             method: "POST",
@@ -112,16 +129,14 @@ export default function HomePage() {
 
       // Fallback to local data if both web searches failed
       if (searchResults.length === 0) {
-        console.log("🎯 Step 2c: Using local data fallback...")
+        console.log("🎯 Step 3c: Using local data fallback...")
         try {
-          const localResponse = await fetch("/api/places", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ vibe: vibeData.vibe, city: vibeData.city }),
-          })
+          const placesResponse = await fetch(
+            `/api/places?vibe=${encodeURIComponent(vibeData.vibe)}&city=${encodeURIComponent(vibeData.city)}`,
+          )
 
-          if (localResponse.ok) {
-            const localPlaces = await localResponse.json()
+          if (placesResponse.ok) {
+            const localPlaces = await placesResponse.json()
             if (localPlaces.length > 0) {
               searchResults = localPlaces
               searchSource = "Curated Local Data"
@@ -196,8 +211,8 @@ export default function HomePage() {
       {/* Sidebar Navigation - 240px fijo */}
       <aside className="w-60 bg-black p-6 flex flex-col">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-2">YCV Playlists</h1>
-          <p className="text-[#B3B3B3] text-sm">El Spotify de lugares</p>
+          <h1 className="text-2xl font-bold text-white mb-2">YourCityVibes</h1>
+          <p className="text-[#B3B3B3] text-sm">Descubre tu vibra en la ciudad</p>
         </div>
 
         {/* Navigation Menu */}
@@ -279,7 +294,18 @@ export default function HomePage() {
 
         {loading && <LoadingSpinner text="Buscando los mejores lugares para tu vibe..." />}
 
-        {error && <ErrorMessage message={error} onRetry={handleRetry} />}
+        {error && (
+          <div className="max-w-2xl mx-auto mb-6">
+            <Card className="bg-red-50 border-red-200">
+              <CardContent className="pt-6">
+                <p className="text-red-700 text-center">{error}</p>
+                <p className="text-red-600 text-sm text-center mt-2">
+                  Ciudades disponibles: CDMX, Monterrey, Guadalajara, San Miguel de Allende, Ciudad Victoria
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Results Section */}
         {searchQuery && !loading && !error && places.length > 0 && (
@@ -293,7 +319,63 @@ export default function HomePage() {
 
             <div className="grid gap-4">
               {places.map((place) => (
-                <PlaceCard key={place.id} place={place} />
+                <Card key={place.id} className="bg-[#181818] border-[#282828] hover:bg-[#282828] transition-colors">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-2">{place.name}</h3>
+                        <p className="text-[#FF6B35] text-sm font-medium mb-2">{place.category}</p>
+                        <p className="text-[#B3B3B3] text-sm mb-2">{place.address}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs text-[#B3B3B3]">
+                          {getSourceIcon(place.source)} {getSourceLabel(place.source)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {place.phone && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <Phone className="h-4 w-4 text-white/60" />
+                        <span className="text-sm text-white/90">{place.phone}</span>
+                      </div>
+                    )}
+
+                    {place.hours && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <Clock className="h-4 w-4 text-white/60" />
+                        <span className="text-sm text-white/90">{place.hours}</span>
+                      </div>
+                    )}
+
+                    {(place.rating || place.price_range) && (
+                      <div className="flex items-center gap-4 mb-3">
+                        {place.rating && (
+                          <div className="flex items-center gap-1">
+                            <Star className="h-4 w-4 text-yellow-400" />
+                            <span className="text-sm text-white/90">{formatRating(place.rating)}</span>
+                          </div>
+                        )}
+                        {place.price_range && (
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="h-4 w-4 text-green-400" />
+                            <span className="text-sm text-white/90">{formatPriceRange(place.price_range)}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <p className="text-[#B3B3B3] text-sm mb-4">{place.description_short}</p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {place.playlists.map((playlist, index) => (
+                        <span key={index} className="px-3 py-1 bg-[#FF6B35]/20 text-[#FF6B35] text-xs rounded-full">
+                          {playlist}
+                        </span>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>

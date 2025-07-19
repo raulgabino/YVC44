@@ -1,0 +1,14 @@
+[
+  {
+    "id": 101,
+    "name": "Café Víctor",
+    "category": "Café",
+    "address": "Centro de Ciudad Victoria, Tamaulipas",
+    "city": "Ciudad Victoria",
+    "rating": 4.2,
+    "price_range": "$$",
+    "description_short": "Café tradicional en el corazón de Ciudad Victoria",
+    "playlists": ["Tranqui", "Local"],
+    "source": "local"
+  }
+]
