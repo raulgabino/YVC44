@@ -19,7 +19,7 @@
   {
     "id": 2,
     "name": "Pujol",
-    "category": "Restaurante",
+    "category": "Fine Dining",
     "address": "Tennyson 133, Polanco, 11560 Ciudad de México",
     "city": "CDMX",
     "phone": "+52 55 5545 4111",
@@ -27,9 +27,9 @@
     "lat": 19.4326,
     "lng": -99.1332,
     "rating": 4.8,
-    "price_range": "$$$",
+    "price_range": "$$$$",
     "description_short": "Restaurante de alta cocina mexicana contemporánea del chef Enrique Olvera. Una experiencia gastronómica única y sofisticada.",
-    "playlists": ["Dateo", "Godínez", "Barbón"],
+    "playlists": ["Fine Dining", "Alta Cocina", "Gourmet"],
     "source": "local",
     "place_id": "ChIJrTLr-GyuEmsRBfy61i59si0"
   }

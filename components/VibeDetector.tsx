@@ -10,7 +10,7 @@ interface VibeDetectorProps {
   vibe?: string
   city?: string
   modelUsed?: string
-  confidence?: string
+  confidence?: string | number
 }
 
 export function VibeDetector({ query, vibe, city, modelUsed, confidence }: VibeDetectorProps) {
@@ -69,17 +69,21 @@ export function VibeDetector({ query, vibe, city, modelUsed, confidence }: VibeD
     }
   }
 
-  const getConfidenceColor = (confidence: string) => {
-    switch (confidence) {
-      case "high":
-        return "text-green-600"
-      case "medium":
-        return "text-yellow-600"
-      case "low":
-        return "text-red-600"
-      default:
-        return "text-muted-foreground"
-    }
+  const getConfidenceColor = (confidence: string | number) => {
+    if (!confidence || isNaN(Number(confidence))) return "text-muted-foreground"
+
+    const numConfidence = typeof confidence === "string" ? Number.parseFloat(confidence) : confidence
+
+    if (numConfidence >= 80) return "text-green-600"
+    if (numConfidence >= 60) return "text-yellow-600"
+    return "text-red-600"
+  }
+
+  const getConfidenceText = (confidence: string | number) => {
+    if (!confidence || isNaN(Number(confidence))) return "Calculando..."
+
+    const numConfidence = typeof confidence === "string" ? Number.parseFloat(confidence) : confidence
+    return `${Math.round(numConfidence)}%`
   }
 
   if (!isVisible || !vibe || !city) return null
@@ -110,13 +114,7 @@ export function VibeDetector({ query, vibe, city, modelUsed, confidence }: VibeD
               {confidence && (
                 <>
                   <span>•</span>
-                  <span className={getConfidenceColor(confidence)}>
-                    {confidence === "high"
-                      ? "Alta confianza"
-                      : confidence === "medium"
-                        ? "Confianza media"
-                        : "Baja confianza"}
-                  </span>
+                  <span className={getConfidenceColor(confidence)}>{getConfidenceText(confidence)}</span>
                 </>
               )}
             </div>

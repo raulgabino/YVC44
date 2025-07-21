@@ -13,6 +13,7 @@ interface Place {
   rating?: number
   hours?: string
   source: string
+  price_range?: string
 }
 
 interface UserCoords {
@@ -40,6 +41,9 @@ const VIBE_TOKENS: Record<string, number> = {
   café: 0.65,
   turista: 0.55,
   shopping: 0.5,
+  gourmet: 0.8,
+  "fine dining": 0.85,
+  "alta cocina": 0.9,
 }
 
 function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -97,6 +101,24 @@ function isCurrentlyOpen(hours?: string): number {
   return 0
 }
 
+function getPriceRangeBonus(priceRange?: string, vibe?: string): number {
+  if (!priceRange || !vibe) return 0
+
+  const vibeKey = vibe.toLowerCase()
+
+  // High-end vibes get bonus for expensive places
+  if ((vibeKey.includes("barbón") || vibeKey.includes("dateo")) && priceRange.includes("$$$")) {
+    return 0.1
+  }
+
+  // Budget-conscious vibes get bonus for cheaper places
+  if ((vibeKey.includes("godinez") || vibeKey.includes("chambeador")) && priceRange.length <= 2) {
+    return 0.1
+  }
+
+  return 0
+}
+
 export function scorePlace(place: Place, userVibe: string, userCoords: UserCoords | null): number {
   const text = `${place.description_short} ${place.playlists.join(" ")}`
 
@@ -112,6 +134,7 @@ export function scorePlace(place: Place, userVibe: string, userCoords: UserCoord
   const ratingScore = getRatingScore(place.rating)
   const keywordScore = getKeywordMatch(text, userVibe)
   const openScore = isCurrentlyOpen(place.hours)
+  const priceBonus = getPriceRangeBonus(place.price_range, userVibe)
 
   const finalScore =
     tokenScore * WEIGHTS.tokenAffinity +
@@ -119,7 +142,8 @@ export function scorePlace(place: Place, userVibe: string, userCoords: UserCoord
     distanceScore * WEIGHTS.distanceKm +
     ratingScore * WEIGHTS.rating +
     keywordScore * WEIGHTS.keywordMatch +
-    openScore * WEIGHTS.isOpen
+    openScore * WEIGHTS.isOpen +
+    priceBonus
 
   return Math.round(finalScore * 100) / 100
 }

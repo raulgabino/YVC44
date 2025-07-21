@@ -16,6 +16,7 @@ interface Place {
   rating?: number
   hours?: string
   source: string
+  price_range?: string
 }
 
 interface ScoredPlace extends Place {
@@ -45,6 +46,7 @@ export async function POST(request: NextRequest) {
         rating: 4.5,
         hours: "20:00-02:00",
         source: "manual",
+        price_range: "$$",
       },
       {
         id: "2",
@@ -59,6 +61,7 @@ export async function POST(request: NextRequest) {
         rating: 4.2,
         hours: "07:00-22:00",
         source: "manual",
+        price_range: "$$",
       },
       {
         id: "3",
@@ -73,6 +76,22 @@ export async function POST(request: NextRequest) {
         rating: 4.0,
         hours: "22:00-04:00",
         source: "manual",
+        price_range: "$$$",
+      },
+      {
+        id: "4",
+        name: "Pujol",
+        category: "Fine Dining",
+        address: "Tennyson 133, Polanco, CDMX",
+        city: "CDMX",
+        description_short: "alta cocina mexicana contemporánea, experiencia gourmet única",
+        playlists: ["Fine Dining", "Alta Cocina", "Gourmet"],
+        lat: 19.4326,
+        lng: -99.1956,
+        rating: 4.8,
+        hours: "13:30-16:00, 19:00-22:00",
+        source: "manual",
+        price_range: "$$$$",
       },
     ]
 
