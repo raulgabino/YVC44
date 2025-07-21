@@ -11,26 +11,43 @@
     "lng": -99.1661,
     "rating": 4.4,
     "price_range": "$$",
-    "description_short": "Café bohemio en Roma Norte con ambiente tranquilo y excelente café de especialidad",
-    "playlists": ["Tranqui", "Intelectual"],
+    "description_short": "Un café acogedor en la Roma Norte con excelente café de especialidad y ambiente relajado para trabajar o socializar.",
+    "playlists": ["Chambeador", "Tranqui", "Dateo"],
     "source": "local",
-    "place_id": "cafe_nin_roma"
+    "place_id": "ChIJN1t_tDeUEmsRUsoyG83frY4"
   },
   {
     "id": 2,
     "name": "Pujol",
     "category": "Restaurante",
-    "address": "Tennyson 133, Polanco, 11570 Ciudad de México",
+    "address": "Tennyson 133, Polanco, 11560 Ciudad de México",
     "city": "CDMX",
     "phone": "+52 55 5545 4111",
     "hours": "L-S 13:30-22:00",
-    "lat": 19.4362,
-    "lng": -99.1887,
+    "lat": 19.4326,
+    "lng": -99.1932,
     "rating": 4.6,
     "price_range": "$$$",
-    "description_short": "Restaurante de alta cocina mexicana con estrella Michelin",
-    "playlists": ["Barbón", "Experimental"],
+    "description_short": "Restaurante de alta cocina mexicana contemporánea del chef Enrique Olvera, reconocido mundialmente.",
+    "playlists": ["Godínez", "Dateo", "Barbón"],
     "source": "local",
-    "place_id": "pujol_polanco"
+    "place_id": "ChIJrTLr-GyuEmsRngrqBwVW9iQ"
+  },
+  {
+    "id": 3,
+    "name": "Pulquería Insurgentes",
+    "category": "Bar y Cantina",
+    "address": "Av. Insurgentes Sur 226, Roma Nte., 06700 Ciudad de México",
+    "city": "CDMX",
+    "phone": "+52 55 5207 5084",
+    "hours": "L-D 12:00-02:00",
+    "lat": 19.4145,
+    "lng": -99.1628,
+    "rating": 4.2,
+    "price_range": "$",
+    "description_short": "Auténtica pulquería con ambiente tradicional mexicano y gran variedad de pulques curados.",
+    "playlists": ["Traca", "Tóxico", "Crudo"],
+    "source": "local",
+    "place_id": "ChIJdd4hrOSuEmsRaOn8HUBb4Qw"
   }
 ]

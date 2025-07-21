@@ -1,14 +1,22 @@
 [
   {
-    "id": 301,
+    "id": 1,
     "name": "Café Rama",
     "category": "Café",
-    "address": "Centro Histórico, San Miguel de Allende, Guanajuato",
+    "address": "Calle Insurgentes 19, Centro, 37700 San Miguel de Allende, Gto.",
     "city": "San Miguel de Allende",
-    "rating": 4.5,
-    "price_range": "$$",
-    "description_short": "Café artesanal en el centro histórico colonial",
-    "playlists": ["Artístico", "Tranqui"],
+    "description_short": "Café de especialidad en una casona colonial con patio interior y ambiente bohemio.",
+    "playlists": ["Tranqui", "Chambeador", "Barbón"],
+    "source": "local"
+  },
+  {
+    "id": 2,
+    "name": "Aperi",
+    "category": "Restaurante",
+    "address": "Sollano 11, Centro, 37700 San Miguel de Allende, Gto.",
+    "city": "San Miguel de Allende",
+    "description_short": "Restaurante de cocina contemporánea mexicana en un ambiente elegante y romántico.",
+    "playlists": ["Dateo", "Godínez", "Barbón"],
     "source": "local"
   }
 ]

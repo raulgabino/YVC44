@@ -300,7 +300,7 @@ export default function HomePage() {
               <CardContent className="pt-6">
                 <p className="text-red-700 text-center">{error}</p>
                 <p className="text-red-600 text-sm text-center mt-2">
-                  Ciudades disponibles: CDMX, Monterrey, Guadalajara, San Miguel de Allende, Ciudad Victoria
+                  Ciudades disponibles: CDMX, Monterrey, Guadalajara, San Miguel de Allende, Ciudad Victoria, Tijuana
                 </p>
               </CardContent>
             </Card>

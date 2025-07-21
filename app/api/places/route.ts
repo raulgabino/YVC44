@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: "Ciudad no soportada",
-        message: `Aún no tenemos datos para ${city}. Ciudades disponibles: CDMX, Monterrey, Guadalajara, San Miguel de Allende, Ciudad Victoria`,
+        message: `Aún no tenemos datos para ${city}. Ciudades disponibles: CDMX, Monterrey, Guadalajara, San Miguel de Allende, Ciudad Victoria, Tijuana`,
         code: "CITY_NOT_SUPPORTED",
       },
       { status: 404 },

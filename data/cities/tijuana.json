@@ -1,0 +1,552 @@
+[
+  {
+    "id": 1,
+    "name": "Mochomos",
+    "category": "Restaurante",
+    "address": "Blvd. Agua Caliente 10387, Calete, 22044 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Cocina sonorense de primer nivel en un ambiente sofisticado y moderno. Ideal para cerrar negocios o una cena elegante.",
+    "playlists": ["Godínez", "Dateo", "Barbón"],
+    "source": "local"
+  },
+  {
+    "id": 2,
+    "name": "Oryx Capital",
+    "category": "Restaurante",
+    "address": "Blvd. Agua Caliente 10750, Aviacion, 22014 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Cocina de autor con un enfoque en los ingredientes de Baja California. Un espacio contemporáneo y audaz.",
+    "playlists": ["Dateo", "Barbón", "Godínez"],
+    "source": "local"
+  },
+  {
+    "id": 3,
+    "name": "Georgina",
+    "category": "Restaurante",
+    "address": "Av. Revolución 1342, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Elegancia y sabor en un ambiente chic de inspiración francesa. Perfecto para una ocasión especial o un brunch con estilo.",
+    "playlists": ["Dateo", "Godínez", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 4,
+    "name": "La Justina",
+    "category": "Restaurante",
+    "address": "Av. Revolución 928, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Gastropub con una vibra industrial y artística. Cocina rústica y coctelería creativa en el corazón de la Revo.",
+    "playlists": ["Traca", "Barbón", "Dateo"],
+    "source": "local"
+  },
+  {
+    "id": 5,
+    "name": "Caesar's",
+    "category": "Restaurante",
+    "address": "Av. Revolución 1059, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "El legendario restaurante donde se inventó la ensalada Caesar. Un viaje en el tiempo con un ambiente clásico y familiar.",
+    "playlists": ["Dominguero", "Godínez", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 6,
+    "name": "Telefónica Gastro Park",
+    "category": "Restaurante",
+    "address": "Blvd. Agua Caliente 8924, Madero, 22040 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "El punto de encuentro de los food trucks más innovadores de la ciudad. Ambiente relajado, cerveza artesanal y mucha variedad.",
+    "playlists": ["Traca", "Dominguero", "Chambeador", "Crudo"],
+    "source": "local"
+  },
+  {
+    "id": 7,
+    "name": "Tacos El Franc",
+    "category": "Restaurante",
+    "address": "Blvd. Gral. Rodolfo Sánchez Taboada 9257, Zonaeste, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Considerados por muchos los mejores tacos de Tijuana. Parada obligatoria para locales y turistas a cualquier hora.",
+    "playlists": ["Traca", "Chambeador", "Crudo", "Bellaqueo"],
+    "source": "local"
+  },
+  {
+    "id": 8,
+    "name": "Mantequilla",
+    "category": "Restaurante",
+    "address": "Blvd. Salinas 4553, Aviacion, 22014 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "El spot perfecto para el brunch o un desayuno delicioso y fotogénico. Ambiente luminoso, relajado y siempre concurrido.",
+    "playlists": ["Tranqui", "Dateo", "Dominguero"],
+    "source": "local"
+  },
+  {
+    "id": 9,
+    "name": "Villa Saverios",
+    "category": "Restaurante",
+    "address": "Blvd. Gral. Rodolfo Sánchez Taboada 10151, Zonaeste, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un clásico de la alta cocina en Tijuana con especialidad en comida mediterránea. Ideal para celebraciones familiares importantes.",
+    "playlists": ["Godínez", "Dominguero", "Dateo"],
+    "source": "local"
+  },
+  {
+    "id": 10,
+    "name": "La Querencia",
+    "category": "Restaurante",
+    "address": "Blvd. Agua Caliente 22440, Lomas de Agua Caliente, 22024 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Cocina Baja Med en su máxima expresión. Un lugar rústico y acogedor para disfrutar los sabores de la región.",
+    "playlists": ["Barbón", "Dateo", "Godínez"],
+    "source": "local"
+  },
+  {
+    "id": 11,
+    "name": "Animalón",
+    "category": "Restaurante",
+    "address": "Dentro de un roble de 200 años en el Valle de Guadalupe (de temporada).",
+    "city": "Tijuana",
+    "description_short": "Una experiencia culinaria única bajo un encino centenario. Cocina de autor en un entorno mágico y exclusivo (aunque es del Valle, su influencia en Tijuana es innegable).",
+    "playlists": ["Dateo", "Barbón", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 12,
+    "name": "52 Kool",
+    "category": "Restaurante",
+    "address": "P.º de los Héroes 9551, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Cocina fusión con un toque asiático en un ambiente moderno y vibrante. Perfecto para empezar la noche.",
+    "playlists": ["Traca", "Dateo", "Bellaqueo"],
+    "source": "local"
+  },
+  {
+    "id": 13,
+    "name": "El Taller Baja Med",
+    "category": "Restaurante",
+    "address": "Blvd. Agua Caliente 9311, Madero, 22040 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Cocina Baja Med informal y creativa en un espacio relajado con patio. Ideal para una comida casual con amigos.",
+    "playlists": ["Tranqui", "Barbón", "Dominguero"],
+    "source": "local"
+  },
+  {
+    "id": 14,
+    "name": "Verde y Crema",
+    "category": "Restaurante",
+    "address": "Calle Orizaba 3034, Neidhart, 22020 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Cocina rústica de autor en un local con diseño de almacén y ambiente relajado. Mucho sabor y buena vibra.",
+    "playlists": ["Barbón", "Tranqui", "Dateo"],
+    "source": "local"
+  },
+  {
+    "id": 15,
+    "name": "Emma Baja French",
+    "category": "Restaurante",
+    "address": "Blvd. Agua Caliente 10480, Calete, 22044 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "La elegancia de la cocina francesa se encuentra con los ingredientes frescos de la Baja. Un lugar íntimo y sofisticado.",
+    "playlists": ["Dateo", "Godínez", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 16,
+    "name": "Das Cortez",
+    "category": "Café",
+    "address": "Av. Brasil 8930-B, Cacho, 22150 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un clásico del café de especialidad en Tijuana. Perfecto para trabajar, leer o tener una buena plática.",
+    "playlists": ["Chambeador", "Tranqui", "Godínez"],
+    "source": "local"
+  },
+  {
+    "id": 17,
+    "name": "Electric Coffee Roasters",
+    "category": "Café",
+    "address": "Blvd. Agua Caliente 9955, Gabilondo, 22044 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Café de especialidad tostado localmente. Ambiente minimalista y moderno para los verdaderos amantes del café.",
+    "playlists": ["Chambeador", "Tranqui", "Barbón"],
+    "source": "local"
+  },
+  {
+    "id": 18,
+    "name": "Cereus",
+    "category": "Café",
+    "address": "C. Salvador Novo 1050, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un oasis en la ciudad con un diseño interior espectacular. Ideal para la foto de Instagram y disfrutar de un buen café.",
+    "playlists": ["Tranqui", "Dateo", "Godínez"],
+    "source": "local"
+  },
+  {
+    "id": 19,
+    "name": "Sospeso",
+    "category": "Café",
+    "address": "Av. Misión de Loreto 2980, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Barra de café de especialidad con métodos de extracción a la vista. Un lugar para aprender y disfrutar del ritual del café.",
+    "playlists": ["Chambeador", "Barbón", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 20,
+    "name": "Jacu",
+    "category": "Café",
+    "address": "Av. Colima 2302, Madero, 22040 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Café de barrio con una atmósfera súper acogedora y amigable. Se siente como estar en casa de un amigo.",
+    "playlists": ["Tranqui", "Dominguero", "Chambeador"],
+    "source": "local"
+  },
+  {
+    "id": 21,
+    "name": "Oso Coffee",
+    "category": "Café",
+    "address": "Blvd. Cuauhtémoc Nte. 1202, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un pequeño local con gran café y una propuesta enfocada en la calidad. Perfecto para un café rápido y bien hecho.",
+    "playlists": ["Chambeador", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 22,
+    "name": "Estación 55",
+    "category": "Café",
+    "address": "P.º de los Héroes 10001, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Café y panadería artesanal en un espacio amplio y cómodo. Ideal para reuniones de trabajo o un desayuno largo.",
+    "playlists": ["Godínez", "Chambeador", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 23,
+    "name": "Breve",
+    "category": "Café",
+    "address": "Blvd. Agua Caliente 4558, local 22, Plaza Aviadores, Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Barra de café y desayunos con un toque diferente. Un espacio pequeño pero con mucho estilo y sabor.",
+    "playlists": ["Tranqui", "Dateo", "Godínez"],
+    "source": "local"
+  },
+  {
+    "id": 24,
+    "name": "Container Coffee Roasters",
+    "category": "Café",
+    "address": "Av. de la Amistad 8810, Empleados Federales, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Micro-tostador de café en un contenedor marítimo. Vibra industrial y un producto de alta calidad.",
+    "playlists": ["Chambeador", "Barbón", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 25,
+    "name": "Lili's OUI",
+    "category": "Café",
+    "address": "Calle Brasil 8820, Cacho, 22150 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Repostería francesa y café en un rincón romántico y muy femenino. Perfecto para ponerse al día con amigas.",
+    "playlists": ["Tranqui", "Dateo", "Dominguero"],
+    "source": "local"
+  },
+  {
+    "id": 26,
+    "name": "Norte Brewing Co.",
+    "category": "Bar y Cantina",
+    "address": "Calle 4ta y o Av. Revolución 821, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Rooftop con vistas al centro de la ciudad, cerveza artesanal y ambiente festivo. Ideal para empezar el fin de semana.",
+    "playlists": ["Traca", "Barbón", "Bellaqueo"],
+    "source": "local"
+  },
+  {
+    "id": 27,
+    "name": "Dandy del Sur",
+    "category": "Bar y Cantina",
+    "address": "Av. Revolución 1928, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Una cantina icónica y sin pretensiones. Tragos baratos, rockola y una atmósfera que ha visto de todo.",
+    "playlists": ["Tóxico", "Traca", "Crudo", "Barbón"],
+    "source": "local"
+  },
+  {
+    "id": 28,
+    "name": "El Tinieblo",
+    "category": "Bar y Cantina",
+    "address": "Calle 7ma 2232, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Speakeasy con una entrada discreta y un interior oscuro y misterioso. Coctelería de autor para conocedores.",
+    "playlists": ["Tóxico", "Dateo", "Barbón"],
+    "source": "local"
+  },
+  {
+    "id": 29,
+    "name": "La Mezcalera",
+    "category": "Bar y Cantina",
+    "address": "Calle 6ta, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "El templo del mezcal en Tijuana. Ambiente oscuro, música ecléctica y una selección de destilados impresionante.",
+    "playlists": ["Tóxico", "Traca", "Barbón"],
+    "source": "local"
+  },
+  {
+    "id": 30,
+    "name": "Oryx-Nórtico",
+    "category": "Bar y Cantina",
+    "address": "Blvd. Agua Caliente 10750, Aviacion, 22014 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "El bar adjunto a Oryx Capital, un speakeasy elegante y sofisticado con cocteles de alta gama. Exclusivo y refinado.",
+    "playlists": ["Dateo", "Godínez", "Barbón"],
+    "source": "local"
+  },
+  {
+    "id": 31,
+    "name": "Insurgente Tap Room",
+    "category": "Bar y Cantina",
+    "address": "Paseo de los Héroes 9902, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "La casa de una de las cervecerías artesanales más importantes de México. Gran variedad de cheves y ambiente relajado.",
+    "playlists": ["Barbón", "Traca", "Dominguero"],
+    "source": "local"
+  },
+  {
+    "id": 32,
+    "name": "Public House TJ",
+    "category": "Bar y Cantina",
+    "address": "Calle Miguel Alemán Valdés 2802, Gabilondo, 22410 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un gastropub con excelente comida y una selección rotativa de cervezas artesanales. Vibra casual y amigable.",
+    "playlists": ["Barbón", "Tranqui", "Godínez"],
+    "source": "local"
+  },
+  {
+    "id": 33,
+    "name": "El Sótano Suizo",
+    "category": "Bar y Cantina",
+    "address": "Paseo de los Héroes 10001, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un clásico de la ciudad para comer fondue y tomar cerveza de tarro. Ambiente familiar y de amigos de toda la vida.",
+    "playlists": ["Godínez", "Dominguero", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 34,
+    "name": "Bar Bachata",
+    "category": "Bar y Cantina",
+    "address": "Av. Revolución 875, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Bar con música tropical y latina para bailar toda la noche. Ambiente caliente y sin complicaciones.",
+    "playlists": ["Bellaqueo", "Traca", "Tóxico"],
+    "source": "local"
+  },
+  {
+    "id": 35,
+    "name": "Plaza Fiesta (La Plaza)",
+    "category": "Bar y Cantina",
+    "address": "Paseo de los Héroes 9415, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un complejo de decenas de pequeños bares de cerveza artesanal. El epicentro del movimiento cervecero en Tijuana.",
+    "playlists": ["Traca", "Barbón", "Crudo", "Bellaqueo"],
+    "source": "local"
+  },
+  {
+    "id": 36,
+    "name": "OBJETO",
+    "category": "Boutique",
+    "address": "Av. Revolución 1368, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Concept store que reúne lo mejor del diseño mexicano en moda, accesorios y objetos. Curaduría impecable.",
+    "playlists": ["Tranqui", "Godínez", "Barbón"],
+    "source": "local"
+  },
+  {
+    "id": 37,
+    "name": "La Caja Fuerte",
+    "category": "Boutique",
+    "address": "C. Segunda Benito Juárez 8260, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Tienda de ropa de segunda mano y vintage con hallazgos únicos. Un paraíso para los que buscan piezas con historia.",
+    "playlists": ["Tranqui", "Chambeador"],
+    "source": "local"
+  },
+  {
+    "id": 38,
+    "name": "Slowly",
+    "category": "Boutique",
+    "address": "Av. Guanajuato 2296, Cacho, 22040 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Boutique con una selección cuidada de marcas sostenibles y de slow fashion. Diseño consciente y atemporal.",
+    "playlists": ["Tranqui", "Godínez"],
+    "source": "local"
+  },
+  {
+    "id": 39,
+    "name": "Tijuana Wax",
+    "category": "Boutique",
+    "address": "Calle 6ta. 1925, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Tienda de vinilos y ropa con una onda muy cool y urbana. Para melómanos y amantes del streetwear.",
+    "playlists": ["Barbón", "Traca"],
+    "source": "local"
+  },
+  {
+    "id": 40,
+    "name": "Two Lions",
+    "category": "Boutique",
+    "address": "Blvd. Salinas 10650, Aviacion, 22014 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Moda para hombre con un estilo contemporáneo y atrevido. Marcas de nicho y una estética muy cuidada.",
+    "playlists": ["Barbón", "Godínez", "Traca"],
+    "source": "local"
+  },
+  {
+    "id": 41,
+    "name": "Glow Beauty Bar",
+    "category": "Salón de Belleza",
+    "address": "Blvd. Agua Caliente 10470-Interior 1, Calete, 22044 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Especialistas en cejas, pestañas y maquillaje. Un espacio moderno y femenino para un retoque rápido y perfecto.",
+    "playlists": ["Tranqui", "Dateo"],
+    "source": "local"
+  },
+  {
+    "id": 42,
+    "name": "The Beauty Room by Fer",
+    "category": "Salón de Belleza",
+    "address": "Av. Sonora 3003, Chapultepec, 22020 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Salón de belleza completo con un ambiente muy chic y relajado. Famoso por sus balayages y tratamientos capilares.",
+    "playlists": ["Tranqui", "Godínez"],
+    "source": "local"
+  },
+  {
+    "id": 43,
+    "name": "Meschini Hair & Beauty",
+    "category": "Salón de Belleza",
+    "address": "Blvd. Cuauhtémoc Sur 3310, Madero, 22040 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un salón de alta gama con servicios de lujo para el cabello y la piel. Para consentirte y sentirte como una estrella.",
+    "playlists": ["Godínez", "Dateo"],
+    "source": "local"
+  },
+  {
+    "id": 44,
+    "name": "Capital de la Belleza",
+    "category": "Salón de Belleza",
+    "address": "Paseo de los Héroes 10001, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un concepto de 'supermercado' de la belleza con un salón integrado. Todo lo que necesitas en un solo lugar.",
+    "playlists": ["Chambeador", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 45,
+    "name": "Nude Beauty Bar",
+    "category": "Salón de Belleza",
+    "address": "Blvd. Salinas 4700, Aviacion, 22014 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Especialistas en diseño de uñas, nail art y manicuras. Un espacio minimalista y muy popular entre las jóvenes.",
+    "playlists": ["Tranqui", "Bellaqueo"],
+    "source": "local"
+  },
+  {
+    "id": 46,
+    "name": "Centro Cultural Tijuana (CECUT)",
+    "category": "Espacio Cultural",
+    "address": "Paseo de los Héroes 9350, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "El ícono arquitectónico y corazón cultural de Tijuana. Alberga el museo de las Californias, cine IMAX y exposiciones.",
+    "playlists": ["Dominguero", "Tranqui", "Chambeador"],
+    "source": "local"
+  },
+  {
+    "id": 47,
+    "name": "La Caja Galería",
+    "category": "Espacio Cultural",
+    "address": "Callejón de las Moras 111-A, 22044, Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Una galería de arte contemporáneo enfocada en artistas emergentes y establecidos de la región. Un espacio íntimo y provocador.",
+    "playlists": ["Barbón", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 48,
+    "name": "Pasaje Rodríguez",
+    "category": "Espacio Cultural",
+    "address": "Av. Revolución entre calle 3ra y 4ta, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un corredor peatonal lleno de galerías pequeñas, estudios de artistas, cafés y tiendas de diseño. El lado alternativo de la Revo.",
+    "playlists": ["Tranqui", "Barbón", "Chambeador"],
+    "source": "local"
+  },
+  {
+    "id": 49,
+    "name": "El Cubo",
+    "category": "Espacio Cultural",
+    "address": "Paseo de los Héroes 9350, Zona Urbana Rio Tijuana, 22010 Tijuana, B.C. (Dentro del CECUT)",
+    "city": "Tijuana",
+    "description_short": "El espacio de exhibición internacional del CECUT. Tres pisos de arte moderno y contemporáneo de todo el mundo.",
+    "playlists": ["Tranqui", "Godínez", "Dominguero"],
+    "source": "local"
+  },
+  {
+    "id": 50,
+    "name": "Relaciones Inesperadas",
+    "category": "Espacio Cultural",
+    "address": "Blvd. Agua Caliente 10535, Calete, 22044 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Galería y espacio de proyectos que fomenta el diálogo y la experimentación en el arte contemporáneo.",
+    "playlists": ["Barbón", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 51,
+    "name": "El Grafógrafo",
+    "category": "Librería con Encanto",
+    "address": "Av. Sonora 3088-2, Chapultepec, 22020 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Librería de viejo con una cuidada selección de títulos y un café acogedor. Un refugio para los amantes de los libros.",
+    "playlists": ["Tranqui", "Chambeador", "Barbón"],
+    "source": "local"
+  },
+  {
+    "id": 52,
+    "name": "La Terca",
+    "category": "Librería con Encanto",
+    "address": "Av. Tapachula 30, Hipódromo, 22020 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Librería independiente con una fuerte curaduría en literatura y ensayo. Un espacio que invita a la conversación y al descubrimiento.",
+    "playlists": ["Tranqui", "Barbón"],
+    "source": "local"
+  },
+  {
+    "id": 53,
+    "name": "Librería El Día",
+    "category": "Librería con Encanto",
+    "address": "Av. Revolución 1141, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Una de las librerías con más tradición en la ciudad. Gran variedad de títulos comerciales y académicos.",
+    "playlists": ["Chambeador", "Dominguero", "Tranqui"],
+    "source": "local"
+  },
+  {
+    "id": 54,
+    "name": "Cafe de la Especialidad y Libros",
+    "category": "Librería con Encanto",
+    "address": "Calle 7ma 8182, Zona Centro, 22000 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un concepto híbrido que combina el amor por el buen café y la literatura. Ideal para pasar una tarde tranquila.",
+    "playlists": ["Tranqui", "Chambeador", "Dateo"],
+    "source": "local"
+  },
+  {
+    "id": 55,
+    "name": "Libros, Cafe y Jazz",
+    "category": "Librería con Encanto",
+    "address": "Av. Alba Roja 11880, La Mesa, 22105 Tijuana, B.C.",
+    "city": "Tijuana",
+    "description_short": "Un espacio bohemio que combina la venta de libros con eventos culturales y noches de jazz en vivo.",
+    "playlists": ["Tranqui", "Barbón", "Dateo"],
+    "source": "local"
+  }
+]

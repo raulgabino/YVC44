@@ -1,6 +1,13 @@
 import type { Place } from "@/types/place"
 
-const SUPPORTED_CITIES = ["cdmx", "ciudad-victoria", "monterrey", "san-miguel-de-allende", "guadalajara"] as const
+const SUPPORTED_CITIES = [
+  "cdmx",
+  "ciudad-victoria",
+  "monterrey",
+  "san-miguel-de-allende",
+  "guadalajara",
+  "tijuana",
+] as const
 
 type SupportedCity = (typeof SUPPORTED_CITIES)[number]
 
@@ -53,6 +60,8 @@ function normalizeCityName(cityName: string): SupportedCity | null {
     "san miguel": "san-miguel-de-allende",
     guadalajara: "guadalajara",
     gdl: "guadalajara",
+    tijuana: "tijuana",
+    tj: "tijuana",
   }
 
   return cityMappings[normalized] || null

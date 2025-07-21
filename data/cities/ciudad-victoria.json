@@ -1,14 +1,22 @@
 [
   {
-    "id": 101,
-    "name": "Café Víctor",
+    "id": 1,
+    "name": "Café Central",
     "category": "Café",
-    "address": "Centro de Ciudad Victoria, Tamaulipas",
+    "address": "Calle Hidalgo 950, Centro, 87000 Ciudad Victoria, Tamps.",
     "city": "Ciudad Victoria",
-    "rating": 4.2,
-    "price_range": "$$",
-    "description_short": "Café tradicional en el corazón de Ciudad Victoria",
-    "playlists": ["Tranqui", "Local"],
+    "description_short": "Café tradicional en el centro histórico con ambiente familiar y excelente café mexicano.",
+    "playlists": ["Tranqui", "Chambeador", "Dominguero"],
+    "source": "local"
+  },
+  {
+    "id": 2,
+    "name": "La Hacienda",
+    "category": "Restaurante",
+    "address": "Blvd. Praxedis Balboa 2355, 87039 Ciudad Victoria, Tamps.",
+    "city": "Ciudad Victoria",
+    "description_short": "Restaurante de comida regional tamaulipeca con especialidad en cabrito y carnes asadas.",
+    "playlists": ["Godínez", "Dominguero", "Barbón"],
     "source": "local"
   }
 ]
