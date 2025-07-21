@@ -149,7 +149,12 @@ export default function Home() {
                   <p className="text-xl font-semibold">
                     {vibeData.vibe} en {vibeData.city}
                   </p>
-                  <p className="text-sm opacity-75">Confianza: {Math.round(vibeData.confidence * 100)}%</p>
+                  <p className="text-sm opacity-75">
+                    Confianza:{" "}
+                    {vibeData.confidence && !isNaN(vibeData.confidence)
+                      ? `${Math.round(vibeData.confidence * 100)}%`
+                      : "Calculando..."}
+                  </p>
                 </div>
               </CardContent>
             </Card>

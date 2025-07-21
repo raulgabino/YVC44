@@ -24,12 +24,13 @@ export async function POST(request: NextRequest) {
             Analiza la consulta del usuario y extrae:
             1. VIBE: El estado de ánimo/vibra (Tranqui, Barbón, Bohemio, etc.)
             2. CIUDAD: La ciudad específica mencionada
+            3. CONFIDENCE: Nivel de confianza en el análisis (0.0 a 1.0)
             
             IMPORTANTE: Si NO se menciona una ciudad específica, devuelve "unknown" para ciudad.
             NO asumas ni agregues ciudades por defecto.
             
             Responde SOLO en formato JSON:
-            {"vibe": "vibe_detectado", "city": "ciudad_detectada_o_unknown"}`,
+            {"vibe": "vibe_detectado", "city": "ciudad_detectada_o_unknown", "confidence": 0.85}`,
           },
           {
             role: "user",
@@ -43,7 +44,11 @@ export async function POST(request: NextRequest) {
       const aiResult = completion.choices[0]?.message?.content
       if (aiResult) {
         const parsed = JSON.parse(aiResult)
-        return NextResponse.json(parsed)
+        return NextResponse.json({
+          vibe: parsed.vibe,
+          city: parsed.city,
+          confidence: parsed.confidence || 0.85,
+        })
       }
     } catch (aiError) {
       console.warn("o3-mini failed, trying gpt-4o-mini:", aiError)
@@ -55,9 +60,9 @@ export async function POST(request: NextRequest) {
           messages: [
             {
               role: "system",
-              content: `Analiza la consulta y extrae vibe y ciudad.
+              content: `Analiza la consulta y extrae vibe, ciudad y confianza.
               Si NO se menciona ciudad, devuelve "unknown" para ciudad.
-              Formato JSON: {"vibe": "vibe", "city": "ciudad_o_unknown"}`,
+              Formato JSON: {"vibe": "vibe", "city": "ciudad_o_unknown", "confidence": 0.8}`,
             },
             {
               role: "user",
@@ -71,7 +76,11 @@ export async function POST(request: NextRequest) {
         const aiResult = completion.choices[0]?.message?.content
         if (aiResult) {
           const parsed = JSON.parse(aiResult)
-          return NextResponse.json(parsed)
+          return NextResponse.json({
+            vibe: parsed.vibe,
+            city: parsed.city,
+            confidence: parsed.confidence || 0.8,
+          })
         }
       } catch (gptError) {
         console.warn("GPT-4o-mini failed, using manual analysis:", gptError)
@@ -80,7 +89,11 @@ export async function POST(request: NextRequest) {
 
     // Manual fallback analysis (NO CDMX default)
     const manualResult = analyzeQueryManually(query)
-    return NextResponse.json(manualResult)
+    return NextResponse.json({
+      vibe: manualResult.vibe,
+      city: manualResult.city,
+      confidence: 0.75, // Manual analysis gets lower confidence
+    })
   } catch (error) {
     console.error("Error in vibe analysis:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
