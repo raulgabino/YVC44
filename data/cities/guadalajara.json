@@ -5,8 +5,8 @@
     "category": "Café",
     "address": "Av. Juárez 170, Zona Centro, 44100 Guadalajara, Jal.",
     "city": "Guadalajara",
-    "description_short": "Café histórico en el centro de Guadalajara con ambiente tradicional tapatío y excelente café.",
-    "playlists": ["Tranqui", "Dominguero", "Chambeador"],
+    "description_short": "Café tradicional tapatío con más de 50 años de historia y ambiente nostálgico.",
+    "playlists": ["Dominguero", "Tranqui"],
     "source": "local"
   },
   {

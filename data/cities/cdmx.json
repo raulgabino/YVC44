@@ -11,10 +11,10 @@
     "lng": -99.1661,
     "rating": 4.4,
     "price_range": "$$",
-    "description_short": "Un café acogedor en la Roma Norte con excelente café de especialidad y ambiente relajado para trabajar o socializar.",
-    "playlists": ["Chambeador", "Tranqui", "Dateo"],
+    "description_short": "Café de especialidad en Roma Norte con ambiente relajado y perfecto para trabajar. Excelente para reuniones casuales o sesiones de trabajo.",
+    "playlists": ["Chambeador", "Tranqui", "Godínez"],
     "source": "local",
-    "place_id": "ChIJN1t_tDeUEmsRUsoyG83frY4"
+    "place_id": "ChIJN1t_tDeEEmsRUsoyG83frY4"
   },
   {
     "id": 2,
@@ -23,31 +23,14 @@
     "address": "Tennyson 133, Polanco, 11560 Ciudad de México",
     "city": "CDMX",
     "phone": "+52 55 5545 4111",
-    "hours": "L-S 13:30-22:00",
+    "hours": "L-S 13:30-16:00, 19:00-22:00",
     "lat": 19.4326,
-    "lng": -99.1932,
-    "rating": 4.6,
+    "lng": -99.1332,
+    "rating": 4.8,
     "price_range": "$$$",
-    "description_short": "Restaurante de alta cocina mexicana contemporánea del chef Enrique Olvera, reconocido mundialmente.",
-    "playlists": ["Godínez", "Dateo", "Barbón"],
+    "description_short": "Restaurante de alta cocina mexicana contemporánea del chef Enrique Olvera. Una experiencia gastronómica única y sofisticada.",
+    "playlists": ["Dateo", "Godínez", "Barbón"],
     "source": "local",
-    "place_id": "ChIJrTLr-GyuEmsRngrqBwVW9iQ"
-  },
-  {
-    "id": 3,
-    "name": "Pulquería Insurgentes",
-    "category": "Bar y Cantina",
-    "address": "Av. Insurgentes Sur 226, Roma Nte., 06700 Ciudad de México",
-    "city": "CDMX",
-    "phone": "+52 55 5207 5084",
-    "hours": "L-D 12:00-02:00",
-    "lat": 19.4145,
-    "lng": -99.1628,
-    "rating": 4.2,
-    "price_range": "$",
-    "description_short": "Auténtica pulquería con ambiente tradicional mexicano y gran variedad de pulques curados.",
-    "playlists": ["Traca", "Tóxico", "Crudo"],
-    "source": "local",
-    "place_id": "ChIJdd4hrOSuEmsRaOn8HUBb4Qw"
+    "place_id": "ChIJrTLr-GyuEmsRBfy61i59si0"
   }
 ]

@@ -3,20 +3,10 @@
     "id": 1,
     "name": "Café Iguana",
     "category": "Café",
-    "address": "Av. Constitución 300 Ote., Centro, 64000 Monterrey, N.L.",
+    "address": "Morelos 927 Ote, Centro, 64000 Monterrey, N.L.",
     "city": "Monterrey",
-    "description_short": "Café bohemio en el Barrio Antiguo con ambiente artístico y cultural, perfecto para trabajar o relajarse.",
-    "playlists": ["Chambeador", "Tranqui", "Barbón"],
-    "source": "local"
-  },
-  {
-    "id": 2,
-    "name": "Pangea",
-    "category": "Restaurante",
-    "address": "Av. Ricardo Margáin Zozaya 565, Santa Engracia, 66267 San Pedro Garza García, N.L.",
-    "city": "Monterrey",
-    "description_short": "Restaurante de alta cocina con vista panorámica de la ciudad, ideal para ocasiones especiales.",
-    "playlists": ["Godínez", "Dateo", "Barbón"],
+    "description_short": "Café bohemio en el Barrio Antiguo con música en vivo y ambiente artístico.",
+    "playlists": ["Barbón", "Tranqui"],
     "source": "local"
   }
 ]

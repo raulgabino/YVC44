@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
         error: "Ciudad requerida",
         message: "Por favor especifica una ciudad para buscar lugares",
         code: "CITY_REQUIRED",
+        availableCities: "CDMX, Monterrey, Guadalajara, San Miguel de Allende, Ciudad Victoria, Tijuana",
       },
       { status: 400 },
     )
@@ -21,53 +22,59 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: "Ciudad no soportada",
-        message: `Aún no tenemos datos para ${city}. Ciudades disponibles: CDMX, Monterrey, Guadalajara, San Miguel de Allende, Ciudad Victoria, Tijuana`,
+        message: `La ciudad "${city}" no está disponible actualmente`,
         code: "CITY_NOT_SUPPORTED",
+        availableCities: "CDMX, Monterrey, Guadalajara, San Miguel de Allende, Ciudad Victoria, Tijuana",
       },
-      { status: 404 },
+      { status: 400 },
     )
   }
 
   try {
-    const cityPlaces = await loadCityData(city)
+    const places = await loadCityData(city)
 
-    if (!cityPlaces || cityPlaces.length === 0) {
+    if (!places || places.length === 0) {
       return NextResponse.json(
         {
           error: "Sin datos",
           message: `No se encontraron lugares para ${city}`,
-          code: "NO_DATA",
+          code: "NO_PLACES_FOUND",
         },
         { status: 404 },
       )
     }
 
-    let filteredPlaces = cityPlaces
-
     // Filter by vibe if provided
-    if (vibe && vibe !== "undefined") {
-      filteredPlaces = cityPlaces.filter((place) =>
-        place.playlists.some((playlist) => playlist.toLowerCase().includes(vibe.toLowerCase())),
+    let filteredPlaces = places
+    if (vibe && vibe !== "unknown") {
+      // Simple filtering by playlist match for now
+      // TODO: Implement more sophisticated vibe matching
+      filteredPlaces = places.filter((place) =>
+        place.playlists.some(
+          (playlist: string) =>
+            playlist.toLowerCase().includes(vibe.toLowerCase()) || vibe.toLowerCase().includes(playlist.toLowerCase()),
+        ),
       )
 
-      // If no exact matches, return all places from the city
+      // If no vibe matches, return all places
       if (filteredPlaces.length === 0) {
-        filteredPlaces = cityPlaces
+        filteredPlaces = places
       }
     }
 
     return NextResponse.json({
+      city,
+      vibe: vibe || "all",
       places: filteredPlaces,
       total: filteredPlaces.length,
-      city: city,
-      vibe: vibe || "all",
+      source: "city_data",
     })
   } catch (error) {
     console.error("Error loading city data:", error)
     return NextResponse.json(
       {
         error: "Error interno",
-        message: "Error al cargar datos de la ciudad",
+        message: "Error al cargar los datos de la ciudad",
         code: "INTERNAL_ERROR",
       },
       { status: 500 },
