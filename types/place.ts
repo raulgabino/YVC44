@@ -1,24 +1,18 @@
-export type Place = {
-  id: number
+export interface Place {
+  id: string
   name: string
-  category:
-    | "Restaurante"
-    | "Café"
-    | "Bar y Cantina"
-    | "Boutique"
-    | "Espacio Cultural"
-    | "Salón de Belleza"
-    | "Librería con Encanto"
+  category: string
   address: string
   city: string
-  phone?: string
-  hours?: string
+  description_short: string
+  playlists: string[]
   lat?: number
   lng?: number
   rating?: number
-  price_range?: "$" | "$$" | "$$$"
-  description_short: string
-  playlists: string[]
-  source: "local" | "web" | "gpt"
+  hours?: string
+  phone?: string
+  price_range?: string
   place_id?: string
+  photoRef?: string
+  source: string
 }
