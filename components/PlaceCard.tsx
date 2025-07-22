@@ -7,10 +7,10 @@ interface PlaceCardProps {
 
 export function PlaceCard({ place }: PlaceCardProps) {
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
       {/* Image placeholder */}
       <div className="h-48 bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-        <div className="text-6xl opacity-50">
+        <div className="text-4xl">
           {place.category === "Café" && "☕"}
           {place.category === "Restaurante" && "🍽️"}
           {place.category === "Bar y Cantina" && "🍸"}
@@ -19,23 +19,13 @@ export function PlaceCard({ place }: PlaceCardProps) {
           {place.category === "Salón de Belleza" && "✂️"}
           {place.category === "Espacio Cultural" && "🎨"}
           {place.category === "Librería con Encanto" && "📚"}
-          {![
-            "Café",
-            "Restaurante",
-            "Bar y Cantina",
-            "Antro",
-            "Boutique",
-            "Salón de Belleza",
-            "Espacio Cultural",
-            "Librería con Encanto",
-          ].includes(place.category) && "📍"}
         </div>
       </div>
 
       <div className="p-4">
         {/* Header */}
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-bold text-lg text-gray-800 line-clamp-1">{place.name}</h3>
+          <h3 className="font-semibold text-lg text-gray-800 line-clamp-1">{place.name}</h3>
           {place.rating && (
             <div className="flex items-center gap-1 text-yellow-500">
               <Star className="h-4 w-4 fill-current" />
@@ -59,7 +49,7 @@ export function PlaceCard({ place }: PlaceCardProps) {
         </div>
 
         {/* Additional info */}
-        <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-3">
+        <div className="flex flex-wrap gap-2 text-xs text-gray-500">
           {place.hours && (
             <div className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
@@ -77,7 +67,7 @@ export function PlaceCard({ place }: PlaceCardProps) {
 
         {/* Playlists */}
         {place.playlists && place.playlists.length > 0 && (
-          <div className="flex flex-wrap gap-1">
+          <div className="mt-3 flex flex-wrap gap-1">
             {place.playlists.slice(0, 3).map((playlist, index) => (
               <span
                 key={index}

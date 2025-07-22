@@ -126,7 +126,6 @@ export function SearchBar({ query, onQueryChange, onSearch, loading = false }: S
           {loading ? "Buscando..." : "Buscar"}
         </button>
       </div>
-
       {/* Suggestions Dropdown */}
       {showSuggestions && (query.length === 0 || !loading) && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 z-50">
