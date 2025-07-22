@@ -1,11 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { SearchBar } from "@/components/SearchBar"
-import { PlaceCard } from "@/components/PlaceCard"
-import { VibeChips } from "@/components/VibeChips"
-import { CitySelector } from "@/components/CitySelector"
+import SearchBar from "@/components/SearchBar"
+import PlaceCard from "@/components/PlaceCard"
+import VibeChips from "@/components/VibeChips"
+import CitySelector from "@/components/CitySelector"
 import type { Place } from "@/types/place"
+import { mapFrontendToCanonical } from "@/lib/vibeMapping"
 
 interface SearchState {
   query: string
@@ -26,20 +27,25 @@ export default function Home() {
   const [searchState, setSearchState] = useState<SearchState>({
     query: "",
     vibe: "",
-    city: "cdmx", // Default city
+    city: "cdmx", // Default ciudad
     places: [],
     loading: false,
     error: null,
   })
 
-  // Función conectada a APIs reales
+  // Búsqueda libre con análisis de IA
   const handleSearch = async () => {
     if (!searchState.query.trim()) return
 
-    setSearchState((prev) => ({ ...prev, loading: true, error: null, places: [] }))
+    setSearchState((prev) => ({
+      ...prev,
+      loading: true,
+      error: null,
+      places: [],
+    }))
 
     try {
-      console.log("Starting search with query:", searchState.query)
+      console.log("🔍 Starting search for:", searchState.query)
 
       // 1. Analizar vibe y ciudad con IA
       const vibeResponse = await fetch("/api/vibe", {
@@ -48,73 +54,58 @@ export default function Home() {
         body: JSON.stringify({ query: searchState.query }),
       })
 
-      console.log("Vibe response status:", vibeResponse.status)
+      let vibeData: VibeAnalysisResult
+      let searchCity = searchState.city // Default a ciudad seleccionada
 
-      if (!vibeResponse.ok) {
-        const errorText = await vibeResponse.text()
-        console.error("Vibe API error:", errorText)
-        throw new Error(`Error analizando búsqueda: ${vibeResponse.status} - ${errorText}`)
+      if (vibeResponse.ok) {
+        vibeData = await vibeResponse.json()
+        console.log("🧠 Vibe analysis result:", vibeData)
+        // Si detectó ciudad, usarla; sino usar la seleccionada
+        if (vibeData.city) {
+          searchCity = vibeData.city.toLowerCase()
+        }
+      } else {
+        console.warn("❌ Vibe analysis failed, using query as-is")
+        vibeData = {
+          vibe: searchState.query,
+          city: searchCity,
+          confidence: 0.5,
+        }
       }
 
-      const vibeData: VibeAnalysisResult = await vibeResponse.json()
-      console.log("Vibe analysis result:", vibeData)
-
-      // 2. Buscar lugares con vibe detectado y ciudad seleccionada
+      // 2. Buscar lugares con vibe detectado
       const placesUrl = new URL("/api/places", window.location.origin)
       placesUrl.searchParams.set("vibe", vibeData.vibe)
-      placesUrl.searchParams.set("city", searchState.city) // Usar ciudad seleccionada
+      placesUrl.searchParams.set("city", searchCity)
 
-      console.log("Fetching places from:", placesUrl.toString())
+      console.log("📍 Searching places:", placesUrl.toString())
 
       const placesResponse = await fetch(placesUrl.toString())
-
-      if (!placesResponse.ok) {
-        const errorText = await placesResponse.text()
-        console.error("Places API error:", errorText)
-        console.warn("Places API failed, will try AI search")
-      }
-
       let finalPlaces: Place[] = []
 
       if (placesResponse.ok) {
         const placesData = await placesResponse.json()
-        console.log("Places data:", placesData)
         finalPlaces = placesData.places || []
+        console.log("🏠 Found places:", finalPlaces.length, placesData.debug)
       }
 
       // 3. Si no hay resultados locales, usar búsqueda con IA
       if (finalPlaces.length === 0) {
-        console.log("No local results, trying AI search...")
+        console.log("🤖 No local results, trying AI search...")
         const searchResponse = await fetch("/api/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             query: searchState.query,
             vibe: vibeData.vibe,
-            city: searchState.city,
+            city: searchCity,
           }),
         })
 
         if (searchResponse.ok) {
           const searchData = await searchResponse.json()
           finalPlaces = searchData.places || []
-          console.log("AI search results:", finalPlaces.length, "places")
-        } else {
-          console.warn("AI search failed:", searchResponse.status)
-          // Create mock results for testing
-          finalPlaces = [
-            {
-              id: "mock-1",
-              name: "Lugar de Ejemplo",
-              category: "Café",
-              address: "Calle Ejemplo 123",
-              city: searchState.city,
-              description_short: `Perfecto para tu vibe: ${vibeData.vibe}`,
-              playlists: [vibeData.vibe, "ambiente"],
-              rating: 4.5,
-              source: "mock",
-            },
-          ]
+          console.log("🔮 AI search results:", finalPlaces.length)
         }
       }
 
@@ -122,10 +113,11 @@ export default function Home() {
         ...prev,
         places: finalPlaces,
         vibe: vibeData.vibe,
+        city: searchCity,
         loading: false,
       }))
     } catch (error) {
-      console.error("Search error:", error)
+      console.error("💥 Search error:", error)
       setSearchState((prev) => ({
         ...prev,
         loading: false,
@@ -134,7 +126,7 @@ export default function Home() {
     }
   }
 
-  // Función para buscar por vibe seleccionado directamente
+  // Búsqueda directa por vibe seleccionado
   const searchByVibe = async (selectedVibe: string) => {
     setSearchState((prev) => ({
       ...prev,
@@ -145,14 +137,16 @@ export default function Home() {
     }))
 
     try {
-      console.log("Searching by vibe:", selectedVibe, "in city:", searchState.city)
+      console.log("🎯 Searching by vibe:", selectedVibe, "in", searchState.city)
 
-      // Buscar lugares por vibe directo con ciudad seleccionada
+      // Mapear vibe del frontend a canónico
+      const canonicalVibe = mapFrontendToCanonical(selectedVibe)
+      console.log("📝 Mapped to canonical:", canonicalVibe)
+
+      // Buscar lugares por vibe directo
       const placesUrl = new URL("/api/places", window.location.origin)
-      placesUrl.searchParams.set("vibe", selectedVibe)
+      placesUrl.searchParams.set("vibe", canonicalVibe)
       placesUrl.searchParams.set("city", searchState.city)
-
-      console.log("Fetching places by vibe from:", placesUrl.toString())
 
       const placesResponse = await fetch(placesUrl.toString())
       let finalPlaces: Place[] = []
@@ -160,17 +154,18 @@ export default function Home() {
       if (placesResponse.ok) {
         const placesData = await placesResponse.json()
         finalPlaces = placesData.places || []
+        console.log("🏠 Vibe search results:", finalPlaces.length, placesData.debug)
       }
 
-      // Si no hay resultados locales, usar búsqueda con IA o mock
+      // Fallback a AI search si no hay resultados
       if (finalPlaces.length === 0) {
-        console.log("No local results for vibe, trying AI search...")
+        console.log("🤖 No vibe results, trying AI search...")
         const searchResponse = await fetch("/api/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             query: `lugares para ${selectedVibe}`,
-            vibe: selectedVibe,
+            vibe: canonicalVibe,
             city: searchState.city,
           }),
         })
@@ -178,35 +173,6 @@ export default function Home() {
         if (searchResponse.ok) {
           const searchData = await searchResponse.json()
           finalPlaces = searchData.places || []
-          console.log("AI search results for vibe:", finalPlaces.length, "places")
-        } else {
-          console.warn("AI search for vibe failed, using mock data")
-          // Create mock results for testing
-          finalPlaces = [
-            {
-              id: `mock-${selectedVibe}-1`,
-              name: `Lugar ${selectedVibe}`,
-              category: selectedVibe === "Hambre" ? "Restaurante" : selectedVibe === "Chupe" ? "Bar y Cantina" : "Café",
-              address: "Calle Ejemplo 123",
-              city: searchState.city,
-              description_short: `Perfecto para tu vibe: ${selectedVibe}`,
-              playlists: [selectedVibe, "ambiente"],
-              rating: 4.5,
-              source: "mock",
-            },
-            {
-              id: `mock-${selectedVibe}-2`,
-              name: `Otro lugar ${selectedVibe}`,
-              category:
-                selectedVibe === "Bellakeo" ? "Antro" : selectedVibe === "Cultural" ? "Espacio Cultural" : "Café",
-              address: "Avenida Ejemplo 456",
-              city: searchState.city,
-              description_short: `Ideal para cuando buscas ${selectedVibe}`,
-              playlists: [selectedVibe, "música"],
-              rating: 4.2,
-              source: "mock",
-            },
-          ]
         }
       }
 
@@ -214,10 +180,10 @@ export default function Home() {
         ...prev,
         places: finalPlaces,
         loading: false,
-        query: `${selectedVibe} en ${searchState.city}`, // Actualizar query para mostrar qué se buscó
+        query: `${selectedVibe} en ${searchState.city.toUpperCase()}`,
       }))
     } catch (error) {
-      console.error("Vibe search error:", error)
+      console.error("💥 Vibe search error:", error)
       setSearchState((prev) => ({
         ...prev,
         loading: false,
@@ -227,17 +193,20 @@ export default function Home() {
   }
 
   const handleVibeSelect = (vibe: string) => {
-    // Si es el mismo vibe, no hacer nada
     if (searchState.vibe === vibe && searchState.places.length > 0) {
-      return
+      return // No repetir búsqueda si ya está activo
     }
-    // Buscar lugares inmediatamente cuando se selecciona un vibe
     searchByVibe(vibe)
   }
 
   const handleCitySelect = (city: string) => {
-    setSearchState((prev) => ({ ...prev, city, places: [], error: null }))
-    // Si hay un vibe seleccionado, buscar de nuevo con la nueva ciudad
+    console.log("🏙️ City changed to:", city)
+    setSearchState((prev) => ({
+      ...prev,
+      city,
+      places: [], // Limpiar resultados al cambiar ciudad
+    }))
+    // Si hay un vibe seleccionado, re-buscar con nueva ciudad
     if (searchState.vibe) {
       setTimeout(() => searchByVibe(searchState.vibe), 100)
     }
@@ -247,12 +216,23 @@ export default function Home() {
     setSearchState((prev) => ({ ...prev, query }))
   }
 
+  const resetSearch = () => {
+    setSearchState({
+      query: "",
+      vibe: "",
+      city: searchState.city, // Mantener ciudad seleccionada
+      places: [],
+      loading: false,
+      error: null,
+    })
+  }
+
   const getEmptyStateMessage = () => {
     if (searchState.query && searchState.places.length === 0 && !searchState.loading && !searchState.error) {
       return {
         emoji: "🤔",
         title: "No encontramos lugares con ese vibe",
-        subtitle: 'Intenta con: "quiero relajarme", "busco fiesta", "hambre de tacos"',
+        subtitle: `Intenta: "quiero relajarme", "busco fiesta", "hambre de tacos" en ${searchState.city.toUpperCase()}`,
         action: "Nueva búsqueda",
       }
     }
@@ -267,117 +247,119 @@ export default function Home() {
     return null
   }
 
-  const resetSearch = () => {
-    setSearchState((prev) => ({
-      ...prev,
-      query: "",
-      vibe: "",
-      places: [],
-      error: null,
-    }))
-  }
-
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
-            YourCityVibes
-          </h1>
-          <p className="text-lg text-gray-300 mb-8">El Spotify de lugares por vibes</p>
-        </div>
+    <main className="min-h-screen bg-gradient-to-br from-green-400 via-yellow-500 to-red-500">
+      <div className="min-h-screen bg-black/60 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">YourCityVibes</h1>
+            <p className="text-lg text-gray-200 mb-4">Descubre tu vibra en la ciudad</p>
+          </div>
 
-        <div className="max-w-4xl mx-auto">
-          <CitySelector selectedCity={searchState.city} onCitySelect={handleCitySelect} />
+          <div className="max-w-4xl mx-auto">
+            {/* City Selector */}
+            <CitySelector selectedCity={searchState.city} onCitySelect={handleCitySelect} />
 
-          <SearchBar
-            query={searchState.query}
-            onQueryChange={handleQueryChange}
-            onSearch={handleSearch}
-            loading={searchState.loading}
-          />
+            {/* Search Bar */}
+            <SearchBar
+              query={searchState.query}
+              onQueryChange={handleQueryChange}
+              onSearch={handleSearch}
+              loading={searchState.loading}
+            />
 
-          <VibeChips selectedVibe={searchState.vibe} onVibeSelect={handleVibeSelect} />
+            {/* Vibe Chips */}
+            <VibeChips selectedVibe={searchState.vibe} onVibeSelect={handleVibeSelect} />
 
-          {/* Loading State */}
-          {searchState.loading && (
-            <div className="text-center py-12">
-              <div className="relative">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-400 mx-auto mb-6"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-400 rounded-full animate-pulse"></div>
+            {/* Loading State */}
+            {searchState.loading && (
+              <div className="text-center py-12">
+                <div className="relative">
+                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-400 mx-auto mb-6"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-green-600 to-yellow-600 rounded-full animate-pulse"></div>
+                  </div>
                 </div>
+                <p className="text-lg text-gray-200 mb-2">Buscando lugares con tu vibe...</p>
+                <p className="text-sm text-gray-400">
+                  {searchState.vibe && `Analizando: ${searchState.vibe} en ${searchState.city.toUpperCase()}`}
+                </p>
               </div>
-              <p className="text-lg text-gray-200 mb-2">Buscando lugares con tu vibe...</p>
-              <p className="text-sm text-gray-400">{searchState.vibe && `Analizando: ${searchState.vibe}`}</p>
-            </div>
-          )}
+            )}
 
-          {/* Error State */}
-          {searchState.error && (
-            <div className="max-w-md mx-auto">
-              <div className="bg-red-900/50 border border-red-500/50 rounded-xl p-6 text-center backdrop-blur-sm">
-                <div className="text-4xl mb-3">⚠️</div>
-                <h3 className="text-lg font-semibold text-red-200 mb-2">Ups, algo salió mal</h3>
-                <p className="text-red-300 mb-4">{searchState.error}</p>
-                <div className="flex gap-3 justify-center">
-                  <button
-                    onClick={() => setSearchState((prev) => ({ ...prev, error: null }))}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                  >
-                    Reintentar
-                  </button>
-                  <button
-                    onClick={resetSearch}
-                    className="px-4 py-2 border border-red-400 text-red-200 rounded-lg hover:bg-red-900/30 transition-colors"
-                  >
-                    Nueva búsqueda
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Results */}
-          {!searchState.loading && !searchState.error && searchState.places.length > 0 && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-white mb-2">{searchState.places.length} lugares encontrados</h2>
-                {searchState.vibe && (
-                  <p className="text-gray-300">
-                    Perfectos para tu vibe: <span className="font-semibold text-green-400">{searchState.vibe}</span>
-                  </p>
-                )}
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {searchState.places.map((place) => (
-                  <PlaceCard key={place.id} place={place} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Empty States */}
-          {!searchState.loading &&
-            !searchState.error &&
-            (() => {
-              const emptyState = getEmptyStateMessage()
-              return emptyState ? (
-                <div className="text-center py-16">
-                  <div className="text-6xl mb-4">{emptyState.emoji}</div>
-                  <h3 className="text-xl font-semibold text-white mb-2">{emptyState.title}</h3>
-                  <p className="text-gray-300 mb-6 max-w-md mx-auto">{emptyState.subtitle}</p>
-                  {emptyState.action && (
+            {/* Error State */}
+            {searchState.error && (
+              <div className="max-w-md mx-auto">
+                <div className="bg-red-900/20 border border-red-700/50 rounded-xl p-6 text-center backdrop-blur-sm">
+                  <div className="text-4xl mb-3">⚠️</div>
+                  <h3 className="text-lg font-semibold text-red-300 mb-2">Ups, algo salió mal</h3>
+                  <p className="text-red-200 mb-4">{searchState.error}</p>
+                  <div className="flex gap-3 justify-center">
+                    <button
+                      onClick={() => setSearchState((prev) => ({ ...prev, error: null }))}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      Reintentar
+                    </button>
                     <button
                       onClick={resetSearch}
-                      className="px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-xl hover:from-green-600 hover:to-blue-600 transition-all duration-200 shadow-md"
+                      className="px-4 py-2 border border-red-500/50 text-red-300 rounded-lg hover:bg-red-900/20 transition-colors"
                     >
-                      {emptyState.action}
+                      Nueva búsqueda
                     </button>
-                  )}
+                  </div>
                 </div>
-              ) : null
-            })()}
+              </div>
+            )}
+
+            {/* Results */}
+            {!searchState.loading && !searchState.error && searchState.places.length > 0 && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-white mb-1">
+                    {searchState.places.length} lugares encontrados
+                  </h2>
+                  <p className="text-gray-300">
+                    {searchState.vibe && (
+                      <>
+                        Perfectos para tu vibe: <span className="font-semibold text-green-400">{searchState.vibe}</span>{" "}
+                        en{" "}
+                      </>
+                    )}
+                    <span className="font-semibold text-yellow-400">{searchState.city.toUpperCase()}</span>
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {searchState.places.map((place) => (
+                    <PlaceCard key={place.id} place={place} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Empty States */}
+            {!searchState.loading &&
+              !searchState.error &&
+              (() => {
+                const emptyState = getEmptyStateMessage()
+                return emptyState ? (
+                  <div className="text-center py-16">
+                    <div className="text-6xl mb-4">{emptyState.emoji}</div>
+                    <h3 className="text-xl font-semibold text-white mb-2">{emptyState.title}</h3>
+                    <p className="text-gray-300 mb-6 max-w-md mx-auto">{emptyState.subtitle}</p>
+                    {emptyState.action && (
+                      <button
+                        onClick={resetSearch}
+                        className="px-6 py-3 bg-gradient-to-r from-green-500 to-yellow-500 text-black font-semibold rounded-xl hover:from-green-600 hover:to-yellow-600 transition-all duration-200 shadow-lg"
+                      >
+                        {emptyState.action}
+                      </button>
+                    )}
+                  </div>
+                ) : null
+              })()}
+          </div>
         </div>
       </div>
     </main>

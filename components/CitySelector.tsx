@@ -17,9 +17,8 @@ const cities = [
   { id: "tijuana", name: "Tijuana", short: "TIJ" },
 ]
 
-export function CitySelector({ selectedCity, onCitySelect }: CitySelectorProps) {
+export default function CitySelector({ selectedCity, onCitySelect }: CitySelectorProps) {
   const [isOpen, setIsOpen] = useState(false)
-
   const selectedCityData = cities.find((c) => c.id === selectedCity) || cities[0]
 
   const handleCitySelect = (cityId: string) => {
@@ -69,5 +68,3 @@ export function CitySelector({ selectedCity, onCitySelect }: CitySelectorProps) 
     </div>
   )
 }
-
-export default CitySelector

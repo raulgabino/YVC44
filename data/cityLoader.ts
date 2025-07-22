@@ -1,104 +1,102 @@
-// City data loader with caching and validation
-const SUPPORTED_CITIES = [
-  "cdmx",
-  "ciudad-victoria",
-  "monterrey",
-  "san-miguel-de-allende",
-  "guadalajara",
-  "tijuana",
-] as const
+import fs from "fs"
+import path from "path"
+import type { Place } from "@/types/place"
 
-type SupportedCity = (typeof SUPPORTED_CITIES)[number]
-
-// City name mappings for flexible input
-const CITY_MAPPINGS: Record<string, SupportedCity> = {
-  // CDMX variations
+// Mapeo de nombres de ciudades
+const CITY_NAME_MAPPING: Record<string, string> = {
   cdmx: "cdmx",
-  "ciudad de mexico": "cdmx",
   "ciudad de méxico": "cdmx",
-  "mexico city": "cdmx",
   df: "cdmx",
-  "distrito federal": "cdmx",
-
-  // Monterrey variations
+  "mexico city": "cdmx",
   monterrey: "monterrey",
   mty: "monterrey",
-
-  // Guadalajara variations
   guadalajara: "guadalajara",
   gdl: "guadalajara",
-
-  // San Miguel de Allende variations
   "san miguel de allende": "san-miguel-de-allende",
-  "san miguel": "san-miguel-de-allende",
-
-  // Ciudad Victoria variations
+  sma: "san-miguel-de-allende",
   "ciudad victoria": "ciudad-victoria",
   victoria: "ciudad-victoria",
-
-  // Tijuana variations
   tijuana: "tijuana",
   tj: "tijuana",
 }
 
-// Cache for loaded city data
-const cityDataCache = new Map<SupportedCity, any[]>()
-
-/**
- * Normalizes city name to supported format
- */
-export function normalizeCityName(cityName: string): SupportedCity | null {
-  const normalized = cityName.toLowerCase().trim()
-  return CITY_MAPPINGS[normalized] || null
+interface CityDataWrapper {
+  city?: string
+  places?: Place[]
 }
 
-/**
- * Checks if a city is supported
- */
-export function isCitySupported(cityName: string): boolean {
-  return normalizeCityName(cityName) !== null
-}
+type CityData = Place[] | CityDataWrapper
 
-/**
- * Gets list of all supported cities
- */
-export function getSupportedCities(): readonly SupportedCity[] {
-  return SUPPORTED_CITIES
-}
+const placesCache = new Map<string, Place[]>()
 
-/**
- * Loads city data with caching
- */
-export async function loadCityData(cityName: string): Promise<any[] | null> {
-  const normalizedCity = normalizeCityName(cityName)
-
-  if (!normalizedCity) {
-    return null
-  }
-
-  // Check cache first
-  if (cityDataCache.has(normalizedCity)) {
-    return cityDataCache.get(normalizedCity)!
-  }
-
+export async function getPlacesByCity(cityInput: string): Promise<Place[]> {
   try {
-    // Dynamic import of city data
-    const cityData = await import(`./cities/${normalizedCity}.json`)
-    const places = cityData.default || cityData
+    const normalizedCity = normalizeCityName(cityInput)
+    if (placesCache.has(normalizedCity)) {
+      return placesCache.get(normalizedCity)!
+    }
 
-    // Cache the result
-    cityDataCache.set(normalizedCity, places)
+    const filePath = path.join(process.cwd(), "data", "cities", `${normalizedCity}.json`)
 
-    return places
+    if (!fs.existsSync(filePath)) {
+      console.warn(`City file not found: ${filePath}`)
+      return []
+    }
+
+    const fileContent = fs.readFileSync(filePath, "utf8")
+    const cityData: CityData = JSON.parse(fileContent)
+
+    // FIX: Manejar ambas estructuras correctamente
+    let places: Place[]
+    if (Array.isArray(cityData)) {
+      // Estructura directa: [Place, Place, ...]
+      places = cityData
+    } else if (cityData.places && Array.isArray(cityData.places)) {
+      // Estructura wrapped: { city: "CDMX", places: [...] }
+      places = cityData.places
+    } else {
+      console.error("Invalid city data structure:", typeof cityData)
+      return []
+    }
+
+    // Validar y limpiar datos
+    const validPlaces = places
+      .filter((place) => place && place.id && place.name)
+      .map((place) => ({
+        ...place,
+        // Normalizar playlists
+        playlists: Array.isArray(place.playlists) ? place.playlists : [],
+        // Asegurar campos requeridos
+        category: place.category || "Restaurante",
+        rating: place.rating || 0,
+        location: place.location || "",
+      }))
+
+    placesCache.set(normalizedCity, validPlaces)
+    console.log(`Loaded ${validPlaces.length} places for ${normalizedCity}`)
+    return validPlaces
   } catch (error) {
-    console.error(`Failed to load data for city: ${normalizedCity}`, error)
-    return null
+    console.error(`Error loading places for ${cityInput}:`, error)
+    return []
   }
 }
 
-/**
- * Clears the city data cache (useful for testing)
- */
-export function clearCityCache(): void {
-  cityDataCache.clear()
+export function normalizeCityName(cityName: string): string {
+  const normalized = cityName.toLowerCase().trim()
+  return CITY_NAME_MAPPING[normalized] || normalized
+}
+
+// Nueva función para debug
+export function debugCityData(cityName: string) {
+  const filePath = path.join(process.cwd(), "data", "cities", `${cityName}.json`)
+  if (fs.existsSync(filePath)) {
+    const content = fs.readFileSync(filePath, "utf8")
+    const data = JSON.parse(content)
+    console.log(`Debug ${cityName}:`, {
+      isArray: Array.isArray(data),
+      hasPlaces: !!data.places,
+      length: Array.isArray(data) ? data.length : data.places?.length || 0,
+      firstItem: Array.isArray(data) ? data[0] : data.places?.[0],
+    })
+  }
 }

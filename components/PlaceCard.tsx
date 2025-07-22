@@ -7,7 +7,7 @@ interface PlaceCardProps {
   place: Place
 }
 
-export function PlaceCard({ place }: PlaceCardProps) {
+export default function PlaceCard({ place }: PlaceCardProps) {
   const formatRating = (rating?: number) => {
     return rating ? rating.toFixed(1) : "N/A"
   }
@@ -29,7 +29,6 @@ export function PlaceCard({ place }: PlaceCardProps) {
     if (lowerCategory.includes("restaurante") || lowerCategory.includes("comida")) return "🍽️"
     if (lowerCategory.includes("galería") || lowerCategory.includes("arte")) return "🎨"
     if (lowerCategory.includes("tienda") || lowerCategory.includes("shopping")) return "🛍️"
-    if (lowerCategory.includes("antro") || lowerCategory.includes("club")) return "🎵"
     return "📍"
   }
 
@@ -53,21 +52,18 @@ export function PlaceCard({ place }: PlaceCardProps) {
           </div>
         </div>
 
-        {/* Descripción */}
-        {place.description_short && <p className="text-gray-300 text-sm line-clamp-2">{place.description_short}</p>}
-
         {/* Información adicional */}
         <div className="space-y-2">
-          {(place.address || place.city) && (
+          {place.location && (
             <div className="flex items-center gap-2 text-gray-300">
               <MapPin className="w-4 h-4 text-gray-400" />
-              <span className="text-sm">{place.address ? place.address : place.city}</span>
+              <span className="text-sm">{place.location}</span>
             </div>
           )}
           {place.hours && (
             <div className="flex items-center gap-2 text-gray-300">
               <Clock className="w-4 h-4 text-gray-400" />
-              <span className="text-sm">{place.hours}</span>
+              <span className="text-sm">Abierto ahora</span>
             </div>
           )}
           {place.phone && (
@@ -98,15 +94,13 @@ export function PlaceCard({ place }: PlaceCardProps) {
         )}
 
         {/* Footer con precio */}
-        {place.price_range && (
+        {place.priceRange && (
           <div className="flex items-center justify-between pt-2 border-t border-white/10">
             <span className="text-gray-400 text-sm">Precio aproximado</span>
-            <span className="font-bold text-green-400 text-lg">{formatPrice(place.price_range)}</span>
+            <span className="font-bold text-green-400 text-lg">{formatPrice(place.priceRange)}</span>
           </div>
         )}
       </div>
     </div>
   )
 }
-
-export default PlaceCard

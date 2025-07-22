@@ -21,14 +21,12 @@ const vibes = [
   { id: "Naturaleza", label: "Naturaleza", emoji: "🌳" },
 ]
 
-export function VibeChips({ selectedVibe, onVibeSelect }: VibeChipsProps) {
+export default function VibeChips({ selectedVibe, onVibeSelect }: VibeChipsProps) {
   const [clickedVibe, setClickedVibe] = useState<string | null>(null)
 
   const handleChipClick = (vibeId: string) => {
-    // Feedback visual inmediato
     setClickedVibe(vibeId)
     setTimeout(() => setClickedVibe(null), 200)
-    // Llamar función de búsqueda
     onVibeSelect(vibeId)
   }
 
@@ -67,5 +65,3 @@ export function VibeChips({ selectedVibe, onVibeSelect }: VibeChipsProps) {
     </div>
   )
 }
-
-export default VibeChips
