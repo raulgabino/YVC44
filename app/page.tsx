@@ -4,11 +4,13 @@ import { useState } from "react"
 import { SearchBar } from "@/components/SearchBar"
 import { PlaceCard } from "@/components/PlaceCard"
 import { VibeChips } from "@/components/VibeChips"
+import { CitySelector } from "@/components/CitySelector"
 import type { Place } from "@/types/place"
 
 interface SearchState {
   query: string
   vibe: string
+  city: string
   places: Place[]
   loading: boolean
   error: string | null
@@ -24,6 +26,7 @@ export default function Home() {
   const [searchState, setSearchState] = useState<SearchState>({
     query: "",
     vibe: "",
+    city: "cdmx", // Default city
     places: [],
     loading: false,
     error: null,
@@ -56,12 +59,10 @@ export default function Home() {
       const vibeData: VibeAnalysisResult = await vibeResponse.json()
       console.log("Vibe analysis result:", vibeData)
 
-      // 2. Buscar lugares con vibe detectado
+      // 2. Buscar lugares con vibe detectado y ciudad seleccionada
       const placesUrl = new URL("/api/places", window.location.origin)
       placesUrl.searchParams.set("vibe", vibeData.vibe)
-      if (vibeData.city && vibeData.city !== "unknown") {
-        placesUrl.searchParams.set("city", vibeData.city)
-      }
+      placesUrl.searchParams.set("city", searchState.city) // Usar ciudad seleccionada
 
       console.log("Fetching places from:", placesUrl.toString())
 
@@ -70,7 +71,6 @@ export default function Home() {
       if (!placesResponse.ok) {
         const errorText = await placesResponse.text()
         console.error("Places API error:", errorText)
-        // Don't throw error here, continue to AI search
         console.warn("Places API failed, will try AI search")
       }
 
@@ -91,7 +91,7 @@ export default function Home() {
           body: JSON.stringify({
             query: searchState.query,
             vibe: vibeData.vibe,
-            city: vibeData.city,
+            city: searchState.city,
           }),
         })
 
@@ -108,7 +108,7 @@ export default function Home() {
               name: "Lugar de Ejemplo",
               category: "Café",
               address: "Calle Ejemplo 123",
-              city: vibeData.city || "CDMX",
+              city: searchState.city,
               description_short: `Perfecto para tu vibe: ${vibeData.vibe}`,
               playlists: [vibeData.vibe, "ambiente"],
               rating: 4.5,
@@ -145,12 +145,12 @@ export default function Home() {
     }))
 
     try {
-      console.log("Searching by vibe:", selectedVibe)
+      console.log("Searching by vibe:", selectedVibe, "in city:", searchState.city)
 
-      // Buscar lugares por vibe directo (sin análisis de texto)
+      // Buscar lugares por vibe directo con ciudad seleccionada
       const placesUrl = new URL("/api/places", window.location.origin)
       placesUrl.searchParams.set("vibe", selectedVibe)
-      placesUrl.searchParams.set("city", "CDMX") // Default CDMX para tags
+      placesUrl.searchParams.set("city", searchState.city)
 
       console.log("Fetching places by vibe from:", placesUrl.toString())
 
@@ -171,7 +171,7 @@ export default function Home() {
           body: JSON.stringify({
             query: `lugares para ${selectedVibe}`,
             vibe: selectedVibe,
-            city: "CDMX",
+            city: searchState.city,
           }),
         })
 
@@ -186,9 +186,9 @@ export default function Home() {
             {
               id: `mock-${selectedVibe}-1`,
               name: `Lugar ${selectedVibe}`,
-              category: selectedVibe === "food" ? "Restaurante" : selectedVibe === "drinks" ? "Bar y Cantina" : "Café",
-              address: "Calle Ejemplo 123, CDMX",
-              city: "CDMX",
+              category: selectedVibe === "Hambre" ? "Restaurante" : selectedVibe === "Chupe" ? "Bar y Cantina" : "Café",
+              address: "Calle Ejemplo 123",
+              city: searchState.city,
               description_short: `Perfecto para tu vibe: ${selectedVibe}`,
               playlists: [selectedVibe, "ambiente"],
               rating: 4.5,
@@ -197,9 +197,10 @@ export default function Home() {
             {
               id: `mock-${selectedVibe}-2`,
               name: `Otro lugar ${selectedVibe}`,
-              category: selectedVibe === "party" ? "Antro" : selectedVibe === "culture" ? "Espacio Cultural" : "Café",
-              address: "Avenida Ejemplo 456, CDMX",
-              city: "CDMX",
+              category:
+                selectedVibe === "Bellakeo" ? "Antro" : selectedVibe === "Cultural" ? "Espacio Cultural" : "Café",
+              address: "Avenida Ejemplo 456",
+              city: searchState.city,
               description_short: `Ideal para cuando buscas ${selectedVibe}`,
               playlists: [selectedVibe, "música"],
               rating: 4.2,
@@ -213,7 +214,7 @@ export default function Home() {
         ...prev,
         places: finalPlaces,
         loading: false,
-        query: `${selectedVibe} en CDMX`, // Actualizar query para mostrar qué se buscó
+        query: `${selectedVibe} en ${searchState.city}`, // Actualizar query para mostrar qué se buscó
       }))
     } catch (error) {
       console.error("Vibe search error:", error)
@@ -232,6 +233,14 @@ export default function Home() {
     }
     // Buscar lugares inmediatamente cuando se selecciona un vibe
     searchByVibe(vibe)
+  }
+
+  const handleCitySelect = (city: string) => {
+    setSearchState((prev) => ({ ...prev, city, places: [], error: null }))
+    // Si hay un vibe seleccionado, buscar de nuevo con la nueva ciudad
+    if (searchState.vibe) {
+      setTimeout(() => searchByVibe(searchState.vibe), 100)
+    }
   }
 
   const handleQueryChange = (query: string) => {
@@ -259,26 +268,28 @@ export default function Home() {
   }
 
   const resetSearch = () => {
-    setSearchState({
+    setSearchState((prev) => ({
+      ...prev,
       query: "",
       vibe: "",
       places: [],
-      loading: false,
       error: null,
-    })
+    }))
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <main className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
             YourCityVibes
           </h1>
-          <p className="text-lg text-gray-600 mb-8">El Spotify de lugares por vibes</p>
+          <p className="text-lg text-gray-300 mb-8">El Spotify de lugares por vibes</p>
         </div>
 
         <div className="max-w-4xl mx-auto">
+          <CitySelector selectedCity={searchState.city} onCitySelect={handleCitySelect} />
+
           <SearchBar
             query={searchState.query}
             onQueryChange={handleQueryChange}
@@ -292,23 +303,23 @@ export default function Home() {
           {searchState.loading && (
             <div className="text-center py-12">
               <div className="relative">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-6"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-400 mx-auto mb-6"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full animate-pulse"></div>
+                  <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-400 rounded-full animate-pulse"></div>
                 </div>
               </div>
-              <p className="text-lg text-gray-600 mb-2">Buscando lugares con tu vibe...</p>
-              <p className="text-sm text-gray-500">{searchState.vibe && `Analizando: ${searchState.vibe}`}</p>
+              <p className="text-lg text-gray-200 mb-2">Buscando lugares con tu vibe...</p>
+              <p className="text-sm text-gray-400">{searchState.vibe && `Analizando: ${searchState.vibe}`}</p>
             </div>
           )}
 
           {/* Error State */}
           {searchState.error && (
             <div className="max-w-md mx-auto">
-              <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+              <div className="bg-red-900/50 border border-red-500/50 rounded-xl p-6 text-center backdrop-blur-sm">
                 <div className="text-4xl mb-3">⚠️</div>
-                <h3 className="text-lg font-semibold text-red-800 mb-2">Ups, algo salió mal</h3>
-                <p className="text-red-600 mb-4">{searchState.error}</p>
+                <h3 className="text-lg font-semibold text-red-200 mb-2">Ups, algo salió mal</h3>
+                <p className="text-red-300 mb-4">{searchState.error}</p>
                 <div className="flex gap-3 justify-center">
                   <button
                     onClick={() => setSearchState((prev) => ({ ...prev, error: null }))}
@@ -318,7 +329,7 @@ export default function Home() {
                   </button>
                   <button
                     onClick={resetSearch}
-                    className="px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors"
+                    className="px-4 py-2 border border-red-400 text-red-200 rounded-lg hover:bg-red-900/30 transition-colors"
                   >
                     Nueva búsqueda
                   </button>
@@ -331,12 +342,10 @@ export default function Home() {
           {!searchState.loading && !searchState.error && searchState.places.length > 0 && (
             <div className="space-y-6">
               <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                  {searchState.places.length} lugares encontrados
-                </h2>
+                <h2 className="text-2xl font-bold text-white mb-2">{searchState.places.length} lugares encontrados</h2>
                 {searchState.vibe && (
-                  <p className="text-gray-600">
-                    Perfectos para tu vibe: <span className="font-semibold text-purple-600">{searchState.vibe}</span>
+                  <p className="text-gray-300">
+                    Perfectos para tu vibe: <span className="font-semibold text-green-400">{searchState.vibe}</span>
                   </p>
                 )}
               </div>
@@ -356,12 +365,12 @@ export default function Home() {
               return emptyState ? (
                 <div className="text-center py-16">
                   <div className="text-6xl mb-4">{emptyState.emoji}</div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">{emptyState.title}</h3>
-                  <p className="text-gray-600 mb-6 max-w-md mx-auto">{emptyState.subtitle}</p>
+                  <h3 className="text-xl font-semibold text-white mb-2">{emptyState.title}</h3>
+                  <p className="text-gray-300 mb-6 max-w-md mx-auto">{emptyState.subtitle}</p>
                   {emptyState.action && (
                     <button
                       onClick={resetSearch}
-                      className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-md"
+                      className="px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-xl hover:from-green-600 hover:to-blue-600 transition-all duration-200 shadow-md"
                     >
                       {emptyState.action}
                     </button>
