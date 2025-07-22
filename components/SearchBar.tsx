@@ -1,140 +1,170 @@
 "use client"
 
 import type React from "react"
+
 import { useState, useRef, useEffect } from "react"
-import { Search, Clock } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Search, Clock, X, Loader2 } from "lucide-react"
 
 interface SearchBarProps {
-  onSearch: (query: string) => void
-  disabled?: boolean
+  query: string
+  onQueryChange: (query: string) => void
+  onSearch: () => void
+  loading?: boolean
 }
 
-export function SearchBar({ onSearch, disabled }: SearchBarProps) {
-  const [query, setQuery] = useState("")
+export function SearchBar({ query, onQueryChange, onSearch, loading = false }: SearchBarProps) {
+  const [suggestions] = useState([
+    "quiero relajarme con un café",
+    "busco fiesta nocturna",
+    "tengo hambre de tacos",
+    "necesito un lugar romántico",
+    "quiero trabajar en un lugar tranquilo",
+  ])
   const [recentSearches, setRecentSearches] = useState<string[]>([])
-  const [showRecent, setShowRecent] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Load recent searches on mount
   useEffect(() => {
+    // Cargar búsquedas recientes del localStorage
     const saved = localStorage.getItem("ycv-recent-searches")
     if (saved) {
-      setRecentSearches(JSON.parse(saved))
+      try {
+        setRecentSearches(JSON.parse(saved))
+      } catch (e) {
+        console.warn("Error loading recent searches:", e)
+      }
     }
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (query.trim()) {
-      performSearch(query.trim())
+  const handleSearch = () => {
+    if (!query.trim() || loading) return
+
+    // Guardar en búsquedas recientes
+    const newRecent = [query, ...recentSearches.filter((s) => s !== query)].slice(0, 5)
+    setRecentSearches(newRecent)
+    localStorage.setItem("ycv-recent-searches", JSON.stringify(newRecent))
+    setShowSuggestions(false)
+    onSearch()
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch()
+    }
+    if (e.key === "Escape") {
+      setShowSuggestions(false)
     }
   }
 
-  const performSearch = (searchQuery: string) => {
-    // Add to recent searches
-    const updated = [searchQuery, ...recentSearches.filter((s) => s !== searchQuery)].slice(0, 5)
-    setRecentSearches(updated)
-    localStorage.setItem("ycv-recent-searches", JSON.stringify(updated))
-
-    setQuery(searchQuery)
-    setShowRecent(false)
-    onSearch(searchQuery)
+  const handleSuggestionClick = (suggestion: string) => {
+    onQueryChange(suggestion)
+    setShowSuggestions(false)
+    // Auto-buscar después de seleccionar sugerencia
+    setTimeout(() => {
+      onSearch()
+    }, 100)
   }
 
   const clearQuery = () => {
-    setQuery("")
+    onQueryChange("")
     inputRef.current?.focus()
   }
 
-  const clearRecentSearches = () => {
-    setRecentSearches([])
-    localStorage.removeItem("ycv-recent-searches")
-  }
-
-  const suggestions = [
-    "algo para bellaquear en gdl",
-    "un lugar tranqui en la Roma",
-    "donde desayunar crudo en Polanco",
-    "un bar barbón en Monterrey",
-    "café para chambear en la Condesa",
-    "lugar dominguero en Santa Fe",
-  ]
-
   return (
-    <div className="max-w-4xl mx-auto">
-      <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#B3B3B3] h-5 w-5" />
-          <Input
-            ref={inputRef}
-            type="text"
-            placeholder="Ej: 'café tranquilo en Monterrey', 'bar bohemio en CDMX'"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setShowRecent(true)}
-            onBlur={() => setTimeout(() => setShowRecent(false), 200)}
-            disabled={disabled}
-            className="w-full pl-12 pr-24 py-4 text-lg bg-[#242424] border-[#3E3E3E] text-white placeholder-[#B3B3B3] focus:border-[#FF6B35] focus:ring-[#FF6B35] rounded-full"
-          />
-          <Button
-            type="submit"
-            disabled={disabled || !query.trim()}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#FF6B35] hover:bg-[#E55A2B] text-white px-6 py-2 rounded-full"
-          >
-            {disabled ? "..." : "Buscar"}
-          </Button>
+    <div className="relative w-full max-w-2xl mx-auto mb-8">
+      {/* Search Input */}
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          {loading ? (
+            <Loader2 className="h-5 w-5 text-purple-600 animate-spin" />
+          ) : (
+            <Search className="h-5 w-5 text-gray-400" />
+          )}
         </div>
-      </form>
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => onQueryChange(e.target.value)}
+          onKeyDown={handleKeyPress}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          placeholder={loading ? "Buscando..." : "¿Qué vibe buscas? Ej: 'quiero relajarme'"}
+          disabled={loading}
+          className={`
+            w-full pl-10 pr-20 py-4 text-lg rounded-2xl border-2 transition-all duration-200
+            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent
+            ${
+              loading
+                ? "bg-gray-50 border-gray-200 cursor-not-allowed"
+                : "bg-white border-gray-200 hover:border-gray-300"
+            }
+          `}
+        />
+        {/* Clear Button */}
+        {query && !loading && (
+          <button
+            onClick={clearQuery}
+            className="absolute inset-y-0 right-16 flex items-center pr-2 text-gray-400 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
+        {/* Search Button */}
+        <button
+          onClick={handleSearch}
+          disabled={!query.trim() || loading}
+          className={`
+            absolute inset-y-0 right-0 px-6 rounded-r-2xl font-medium transition-all duration-200
+            ${
+              query.trim() && !loading
+                ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-md"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            }
+          `}
+        >
+          {loading ? "Buscando..." : "Buscar"}
+        </button>
+      </div>
 
-      {/* Recent searches dropdown */}
-      {showRecent && recentSearches.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-[#282828] border border-[#3E3E3E] rounded-lg shadow-xl z-10">
-          <div className="flex items-center justify-between p-4 border-b border-[#3E3E3E]">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-[#B3B3B3]" />
-              <span className="text-sm font-medium text-white">Búsquedas recientes</span>
+      {/* Suggestions Dropdown */}
+      {showSuggestions && (query.length === 0 || !loading) && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 z-50">
+          {/* Recent Searches */}
+          {recentSearches.length > 0 && (
+            <div className="p-4 border-b border-gray-100">
+              <h4 className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                Búsquedas recientes
+              </h4>
+              {recentSearches.map((search, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSuggestionClick(search)}
+                  className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
+                >
+                  {search}
+                </button>
+              ))}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearRecentSearches}
-              className="text-xs h-6 text-[#B3B3B3] hover:text-white"
-            >
-              Limpiar
-            </Button>
-          </div>
-          <div className="max-h-48 overflow-y-auto">
-            {recentSearches.map((search, index) => (
+          )}
+          {/* Suggestions */}
+          <div className="p-4">
+            <h4 className="text-sm font-medium text-gray-600 mb-2">Prueba estas búsquedas:</h4>
+            {suggestions.map((suggestion, index) => (
               <button
                 key={index}
-                onClick={() => performSearch(search)}
-                className="w-full text-left px-4 py-3 hover:bg-[#3E3E3E] text-sm text-[#B3B3B3] hover:text-white transition-colors"
+                onClick={() => handleSuggestionClick(suggestion)}
+                className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-purple-50 rounded-lg"
               >
-                {search}
+                {suggestion}
               </button>
             ))}
           </div>
         </div>
       )}
-
-      {/* Suggestions mejoradas - estilo pills */}
-      <div className="flex flex-wrap gap-2 justify-center mt-6">
-        <span className="text-sm text-[#B3B3B3] mr-2 self-center">Prueba:</span>
-        {suggestions.map((suggestion) => (
-          <Button
-            key={suggestion}
-            variant="outline"
-            size="sm"
-            onClick={() => performSearch(suggestion)}
-            disabled={disabled}
-            className="text-xs bg-transparent border-[#3E3E3E] text-[#B3B3B3] hover:bg-[#FF6B35] hover:text-white hover:border-[#FF6B35] transition-all rounded-full"
-          >
-            {suggestion}
-          </Button>
-        ))}
-      </div>
     </div>
   )
 }
+
+export default SearchBar

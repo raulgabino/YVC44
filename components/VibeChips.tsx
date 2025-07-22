@@ -1,58 +1,69 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 
 interface VibeChipsProps {
+  selectedVibe: string
   onVibeSelect: (vibe: string) => void
-  selectedVibe?: string
 }
 
-const VIBE_TOKENS = [
-  "Bellaquear",
-  "Chill",
-  "Productivo",
-  "Romanticón",
-  "Turista",
-  "Shopear",
-  "Fiesta",
-  "Tranqui",
-  "Aesthetic",
-  "Vintage",
-  "Lounge",
-  "Boho",
+const vibes = [
+  { id: "chill", label: "Chill", emoji: "😌" },
+  { id: "party", label: "Fiesta", emoji: "🎉" },
+  { id: "romantic", label: "Romántico", emoji: "💕" },
+  { id: "work", label: "Trabajo", emoji: "💻" },
+  { id: "food", label: "Comida", emoji: "🍽️" },
+  { id: "drinks", label: "Drinks", emoji: "🍸" },
+  { id: "culture", label: "Cultural", emoji: "🎨" },
+  { id: "sport", label: "Deporte", emoji: "⚽" },
+  { id: "shopping", label: "Shopping", emoji: "🛍️" },
+  { id: "nature", label: "Naturaleza", emoji: "🌳" },
 ]
 
-export default function VibeChips({ onVibeSelect, selectedVibe }: VibeChipsProps) {
-  const [randomVibes, setRandomVibes] = useState<string[]>([])
+export function VibeChips({ selectedVibe, onVibeSelect }: VibeChipsProps) {
+  const [clickedVibe, setClickedVibe] = useState<string | null>(null)
 
-  useEffect(() => {
-    const shuffled = [...VIBE_TOKENS].sort(() => 0.5 - Math.random())
-    setRandomVibes(shuffled.slice(0, 5))
-  }, [])
+  const handleChipClick = (vibeId: string) => {
+    // Feedback visual inmediato
+    setClickedVibe(vibeId)
+    setTimeout(() => setClickedVibe(null), 200)
+    // Llamar función de búsqueda
+    onVibeSelect(vibeId)
+  }
 
   return (
-    <div className="flex flex-wrap gap-2 mt-3">
-      {randomVibes.map((vibe) => (
-        <button
-          key={vibe}
-          onClick={() => onVibeSelect(vibe)}
-          className={`
-            px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200
-            ${selectedVibe === vibe ? "bg-white text-purple-600 shadow-lg" : "bg-white/20 text-white hover:bg-white/30"}
-          `}
-        >
-          {vibe}
-        </button>
-      ))}
-      <button
-        onClick={() => {
-          const shuffled = [...VIBE_TOKENS].sort(() => 0.5 - Math.random())
-          setRandomVibes(shuffled.slice(0, 5))
-        }}
-        className="px-3 py-1.5 rounded-full text-sm font-medium bg-white/10 text-white/60 hover:bg-white/20 transition-colors"
-      >
-        🎲 Más
-      </button>
+    <div className="mb-8">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">O elige tu vibe:</h3>
+      <div className="flex flex-wrap justify-center gap-3">
+        {vibes.map((vibe) => (
+          <button
+            key={vibe.id}
+            onClick={() => handleChipClick(vibe.id)}
+            className={`
+              px-4 py-2 rounded-full font-medium transition-all duration-200 transform
+              flex items-center gap-2 min-w-fit
+              ${
+                selectedVibe === vibe.id
+                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105"
+                  : "bg-white text-gray-700 border border-gray-200 hover:border-purple-300 hover:shadow-md hover:scale-105"
+              }
+              ${clickedVibe === vibe.id ? "scale-95" : ""}
+            `}
+          >
+            <span className="text-lg">{vibe.emoji}</span>
+            <span className="text-sm">{vibe.label}</span>
+          </button>
+        ))}
+      </div>
+      {selectedVibe && (
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Mostrando lugares para: <span className="font-semibold text-purple-600">{selectedVibe}</span>
+          </p>
+        </div>
+      )}
     </div>
   )
 }
+
+export default VibeChips
