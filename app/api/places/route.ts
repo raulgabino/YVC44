@@ -1,80 +1,125 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getPlacesByCity } from "@/data/cityLoader"
-import { findCanonicalVibe, getJsonVariations } from "@/lib/vibeMapping"
+import type { Place } from "@/types/place"
+
+// Mapeo de vibes canónicos a variaciones
+const VIBE_VARIATIONS: Record<string, string[]> = {
+  traca: ["traca", "fiesta", "party", "reventón"],
+  bellaqueo: ["bellaqueo", "seducir", "ligar", "sensual"],
+  tranqui: ["tranqui", "relajado", "chill", "zen"],
+  godínez: ["godínez", "profesional", "trabajo", "oficina"],
+  dominguero: ["dominguero", "familiar", "familia", "casual"],
+  chambeador: ["chambeador", "productivo", "trabajar", "estudiar"],
+  tóxico: ["tóxico", "dramático", "intenso", "emocional"],
+  dateo: ["dateo", "romántico", "romanticón", "cita"],
+  crudo: ["crudo", "resaca", "recovery", "hangover"],
+  barbón: ["barbón", "sofisticado", "elegante", "premium"],
+  aesthetic: ["aesthetic", "instagrameable", "fotogénico", "trendy"],
+  cultural: ["cultural", "arte", "museo", "historia"],
+  nostálgico: ["nostálgico", "vintage", "retro", "clásico"],
+  boho: ["boho", "bohemio", "artístico", "alternativo"],
+  gourmet: ["gourmet", "alta cocina", "chef", "fine dining"],
+  minimal: ["minimal", "minimalista", "simple", "clean"],
+}
+
+function normalizeVibe(vibe: string): string {
+  const normalized = vibe.toLowerCase().trim()
+
+  // Buscar en las variaciones
+  for (const [canonical, variations] of Object.entries(VIBE_VARIATIONS)) {
+    if (variations.includes(normalized)) {
+      return canonical
+    }
+  }
+
+  return normalized
+}
+
+function filterPlacesByVibe(places: Place[], vibe: string): Place[] {
+  if (!vibe || vibe.trim() === "") {
+    console.log("🔍 No vibe filter, returning all places")
+    return places
+  }
+
+  const normalizedVibe = normalizeVibe(vibe)
+  console.log(`🎵 Filtering by vibe: ${vibe} -> ${normalizedVibe}`)
+
+  const filtered = places.filter((place) => {
+    if (!place.playlists || !Array.isArray(place.playlists)) {
+      console.log(`⚠️ Place ${place.name} has no playlists`)
+      return false
+    }
+
+    // Normalizar playlists del lugar
+    const normalizedPlaylists = place.playlists.map((p) => normalizeVibe(p))
+    const matches = normalizedPlaylists.includes(normalizedVibe)
+
+    if (matches) {
+      console.log(`✅ ${place.name} matches vibe ${normalizedVibe}:`, place.playlists)
+    }
+
+    return matches
+  })
+
+  console.log(`🎯 Filtered ${filtered.length} places from ${places.length} total`)
+  return filtered
+}
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const vibe = searchParams.get("vibe")
     const city = searchParams.get("city") || "cdmx"
+    const vibe = searchParams.get("vibe") || ""
 
-    console.log("API /places called with:", { vibe, city })
+    console.log(`🔍 API Request - City: ${city}, Vibe: ${vibe}`)
 
-    const places = await getPlacesByCity(city)
-    console.log(`Loaded ${places.length} total places for ${city}`)
+    // Cargar lugares de la ciudad
+    const allPlaces = await getPlacesByCity(city)
+    console.log(`📍 Loaded ${allPlaces.length} places for ${city}`)
 
-    if (!vibe) {
-      return NextResponse.json({ places: places.slice(0, 20) }) // Límite por performance
-    }
-
-    // NUEVO: Mapeo semántico inteligente
-    const canonicalVibe = findCanonicalVibe(vibe)
-    console.log(`Mapped vibe "${vibe}" to canonical "${canonicalVibe}"`)
-
-    if (!canonicalVibe) {
-      console.warn(`No mapping found for vibe: ${vibe}`)
-      return NextResponse.json({ places: [] })
-    }
-
-    // Obtener todas las variaciones que podrían estar en los JSONs
-    const jsonVariations = getJsonVariations(canonicalVibe)
-    console.log(`Searching for variations:`, jsonVariations)
-
-    // MEJORADO: Matching semántico en lugar de literal
-    const filteredPlaces = places.filter((place) => {
-      if (!place.playlists || !Array.isArray(place.playlists)) {
-        return false
-      }
-
-      // Buscar match con cualquiera de las variaciones
-      return place.playlists.some((playlist: string) => {
-        const playlistLower = playlist.toLowerCase().trim()
-        return jsonVariations.some((variation) => {
-          const variationLower = variation.toLowerCase().trim()
-          // Match exacto
-          if (playlistLower === variationLower) return true
-          // Match parcial bidireccional
-          if (playlistLower.includes(variationLower) || variationLower.includes(playlistLower)) return true
-          return false
-        })
+    if (allPlaces.length === 0) {
+      console.log(`❌ No places found for city: ${city}`)
+      return NextResponse.json({
+        places: [],
+        debug: {
+          city,
+          vibe,
+          totalPlaces: 0,
+          filteredPlaces: 0,
+          message: `No places found for city: ${city}`,
+        },
       })
-    })
-
-    console.log(`Found ${filteredPlaces.length} places matching "${canonicalVibe}"`)
-
-    // Debug: mostrar algunos matches
-    if (filteredPlaces.length > 0) {
-      console.log(
-        "Sample matches:",
-        filteredPlaces.slice(0, 3).map((p) => ({
-          name: p.name,
-          playlists: p.playlists,
-        })),
-      )
     }
+
+    // Filtrar por vibe si se proporciona
+    const filteredPlaces = vibe ? filterPlacesByVibe(allPlaces, vibe) : allPlaces
+
+    console.log(`🎯 Final result: ${filteredPlaces.length} places`)
 
     return NextResponse.json({
       places: filteredPlaces,
       debug: {
-        originalVibe: vibe,
-        canonicalVibe,
-        jsonVariations,
-        totalPlaces: places.length,
-        matchedPlaces: filteredPlaces.length,
+        city,
+        vibe,
+        normalizedVibe: vibe ? normalizeVibe(vibe) : null,
+        totalPlaces: allPlaces.length,
+        filteredPlaces: filteredPlaces.length,
+        samplePlaylists: allPlaces.slice(0, 5).map((p) => ({
+          name: p.name,
+          playlists: p.playlists,
+        })),
       },
     })
   } catch (error) {
-    console.error("Error in /api/places:", error)
-    return NextResponse.json({ error: "Error fetching places", places: [] }, { status: 500 })
+    console.error("💥 Error in places API:", error)
+    return NextResponse.json(
+      {
+        places: [],
+        debug: {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+      },
+      { status: 500 },
+    )
   }
 }
